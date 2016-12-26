@@ -1,0 +1,12 @@
+*.bak
+debug/*
+release/*
+profile/*
+*.exe
+*.stash
+*.user
+*.user.*
+*.Debug
+*.Release
+*.Profile
+*.autosave
