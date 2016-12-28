@@ -58,10 +58,12 @@ void RpgDialogBase::setSkinFile(const QString &skinFilename){
 }
 
 void RpgDialogBase::renderSkin(const QString &skinFilename){
+	QFileInfo fInfo(skinFilename);
+	qDebug() << "RpgDialogBase::renderSkin: Loading skin file: " << fInfo.absoluteFilePath();
 	QImage skin;
 	skin.load(skinFilename);
 	if(skin.isNull()){
-		qDebug() << "RpgDialogBase: RpgDialogBase: Load skin file failed.";
+		qDebug() << "RpgDialogBase::renderSkin: Load skin file failed.";
 		return;
 	}
 	if(skin.width() < 192 || skin.height() < 128){
