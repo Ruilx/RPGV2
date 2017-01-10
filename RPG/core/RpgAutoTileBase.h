@@ -224,7 +224,7 @@ private:
 	const QRect rightTopHHalfRect = QRect(64, 32, 32, 16);			// rightTop32 Top		// Maybe unused. replaced by rightTop
 	const QRect rightBottomHHalfRect = QRect(64, 112, 32, 16);		// rightBottom32 Bottom
 	const QRect topHHalfRect = QRect = (32, 32, 32, 16);			// top32 Top			// Maybe unused. replaced by top
-	const QRect bototmHHalfRect = QRect(32, 112, 32, 16);			// bottom32 Bottom
+	const QRect bottomHHalfRect = QRect(32, 112, 32, 16);			// bottom32 Bottom
 
 	const QRect leftTopVHalfRect = QRect(0, 32, 16, 32);			// leftTop32 Left		// Maybe unused. replaced by leftTop
 	const QRect leftBottomVHalfRect = QRect(0, 96, 16, 32);			// leftBottom32 Left
@@ -443,6 +443,44 @@ private:
 				p.setCompositionMode(QPainter::CompositionMode_SourceOver);
 				p.drawImage(leftBottomInnerCornerLocalOffset, leftBottomInnerBase);
 				block.insertImage(Block::LeftBottomMultiInnerCorner, backgroundLoad);	// 保存左下角外拐块
+				p.end();
+			}
+
+			// 竖直的块(16x32竖, 32x16横)
+			QImage leftBase = blockImage.copy(leftVHalfRect);
+			QImage rightBase = blockImage.copy(rightVHalfRect);
+			QImage topBase = blockImage.copy(topHHalfRect);
+			QImage bottomBase = blockImage.copy(bottomHHalfRect);
+			{
+				QImage backgroundLoad = multiAreaLeftBg;
+				QPainter p(&backgroundLoad);
+				p.setCompositionMode(QPainter::CompositionMode_SourceOver);
+				p.drawImage(rightHHalfLocalOffset, rightBase);
+				block.insertImage(Block::RightSingleTee, backgroundLoad);				// 保存左上, 左下外拐块和右边
+				p.end();
+			}
+			{
+				QImage backgroundLoad = multiAreaRightBg;
+				QPainter p(&backgroundLoad);
+				p.setCompositionMode(QPainter::CompositionMode_SourceOver);
+				p.drawImage(leftHHalfLocalOffset, leftBase);
+				block.insertImage(Block::LeftSingleTee, backgroundLoad);				// 保存右上, 右下外拐块和左边
+				p.end();
+			}
+			{
+				QImage backgroundLoad = multiAreaTopBg;
+				QPainter p(&backgroundLoad);
+				p.setCompositionMode(QPainter::CompositionMode_SourceOver);
+				p.drawImage(topHHalfLocalOffset, topBase);
+				block.insertImage(Block::TopSingleTee, backgroundLoad);					// 保存左下, 右下外拐块和上边
+				p.end();
+			}
+			{
+				QImage backgroundLoad = multiAreaBottomBg;
+				QPainter p(&backgroundLoad);
+				p.setCompositionMode(QPainter::CompositionMode_SourceOver);
+				p.drawImage(bottomHHalfLocalOffset, bottomBase);
+				block.insertImage(Block::BottomSingleTee, backgroundLoad);				// 保存左上, 右上外拐块和下边
 				p.end();
 			}
 
