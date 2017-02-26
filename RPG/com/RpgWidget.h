@@ -146,7 +146,9 @@ public:
 		mainLay->addWidget(this->stage);
 		mainLay->setMargin(0);
 
-		this->dialog = new RpgDialog(titleScene);
+		//this->dialog = new RpgDialog(titleScene);
+		this->dialog = RpgDialog::getInstance();
+		this->dialog->setGraphicsScene(titleScene);
 		connect(this->dialog, &RpgDialog::enterDialogMode, this, [this](){
 			this->modeStack.push(DialogMode);
 			this->enterDialogMode();
@@ -212,26 +214,42 @@ public slots:
 	 * @brief enterDialogMode, exitDialogMode
 	 * 进入/退出对话模式(接受对话模块传来的信号), 槽
 	 */
-	void enterDialogMode(){}
-	void quitDialogMode(){}
+	void enterDialogMode(){
+		qDebug() << "[DEBUG][System] Enter [Dialog] Mode.";
+	}
+	void quitDialogMode(){
+		qDebug() << "[DEBUG][System] Quit [Dialog] Mode.";
+	}
 	/**
 	 * @brief enterNormalMode, exitNormalMode
 	 * 进入/退出普通模式(接受普通模式模块传来的信号), 槽
 	 */
-	void enterNormalMode(){}
-	void quitNormalMode(){}
+	void enterNormalMode(){
+		qDebug() << "[DEBUG][System] Enter Normal Mode.";
+	}
+	void quitNormalMode(){
+		qDebug() << "[DEBUG][System] Quit Normal Mode.";
+	}
 	/**
 	 * @brief enterSystemMenuMode, exitSystemMenuMode
 	 * 进入/退出系统菜单模式(接受系统菜单模块传来的信号), 槽
 	 */
-	void enterSystemMenuMode(){}
-	void quitSystemMenuMode(){}
+	void enterSystemMenuMode(){
+		qDebug() << "[DEBUG][System] Enter SystemMenu Mode.";
+	}
+	void quitSystemMenuMode(){
+		qDebug() << "[DEBUG][System] Exit SystemMenu Mode.";
+	}
 	/**
 	 * @brief enterItemMenuMode, exitItemMenuMode
 	 * 进入/退出背包模式(接受背包界面模块传来的信号), 槽
 	 */
-	void enterItemMenuMode(){}
-	void quitItemMenuMode(){}
+	void enterItemMenuMode(){
+		qDebug() << "[DEBUG][System] Enter ItemMenu Mode.";
+	}
+	void quitItemMenuMode(){
+		qDebug() << "[DEBUG][System] Quit ItemMenu Mode.";
+	}
 
 	/**
 	 * @brief ready
@@ -268,6 +286,7 @@ public slots:
 		dialog->addText("一声刻骨铭心的爆炸。");
 		dialog->addText("她，从此生死不明。");
 		dialog->exec();
+
 
 #ifdef _DEBUG
 		int blockCol = titleScene->width() / MapBlockWidth;

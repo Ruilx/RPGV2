@@ -10,10 +10,11 @@
 
 #define DialogZValue 100.0f
 
-
 class RpgDialog : public QObject, public RpgDialogBase
 {
 	Q_OBJECT
+	// 标志: 是否在运行
+	bool isRunning = false;
 	// 指定显示在哪个Scene上
 	QGraphicsScene *parentScene = nullptr;
 	// 构成
@@ -55,6 +56,14 @@ private:
 	QPixmap *continueSymbolPixmap[4] = {nullptr};
 
 public:
+	// 返回单例模式
+	static RpgDialog *getInstance(){
+		if(_instance == nullptr){
+			_instance = new RpgDialog();
+		}
+		return _instance;
+	}
+protected:
 	// 构造
 	explicit RpgDialog(QGraphicsScene *parentScene = nullptr, QObject *parent = 0): QObject(parent), RpgDialogBase(){
 		this->parentScene = parentScene;
@@ -94,7 +103,7 @@ public:
 		this->messageRect = QRect(messagePaddingH, messagePaddingV, this->getDialogRect().width() - messagePaddingH - messagePaddingH, this->getDialogHeight() - messagePaddingV - messagePaddingV);
 
 	}
-
+public:
 	// 在文字列表中添加文字
 	void addText(const QString &text){
 		this->messageList.append(text);
@@ -137,6 +146,10 @@ public:
 				return;
 			}
 		}
+		if(this->isRunning == true){
+			qDebug() << "Dialog is still running, please don't call it repeatly!";
+			return;
+		}
 
 		this->box->setPixmap(QPixmap::fromImage(this->getDialogImage()));
 		this->box->setPos(this->getDialogPosition());
@@ -156,6 +169,7 @@ public:
 
 	// 显示Dialog函数
 	void showDialog(){
+		this->isRunning = true;
 		emit this->enterDialogMode();
 		this->parentScene->addItem(this->box);
 		this->showText(this->messageIndex);
@@ -169,6 +183,7 @@ public:
 		this->box->hide();
 		this->clearText();
 		emit this->quitDialogMode();
+		this->isRunning = false;
 	}
 protected:
 	// 显示文字函数
@@ -229,6 +244,10 @@ public slots:
 			}
 		}
 	}
+
+private:
+	// 单例模式
+	static RpgDialog *_instance;
 };
 
 #endif // RPGDIALOG_H
