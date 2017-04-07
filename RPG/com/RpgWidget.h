@@ -8,8 +8,13 @@
 #include <RPG/utils/Utils.h>
 #include <RPG/com/RpgDialog.h>
 #include <RPG/core/RpgMapBlock.h>
+#include <RPG/com/RpgScene.h>
 
-
+/**
+ * @brief The RpgWidget class
+ * QWidget, 构建的RPG演出台幕
+ * 处理用户输入, 场景调度, 信息发送, 模式栈
+ */
 class RpgWidget : public QWidget
 {
 	Q_OBJECT
@@ -17,7 +22,7 @@ class RpgWidget : public QWidget
 	 * @brief mapList
 	 * 地图的列表, 由名字对应一个地图的scene, 游戏会载入各种地图到相应的场景中
 	 */
-	QHash<QString, QGraphicsScene*> mapList;
+	QHash<QString, RpgScene*> mapList;
 	/**
 	 * @brief stage
 	 * 舞台(窗口)用来看见地图的窗口, 控制舞台显示机制, 对话框等显示.
@@ -33,7 +38,7 @@ class RpgWidget : public QWidget
 	 * @brief dialog
 	 * RPG对话框, 用来显示文字, 并接受Return, Space按键以显示一些字符.
 	 */
-	RpgDialog *dialog;
+	//RpgDialog *dialog;
 	/**
 	 * @brief The Mode enum
 	 * 定义游戏会有哪些模式, 各个模式中按键接受方式, 显示方式等都不相同, 用这个Enum来规范现在
@@ -129,9 +134,11 @@ public:
 	 * RpgWidget构造函数
 	 */
 	explicit RpgWidget(QWidget *parent = nullptr): QWidget(parent){
-		QGraphicsScene *titleScene = new QGraphicsScene(this);
+		//QGraphicsScene *titleScene = new QGraphicsScene(this);
+		//this->mapList.insert("titlescene", titleScene);
+		RpgScene *titleScene = new RpgScene(this);
 		this->mapList.insert("titlescene", titleScene);
-		titleScene->setSceneRect(0.0f, 0.0f, ScreenWidth, ScreenHeight);
+		titleScene->setSceneRect(0.0f, 0.0f, ScreenWidth*1.5, ScreenHeight*1.5);
 
 		this->stage->setScene(titleScene);
 		this->stage->setFixedSize(ScreenWidth + 2, ScreenHeight + 2);
@@ -146,15 +153,12 @@ public:
 		mainLay->addWidget(this->stage);
 		mainLay->setMargin(0);
 
-		//this->dialog = new RpgDialog(titleScene);
-		this->dialog = RpgDialog::getInstance();
-		this->dialog->setGraphicsScene(titleScene);
-		connect(this->dialog, &RpgDialog::enterDialogMode, this, [this](){
+		connect(titleScene->getRpgDialog(), &RpgDialog::enterDialogMode, this, [this](){
 			this->modeStack.push(DialogMode);
 			this->enterDialogMode();
 		});
 
-		connect(this->dialog, &RpgDialog::quitDialogMode, this, [this](){
+		connect(titleScene->getRpgDialog(), &RpgDialog::quitDialogMode, this, [this](){
 			if(this->modeStack.top() == DialogMode){
 				this->modeStack.pop();
 			}else{
@@ -164,19 +168,13 @@ public:
 			this->quitDialogMode();
 		});
 
-		connect(this, &RpgWidget::dialogModeKeyClick, this->dialog, &RpgDialog::receiveKey);
+		connect(this, &RpgWidget::dialogModeKeyClick, titleScene->getRpgDialog(), &RpgDialog::receiveKey);
 
 		this->modeStack.push(NormalMode);
 
 		QTimer::singleShot(1000, this, &RpgWidget::ready);
-	}
-	/**
-	 * @brief getRpgDialog
-	 * @return
-	 * 返回Dialog实例
-	 */
-	RpgDialog *getRpgDialog(){
-		return this->dialog;
+
+		this->stage->setRenderHints(QPainter::Antialiasing | QPainter::TextAntialiasing | QPainter::SmoothPixmapTransform);
 	}
 
 signals:
@@ -257,35 +255,28 @@ public slots:
 	 */
 	void ready(){
 		qDebug() << "Ready...";
-		QGraphicsScene *titleScene = this->mapList.value("titlescene", nullptr);
+		RpgScene *titleScene = this->mapList.value("titlescene", nullptr);
 		if(titleScene == nullptr){
 			qDebug() << "RpgWidget::ready(): titleScene(\"titlescene\") not exist.";
 			return;
 		}
 
-		QFont font;{
-			font.setFamily(tr("A-OTF Folk Pro M, Microsoft YaHei Light"));
-			font.setPixelSize(22);
-			font.setBold(true);
-		}
-		dialog->setFont(font);
-		dialog->setSlowprint(RpgDialog::SpeedFast);
-		dialog->setGraphicsScene(titleScene);
-		dialog->addText("我做梦都没想到，会有一天，竟然用<red>这种尴尬</red>的方式，和那个女孩子相遇了。");
-		dialog->addText("但是当我遇见她的时候，她的心情异常的平静，好像并没有对此感到吃惊。");
-		dialog->addText("“难道她认识我？”");
-		dialog->addText("她说她看到我就有一种似曾相识的感觉。");
-		dialog->addText("<blue>似曾相识的感觉？</blue>我倒是记得一位和她很像的女生，跟我关系非常好，但是相比之下，这么让人相敬如宾的女孩子我还是头一回见。");
-		dialog->addText("不对。一定不是她，她在那场灾难中没有活下来，即便活下来了，烧伤的痕迹应该也能看出来，<green>即便是她</green>，那么这三年她是怎么生活过来的。");
-		dialog->addText("一大堆问题忽然全部堆到我的脑海里，我飞速的计算着，飞速的猜测着，但是并没有任何结果。");
-		dialog->addText("当时只是尴尬了说了一句：“对不起”便匆匆离去。但之后真的回味无穷。");
-		dialog->addText("真的是她吗，我不相信。三年前，我亲眼看到她被大火淹没，从此再无音信。");
-		dialog->addText("……");
-		dialog->addText("我当时真的傻眼了，我想冲回去救她，但是被其他人拦住强制拖出了火灾区。");
-		dialog->addText("眼看着我离她越来越远，我极力挣扎着。我只记得我被营救出去的那一刻，后面出现了爆炸。");
-		dialog->addText("一声刻骨铭心的爆炸。");
-		dialog->addText("她，从此生死不明。");
-		dialog->exec();
+		titleScene->getRpgDialog()->addText("我做梦都没想到，会有一天，竟然用<r>这种尴尬</r>的方式，和那个女孩子相遇了。");
+		titleScene->getRpgDialog()->addText("私は一日持っていた夢の中でそれを考えなかった、私は非常に恥ずかしい状況でその女の子に会った");
+		titleScene->getRpgDialog()->addText("但是当我遇见她的时候，她的心情异常的平静，好像并没有对此感到吃惊。");
+		titleScene->getRpgDialog()->addText("“难道她认识我？”");
+		titleScene->getRpgDialog()->addText("她说她看到我就有一种似曾相识的感觉。");
+		titleScene->getRpgDialog()->addText("<b>似曾相识的感觉？</b>我倒是记得一位和她很像的女生，跟我关系非常好，但是相比之下，这么让人相敬如宾的女孩子我还是头一回见。");
+		titleScene->getRpgDialog()->addText("不对。一定不是她，她在那场灾难中没有活下来，即便活下来了，烧伤的痕迹应该也能看出来，<g>即便是她</g>，那么这三年她是怎么生活过来的。");
+		titleScene->getRpgDialog()->addText("一大堆问题忽然全部堆到我的脑海里，我飞速的计算着，飞速的猜测着，但是并没有任何结果。");
+		titleScene->getRpgDialog()->addText("当时只是尴尬了说了一句：“对不起”便匆匆离去。但之后真的回味无穷。");
+		titleScene->getRpgDialog()->addText("真的是她吗，我不相信。三年前，我亲眼看到她被大火淹没，从此再无音信。");
+		titleScene->getRpgDialog()->addText("……");
+		titleScene->getRpgDialog()->addText("我当时真的傻眼了，我想冲回去救她，但是被其他人拦住强制拖出了火灾区。");
+		titleScene->getRpgDialog()->addText("眼看着我离她越来越远，我极力挣扎着。我只记得我被营救出去的那一刻，后面出现了<y>爆炸</y>。");
+		titleScene->getRpgDialog()->addText("一声刻骨铭心的爆炸。");
+		titleScene->getRpgDialog()->addText("她，从此生死不明。");
+		titleScene->getRpgDialog()->exec();
 
 
 #ifdef _DEBUG

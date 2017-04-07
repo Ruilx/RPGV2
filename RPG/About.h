@@ -1,7 +1,7 @@
 #ifndef ABOUT_H
 #define ABOUT_H
 
-#if 0
+#if 1
 #include <QtCore>
 
 #define ApplicationName QObject::tr("VRPGV2")
@@ -16,7 +16,7 @@
 #define UsingLicense "Private"
 #define UsingLicenseVersion 0x00000000
 #define UsingSDK "Qt"
-#define UsingSDKVersion QT_VERSION
+#define UsingSDKVersion (QT_VERSION)
 #define ApplicationVersion 0x0D000100
 //                            | | | +-Revised Version (Patch)
 //                            | | +---Minor Version
@@ -32,7 +32,7 @@
 //  0x0F = Final
 //  0x10 = Release
 //  0x11 = RC (Release Candidate)
-#define Version ApplicationVersion
+//#define Version ApplicationVersion
 #define ApplicationLanguage 0x1033
 
 class About{
@@ -75,10 +75,10 @@ public:
 
 	static QString getVersionString()/* const*/{
 		About _about;
-		QString versionEString = _about.getVersionEditionInTheMap((Version & 0xFF000000) >> 24);
-		int majorVersion = (Version & 0x00FF0000) >> 16;
-		int minorVersion = (Version & 0x0000FF00) >> 8;
-		int patchVersion = (Version & 0x000000FF);
+		QString versionEString = _about.getVersionEditionInTheMap((ApplicationVersion & 0xFF000000) >> 24);
+		int majorVersion = (ApplicationVersion & 0x00FF0000) >> 16;
+		int minorVersion = (ApplicationVersion & 0x0000FF00) >> 8;
+		int patchVersion = (ApplicationVersion & 0x000000FF);
 		if(!versionEString.isEmpty()){
 			return QString("%1.%2%3 %4").arg(majorVersion).arg(minorVersion).arg((patchVersion == 0)?"":QString("(%1)").arg(patchVersion)).arg(versionEString);
 		}else{

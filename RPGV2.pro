@@ -19,7 +19,9 @@ SOURCES += main.cpp\
     RPG/com/RpgDialog.cpp \
     RPG/core/RpgDialogBase.cpp \
     RPG/core/RpgMapBlock.cpp \
-    RPG/core/RpgAutoTileBase.cpp
+    RPG/core/RpgAutoTileBase.cpp \
+    RPG/Global.cpp \
+    RPG/com/RpgScene.cpp
 
 HEADERS  += Mainw.h \
     RPG/About.h \
@@ -29,7 +31,8 @@ HEADERS  += Mainw.h \
     RPG/com/RpgDialog.h \
     RPG/core/RpgDialogBase.h \
     RPG/core/RpgMapBlock.h \
-    RPG/core/RpgAutoTileBase.h
+    RPG/core/RpgAutoTileBase.h \
+    RPG/com/RpgScene.h
 
 
 INCLUDEPATH += $$PWD
