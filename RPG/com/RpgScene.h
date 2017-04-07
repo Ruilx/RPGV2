@@ -20,9 +20,14 @@ public:
 
 	}
 
+	void setSceneRect(const QRectF &rect){
+		QGraphicsScene::setSceneRect(rect);
+		this->dialog->setViewportOffset(QPointF(rect.left(), rect.top()));
+	}
+	inline void setSceneRect(qreal x, qreal y, qreal w, qreal h) { this->setSceneRect(QRectF(x, y, w, h)); }
 	RpgDialog *getRpgDialog(){ return this->dialog; }
-
-
+	void setScenePos(const QPointF &point){ this->setSceneRect(point.x(), point.y(), ScreenWidthF, ScreenHeightF); }
+	inline void setScenePos(qreal left, qreal top){ this->setScenePos(QPointF(left, top)); }
 
 };
 

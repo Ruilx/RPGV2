@@ -134,15 +134,18 @@ public:
 	 * RpgWidget构造函数
 	 */
 	explicit RpgWidget(QWidget *parent = nullptr): QWidget(parent){
-		//QGraphicsScene *titleScene = new QGraphicsScene(this);
-		//this->mapList.insert("titlescene", titleScene);
+
+		// 新建一个Scene, 然后加入地图列表
 		RpgScene *titleScene = new RpgScene(this);
 		this->mapList.insert("titlescene", titleScene);
-		titleScene->setSceneRect(0.0f, 0.0f, ScreenWidth*1.5, ScreenHeight*1.5);
-
+		// 设置显示偏移量
+		titleScene->setScenePos(50.0f, 50.0f);
+		// 设置当前地图
 		this->stage->setScene(titleScene);
 		this->stage->setFixedSize(ScreenWidth + 2, ScreenHeight + 2);
-		this->stage->scale(1.0f, 1.0f);
+		this->stage->scale(2.0f, 1.0f);
+		//this->stage->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+		//this->stage->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
 		QPalette pal;{
 			pal.setColor(QPalette::Base, Qt::black);
 		}

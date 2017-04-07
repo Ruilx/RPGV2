@@ -53,10 +53,6 @@ QImage *RpgDialogBase::getContinueSymbol(int index) const{
 	return this->continueSymbol[index];
 }
 
-void RpgDialogBase::setSkinFile(const QString &skinFilename){
-	this->renderSkin(skinFilename);
-}
-
 void RpgDialogBase::renderSkin(const QString &skinFilename){
 	QFileInfo fInfo(skinFilename);
 	qDebug() << "RpgDialogBase::renderSkin: Loading skin file: " << fInfo.absoluteFilePath();

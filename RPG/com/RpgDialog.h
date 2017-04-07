@@ -39,6 +39,9 @@ class RpgDialog : public QObject, public RpgDialogBase
 	int messagePaddingV = 6;
 	QRect messageRect = QRect(messagePaddingH, messagePaddingV, ScreenWidth - messagePaddingH - messagePaddingH, ScreenHeight - messagePaddingV - messagePaddingV);
 
+	// Viewport Offset( 一般Scene要比View大, 所以如果要浮于View中间, 则还需要View相对于Scene的视窗大小 )
+	QPointF viewportOffset = QPoint(0, 0);
+
 public:
 	/**
 	 * @brief The Speed enum
@@ -81,48 +84,65 @@ public:
 	 * @param text 添加的文字
 	 * 在文本列表中添加一条文字
 	 */
-	void addText(const QString &text);
+	void addText(const QString &text){ this->messageList.append(text); }
 
 	/**
 	 * @brief addText
 	 * @param textList 添加的文本列表
 	 * 在文本列表中添加一堆文字
 	 */
-	void addText(const QStringList &textList);
+	void addText(const QStringList &textList){ this->messageList.append(textList); }
 
 	/**
 	 * @brief setSlowprint
 	 * @param speed 速度
 	 * 设置缓慢输出速度
 	 */
-	void setSlowprint(int speed);
+	void setSlowprint(int speed){ this->slowprint = speed; }
 
 	/**
 	 * @brief setFont
 	 * @param font 字体
 	 * 设置字体
 	 */
-	void setFont(const QFont &font);
+	void setFont(const QFont &font){ this->message->setFont(font); }
 
 	/**
 	 * @brief setTextColor
 	 * @param color
 	 * 设置字体颜色
 	 */
-	void setTextColor(const QColor &color);
+	void setTextColor(const QColor &color){ this->message->setDefaultTextColor(color); }
+
+	/**
+	 * @brief getViewportOffset
+	 * @return QPoint
+	 * 获得Viewport的偏移坐标
+	 */
+	QPointF getViewportOffset() const { return this->viewportOffset; }
+
+	/**
+	 * @brief setViewportOffset
+	 * @param offset
+	 * 设置Viewport的偏移坐标
+	 */
+	void setViewportOffset(const QPointF &offset){ this->viewportOffset = offset; }
 
 	/**
 	 * @brief clearText
 	 * 清除文字列表(清空列表)
 	 */
-	void clearText();
+	void clearText(){ this->messageList.clear(); }
 
 	/**
 	 * @brief setGraphicsScene
 	 * @param scene
 	 * 设置对话框显示到的Scene
 	 */
-	void setGraphicsScene(QGraphicsScene *scene);
+	void setGraphicsScene(QGraphicsScene *scene){
+		this->parentScene = scene;
+//		this->setViewportOffset(QPointF(this->parentScene->sceneRect().left(), this->parentScene->sceneRect().top()));
+	}
 
 	/**
 	 * @brief exec

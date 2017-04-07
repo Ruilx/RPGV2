@@ -3,7 +3,8 @@
 //RpgDialog *RpgDialog::_instance = nullptr;
 
 RpgDialog::RpgDialog(QGraphicsScene *parentScene, QObject *parent): QObject(parent), RpgDialogBase(){
-	this->parentScene = parentScene;
+	//this->parentScene = parentScene;
+	this->setGraphicsScene(parentScene);
 	this->setTextColor(QColor(Qt::white));
 	//		QFont font = QApplication::font();
 	//		font.setPixelSize(22);
@@ -47,34 +48,6 @@ RpgDialog::RpgDialog(QGraphicsScene *parentScene, QObject *parent): QObject(pare
 	this->slowprint = SpeedFast;
 }
 
-void RpgDialog::addText(const QString &text){
-	this->messageList.append(text);
-}
-
-void RpgDialog::addText(const QStringList &textList){
-	this->messageList.append(textList);
-}
-
-void RpgDialog::setSlowprint(int speed){
-	this->slowprint = speed;
-}
-
-void RpgDialog::setFont(const QFont &font){
-	this->message->setFont(font);
-}
-
-void RpgDialog::setTextColor(const QColor &color){
-	this->message->setDefaultTextColor(color);
-}
-
-void RpgDialog::clearText(){
-	this->messageList.clear();
-}
-
-void RpgDialog::setGraphicsScene(QGraphicsScene *scene){
-	this->parentScene = scene;
-}
-
 void RpgDialog::exec(){
 	if(this->parentScene == nullptr){
 		qDebug() << "Rpgdialog::exec(): parentScene is not set.(Null)";
@@ -92,7 +65,7 @@ void RpgDialog::exec(){
 	}
 
 	this->box->setPixmap(QPixmap::fromImage(this->getDialogImage()));
-	this->box->setPos(this->getDialogPosition());
+	this->box->setPos(this->getDialogPosition() + this->getViewportOffset());
 	this->box->setZValue(DialogZValue + 0.0f);
 
 	this->message->setTextWidth(this->messageRect.width());

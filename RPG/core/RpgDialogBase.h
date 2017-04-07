@@ -122,10 +122,10 @@ public:
 
 	QRect getDialogRect() const { return this->rect; }
 
-	QPoint getDialogPosition() const { return QPoint(this->rect.left(), this->rect.top()); }
-	QPoint getSelectBarPosition() const { return QPoint(this->selectBarScaleRect.left(), this->selectBarScaleRect.top()); }
+	QPointF getDialogPosition() const { return QPointF(this->rect.left(), this->rect.top()); }
+	QPointF getSelectBarPosition() const { return QPointF(this->selectBarScaleRect.left(), this->selectBarScaleRect.top()); }
 
-	void setSkinFile(const QString &skinFilename);
+	void setSkinFile(const QString &skinFilename){ this->renderSkin(skinFilename); }
 
 protected:
 	void setDialogSkinFilename(const QString &filename);

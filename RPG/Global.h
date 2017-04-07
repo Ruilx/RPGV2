@@ -8,9 +8,9 @@
 // 屏幕高度(像素)
 #define ScreenHeight 480
 // 屏幕宽度(像素)(浮点型)
-#define ScreenWidthF ScreenWidth##.0f
+#define ScreenWidthF 640.0f
 // 屏幕高度(像素)(浮点型)
-#define ScreenHeightF ScreenHeight##.0f
+#define ScreenHeightF 480.0f
 
 // 一个Block的宽度
 #define MapBlockWidth 32
