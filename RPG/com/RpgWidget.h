@@ -143,7 +143,7 @@ public:
 		// 设置当前地图
 		this->stage->setScene(titleScene);
 		this->stage->setFixedSize(ScreenWidth + 2, ScreenHeight + 2);
-		this->stage->scale(2.0f, 1.0f);
+		this->stage->scale(1.0f, 1.0f);
 		//this->stage->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
 		//this->stage->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
 		QPalette pal;{
@@ -282,7 +282,7 @@ public slots:
 		titleScene->getRpgDialog()->exec();
 
 
-#ifdef _DEBUG
+#ifdef DEBUG
 		int blockCol = titleScene->width() / MapBlockWidth;
 		int blockRow = titleScene->height() / MapBlockHeight;
 		for(int i = 0; i < blockRow; i++){
