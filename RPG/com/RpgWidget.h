@@ -9,6 +9,7 @@
 #include <RPG/com/RpgDialog.h>
 #include <RPG/core/RpgMapBlock.h>
 #include <RPG/com/RpgScene.h>
+#include <RPG/core/RpgTileSetBase.h>
 
 /**
  * @brief The RpgWidget class
@@ -264,6 +265,21 @@ public slots:
 			return;
 		}
 
+#ifdef DEBUG
+		int blockCol = titleScene->width() / MapBlockWidth;
+		int blockRow = titleScene->height() / MapBlockHeight;
+		RpgTileSetBase rpgTileSetBase("data/images/tilesets/016-ForestTown02.png");
+		for(int i = 0; i < blockRow; i++){
+			for(int j = 0; j < blockCol; j++){
+				RpgMapBlock *block = new RpgMapBlock(j, i, rpgTileSetBase.getRpgTilePixmap(3, 0) , true, titleScene, nullptr, this);
+				//qDebug() << QPixmap::fromImage(*rpgTileSetBase->getRpgTile(0, 0));
+				//block->addPixmap();
+				block->show();
+			}
+		}
+#endif
+
+		titleScene->getRpgDialog()->addText("终于可以显示背景啦! 天哪, 简直高兴~");
 		titleScene->getRpgDialog()->addText("我做梦都没想到，会有一天，竟然用<r>这种尴尬</r>的方式，和那个女孩子相遇了。");
 		titleScene->getRpgDialog()->addText("私は一日持っていた夢の中でそれを考えなかった、私は非常に恥ずかしい状況でその女の子に会った");
 		titleScene->getRpgDialog()->addText("但是当我遇见她的时候，她的心情异常的平静，好像并没有对此感到吃惊。");
@@ -280,17 +296,6 @@ public slots:
 		titleScene->getRpgDialog()->addText("一声刻骨铭心的爆炸。");
 		titleScene->getRpgDialog()->addText("她，从此生死不明。");
 		titleScene->getRpgDialog()->exec();
-
-
-#ifdef DEBUG
-		int blockCol = titleScene->width() / MapBlockWidth;
-		int blockRow = titleScene->height() / MapBlockHeight;
-		for(int i = 0; i < blockRow; i++){
-			for(int j = 0; j < blockCol; j++){
-				RpgMapBlock *block = new RpgMapBlock(j, i, true, nullptr);
-			}
-		}
-#endif
 	}
 };
 

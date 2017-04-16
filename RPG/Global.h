@@ -51,4 +51,10 @@ public:
 	static QFont applicationFont;
 };
 
+#ifdef DEBUG
+#	define CodePath() "[File: " __FILE__ " Line:" + QString::number(__LINE__) + "]"
+#else
+#	define CodePath() ""
+#endif
+
 #endif // GLOBAL_H

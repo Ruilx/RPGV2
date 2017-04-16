@@ -3,6 +3,8 @@
 
 #include <QtCore>
 #include <QGraphicsPixmapItem>
+#include <RPG/Core/RpgTileSetBase.h>
+#include <RPG/com/RpgScene.h>
 #include <RPG/Global.h>
 
 /**
@@ -29,13 +31,13 @@
  *   +====***====+
  *        ***      <- 主角, ZValue等于其所踩格子的行数
  */
-class RpgMapBlock: public QGraphicsPixmapItem
+class RpgMapBlock: public QGraphicsPixmapItem, public QObject
 {
 	/**
 	 * @brief mapPixmapList
 	 * 这个就是存储的图像序列
 	 */
-	QList<QPixmap> mapPixmapList;
+	QList<QPixmap *> mapPixmapList;
 	/**
 	 * @brief currentIndex
 	 * 这个是现在正在显示的图片的Index
@@ -46,6 +48,18 @@ class RpgMapBlock: public QGraphicsPixmapItem
 	 * 这里存储着精灵是否能进入此处(通过)
 	 */
 	bool canWalkThrough = true;
+	/**
+	 * @brief parent
+	 * 父类Scene
+	 */
+	RpgScene *parentScene = nullptr;
+
+	QTimeLine *timeLine = new QTimeLine(1000, this);
+	/**
+	 * @brief location
+	 * 这个存的是块地址, 需要像素地址请乘以MapBlockWidth/Height或直接调用this->pos().
+	 */
+	QPoint location = QPoint(0, 0);
 
 	/**
 	 * @brief setPixmapPrivate
@@ -60,10 +74,15 @@ class RpgMapBlock: public QGraphicsPixmapItem
 				qDebug() << QObject::tr("RpgMapBlock::setPixmapPrivate(): content is not fit at (%1, %2), source: (%1, %2)")
 							.arg(MapBlockWidth).arg(MapBlockHeight).arg(content.width()).arg(content.height());
 			}
-			this->setPixmap(content);
 			if(append == true){
 				this->addPixmap(content);
+			}else{
+				this->clearPixmap();
+				this->addPixmap(content);
 			}
+			this->showPixmapIndex(0);
+		}else{
+			qDebug() << "RpgMapBlock::setPixmapPrivate: Pixmap is Null." << CodePath();
 		}
 	}
 
@@ -72,10 +91,11 @@ protected:
 	 * @brief setPixmap
 	 * @param content
 	 * 继承要用的? 或者构造函数调用用的
+	 * 继承函数里有了, 删除掉
 	 */
-	void setPixmap(const QPixmap &content){
-		this->setPixmapPrivate(content);
-	}
+	//void setPixmap(const QPixmap &content){
+		//this->setPixmapPrivate(content);
+	//}
 
 public:
 	/**
@@ -83,12 +103,28 @@ public:
 	 * @param location Point: 位置
 	 * @param content Pixmap: 内容
 	 * @param canWalkThrough Bool: 设置能否走进该区域
-	 * @param parent: 父类(作为一个QGraphicsItem自带的)
+	 * @param parentScene: RpgScene: 父场景指针, 显示到哪个场景中
+	 * @param parentGraphicsItem: QGraphicsItem: 父GraphicsItem, 继承要用的
+	 * @param parent: QObject父类
 	 */
-	RpgMapBlock(const QPoint &location, const QPixmap &content = QPixmap(), bool canWalkThrough = true, QGraphicsItem *parent = nullptr): QGraphicsPixmapItem(parent){
+	RpgMapBlock(const QPoint &location,
+				const QPixmap &content = QPixmap(),
+				bool canWalkThrough = true,
+				RpgScene *parentScene = nullptr,
+				QGraphicsItem *parentGraphicsItem = nullptr,
+				QObject *parent = nullptr): QGraphicsPixmapItem(parentGraphicsItem), QObject(parent){
+		this->parentScene = parentScene;
 		this->setPos(location);
 		this->canWalkThrough = canWalkThrough;
 		this->setPixmapPrivate(content, true);
+		connect(this->timeLine, &QTimeLine::frameChanged, this, [this](int frame){
+			if(this->mapPixmapList.length() <= 1 && this->timeLine->state() != QTimeLine::NotRunning){
+				this->timeLine->stop();
+			}
+			if(frame < this->mapPixmapList.length() && frame >= 0){
+				showPixmapNext();
+			}
+		});
 	}
 
 	/**
@@ -97,13 +133,70 @@ public:
 	 * @param row Int: 行(按照块的宽度倍数)
 	 * @param content Pixmap: 内容
 	 * @param canWalkThrough Bool: 设置能否走进该区域
-	 * @param parent: 父类(作为一个QGraphicsItem自带的)
+	 * @param parentScene: RpgScene: 父场景指针, 显示到哪个场景中
+	 * @param parentGraphicsItem: QGraphicsItem: 父GraphicsItem, 继承要用的
+	 * @param parent: QObject父类
 	 */
-	RpgMapBlock(int col, int row, const QPixmap &content = QPixmap(), bool canWalkThrough = true, QGraphicsItem *parent = nullptr): QGraphicsPixmapItem(parent){
+	RpgMapBlock(int col, int row,
+				const QPixmap &content = QPixmap(),
+				bool canWalkThrough = true,
+				RpgScene *parentScene = nullptr,
+				QGraphicsItem *parentGraphicsItem = nullptr,
+				QObject *parent = nullptr): QGraphicsPixmapItem(parentGraphicsItem), QObject(parent){
+		this->parentScene = parentScene;
+		this->location.setX(col);
+		this->location.setY(row);
 		this->setPos(col * MapBlockWidth, row * MapBlockHeight);
 		this->canWalkThrough = canWalkThrough;
 		this->setPixmapPrivate(content, true);
+		connect(this->timeLine, &QTimeLine::frameChanged, this, [this](int frame){
+			if(this->mapPixmapList.length() <= 1 && this->timeLine->state() != QTimeLine::NotRunning){
+				this->timeLine->stop();
+			}
+			if(frame < this->mapPixmapList.length() && frame >= 0){
+				showPixmapNext();
+			}
+		});
 	}
+
+	/**
+	 * @brief RpgMapBlock
+	 * @param col Int: 列(按照块的宽度倍数)
+	 * @param row Int: 行(按照块的高度倍数)
+	 * @param tileSetPixmap RpgTileSetBase: 阅读块类对象
+	 * @param x Int: 阅读块对象Col
+	 * @param y Int: 阅读块对象Row
+	 * @param canWalkThrough Bool: 设置是否能走进该区域
+	 * @param parentScene: RpgScene: 父场景指针, 显示到哪个场景中
+	 * @param parentGraphicsItem: QGraphicsItem: 父GraphicsItem, 继承要用的
+	 * @param parent: QObject父类
+	 * 注: 这个构造函数有毒
+	 */
+//	RpgMapBlock(int col, int row,
+//				RpgTileSetBase *tileSetPixmap,
+//				int x, int y,
+//				bool canWalkThrough = true,
+//				RpgScene *parentScene = nullptr,
+//				QGraphicsItem *parentGraphicsItem = nullptr,
+//				QObject *parent = nullptr){
+//		if(tileSetPixmap == nullptr){
+//			qDebug() << "RpgMapBlock::RpgMapBlock: RpgTileSetBase is a nullptr.";
+//			return;
+//		}
+//		int rows = tileSetPixmap->getRows();
+//		int cols = tileSetPixmap->getCols();
+//		if(x >= cols){
+//			qDebug() << "RpgMapBlock::RpgMapBlock: x out of cols.";
+//			return;
+//		}
+//		if(y >= rows){
+//			qDebug() << "RpgMapBlock::RpgMapBlock: y out of rows.";
+//			return;
+//		}
+//		QPixmap pp = tileSetPixmap->getRpgTilePixmap(x, y);
+//		qDebug() << "pp:" << pp << CodePath();
+//		RpgMapBlock(col, row, pp, canWalkThrough, parentScene, parentGraphicsItem, parent);
+//	}
 
 	/**
 	 * @brief getCanWalkThrough
@@ -116,7 +209,7 @@ public:
 	/**
 	 * @brief setLocation
 	 * @param point Point: 位置
-	 * 设置位置
+	 * 设置位置(像素)
 	 */
 	void setLocation(const QPoint &point){
 		this->setPos(point);
@@ -125,7 +218,7 @@ public:
 	 * @brief setLocation
 	 * @param col
 	 * @param row
-	 * 设置位置
+	 * 设置位置(格子)
 	 */
 	void setLocation(const int col, const int row){
 		this->setPos(col * MapBlockWidth, row * MapBlockHeight);
@@ -138,11 +231,16 @@ public:
 	 * 添加图片(多个图片的时候要用的)
 	 */
 	void addPixmap(const QPixmap &content, int index = -1){
+		QPixmap *p = new QPixmap(content);
 		if(index == -1){
-			this->mapPixmapList.append(content);
+			this->mapPixmapList.append(p);
 		}else{
-			this->mapPixmapList.insert(index, content);
+			this->mapPixmapList.insert(index, p);
 		}
+	}
+
+	void clearPixmap(){
+		this->mapPixmapList.clear();
 	}
 
 	/**
@@ -152,10 +250,10 @@ public:
 	 */
 	void showPixmapIndex(int index){
 		if(index < 0 || index >= this->mapPixmapList.length()){
-			qDebug() << "RpgMapBlock::showPixmapIndex: index is out of range";
+			qDebug() << "RpgMapBlock::showPixmapIndex: index is out of range. Length:" << this->mapPixmapList.length();
 			return;
 		}
-		this->setPixmap(this->mapPixmapList.at(index));
+		this->setPixmap(*this->mapPixmapList.at(index));
 	}
 
 	/**
@@ -199,6 +297,64 @@ public:
 	QPixmap getPixmap() const{
 		return this->pixmap();
 	}
+	/**
+	 * @brief setRpgScene
+	 * @param scene
+	 * 设置显示的Scene
+	 */
+	void setRpgScene(RpgScene * scene){
+		this->parentScene = scene;
+	}
+
+	/**
+	 * @brief show
+	 * 显示到屏幕上
+	 */
+	void show(){
+		if(this->parentScene == nullptr){
+			qDebug() << "RpgMapBlock::show(): parentScene is not set.(Null)" << CodePath();
+			return;
+		}
+		if(this->parentScene->itemAt(this->pos(), QTransform()) == this){
+			qDebug() << "RpgMapBlock::show(): There has this item in the scene." << CodePath();
+			return;
+		}
+		if(this->pixmap().isNull()){
+			qDebug() << "RpgMapBlock::show(): Pixmap is Null." << CodePath();
+		}
+		this->setZValue(LineZValue(this->location.y()));
+		this->parentScene->addItem(this);
+		if(this->mapPixmapList.length() >= 1){
+			this->timeLine->start();
+		}
+	}
+
+	/**
+	 * @brief hide
+	 * 从屏幕移除?
+	 */
+	void hide(){
+		if(this->timeLine->state() == QTimeLine::Running){
+			this->timeLine->stop();
+		}
+		this->hide();
+	}
+
+	/**
+	 * @brief setDuringTime
+	 * @param timeLength
+	 * 设置时间长度
+	 */
+	void setDuringTime(int timeLength){
+		if(timeLength <= 0){
+			this->timeLine->setDuration(1000);
+		}else if(this->mapPixmapList.length() <= 1){
+			this->timeLine->setDuration(1000);
+		}else{
+			this->timeLine->setDuration(timeLength);
+		}
+	}
+
 };
 
 #endif // RPGMAPBLOCK_H

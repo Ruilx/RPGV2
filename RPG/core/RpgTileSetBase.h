@@ -3,6 +3,7 @@
 
 #include <QtCore>
 #include <QImage>
+#include <QPixmap>
 #include <RPG/Global.h>
 /**
  * @brief The RpgTileSetBase class
@@ -16,7 +17,8 @@ class RpgTileSetBase
 	int rows = 0;
 	int cols = 0;
 protected:
-	QList<QImage *> imageList;
+	//QList<QImage *> imageList;
+	QMap<quint64, QImage *> imageList;
 
 	void readHandle(QString filename){
 		qDebug() << "[INFOR] RpgTileSetBase::readHandle(): Reading image path:" << filename;
@@ -38,7 +40,8 @@ protected:
 		for(int i = 0; i < this->rows; i++){
 			for(int j = 0; j < this->cols; j++){
 				QImage *p = new QImage(fileImage.copy(j * MapBlockHeight, i * MapBlockWidth, MapBlockWidth, MapBlockHeight));
-				this->imageList.append(p);
+				//this->imageList.append(p);
+				this->imageList.insert((quint64)(j) << 32 | (quint64)(i), p);
 			}
 		}
 	}
@@ -49,6 +52,25 @@ public:
 			this->readHandle(filename);
 		}
 	}
+
+	QImage *getRpgTile(int x, int y) const {
+		return RpgTileSetBase::getRpgTile(QPoint(x, y));
+	}
+
+	QImage *getRpgTile(QPoint loc) const {
+		return this->imageList.value((quint64)(loc.x()) << 32 | (quint64)(loc.y()), new QImage());
+	}
+
+	QPixmap getRpgTilePixmap(int x, int y) const {
+		return QPixmap::fromImage(*getRpgTile(x, y));
+	}
+
+	QPixmap getRpgTilePixmap(QPoint loc) const {
+		return QPixmap::fromImage(*getRpgTile(loc));
+	}
+
+	int getRows(){ return this->rows; }
+	int getCols(){ return this->cols; }
 };
 
 #endif // RPGTILESETBASE_H
