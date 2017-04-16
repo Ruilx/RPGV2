@@ -37,7 +37,8 @@
   */
 #define BackgroundZValue -1
 #define LineZValue(line) (line)
-#define SpiritZValue(line) (line + 0.5)
+#define SpiritZValue(line) (line + 0.4)
+#define ThingZValue(line) (line + 0.5)
 #define DialogZValue 100
 #define FrontZValue 101
 #define ItemZValue 102

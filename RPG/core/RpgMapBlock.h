@@ -114,6 +114,8 @@ public:
 				QGraphicsItem *parentGraphicsItem = nullptr,
 				QObject *parent = nullptr): QGraphicsPixmapItem(parentGraphicsItem), QObject(parent){
 		this->parentScene = parentScene;
+		this->location.setX(col);
+		this->location.setY(row);
 		this->setPos(location);
 		this->canWalkThrough = canWalkThrough;
 		this->setPixmapPrivate(content, true);
@@ -354,6 +356,8 @@ public:
 			this->timeLine->setDuration(timeLength);
 		}
 	}
+
+	void setLayer()
 
 };
 
