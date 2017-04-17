@@ -29,7 +29,7 @@
  *   +-----------+
  *   |    ***    | <- 能通过, ZValue值比较低
  *   +====***====+
- *        ***      <- 主角, ZValue等于其所踩格子的行数
+ *        ***      <- 主角, ZValue等于其所踩格子的行数 + 0.4
  */
 class RpgMapBlock: public QGraphicsPixmapItem, public QObject
 {
@@ -114,8 +114,8 @@ public:
 				QGraphicsItem *parentGraphicsItem = nullptr,
 				QObject *parent = nullptr): QGraphicsPixmapItem(parentGraphicsItem), QObject(parent){
 		this->parentScene = parentScene;
-		this->location.setX(col);
-		this->location.setY(row);
+		this->location.setX(location.x());
+		this->location.setY(location.y());
 		this->setPos(location);
 		this->canWalkThrough = canWalkThrough;
 		this->setPixmapPrivate(content, true);
@@ -357,7 +357,19 @@ public:
 		}
 	}
 
-	void setLayer()
+	/**
+	 * @brief setLayer
+	 * @param adjust
+	 * 设置当前块所在的层数, 利用zValue来控制层数, adjust的数值根据Global zValue设置.
+	 * adjust可以是0-0.9的数, 也可以是0-9的数, 它相当于设置了0-0.9的数.
+	 */
+	void setLayer(qreal adjust){
+		if(adjust >= 0 && adjust < 1){
+			this->setZValue(qFloor(this->zValue()) + adjust);
+		}else if(adjust >= 1 && adjust < 10){
+			this->setZValue(qFloor(this->zValue()) + (adjust / 10.0f));
+		}
+	}
 
 };
 
