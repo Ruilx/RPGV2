@@ -26,9 +26,12 @@ class RpgDialog : public QObject, public RpgDialogBase
 	// 指定显示在哪个Scene上
 	QGraphicsScene *parentScene = nullptr;
 	// 构成
-	QGraphicsPixmapItem *box = new QGraphicsPixmapItem(nullptr);
-	QGraphicsTextItem *message = new QGraphicsTextItem(this->box);
-	QGraphicsPixmapItem *continueSymbol = new QGraphicsPixmapItem(this->box);
+	QGraphicsPixmapItem *box = new QGraphicsPixmapItem(nullptr);				//那蓝色的盒子
+	QGraphicsTextItem *message = new QGraphicsTextItem(this->box);				//中间的字
+	QGraphicsPixmapItem *continueSymbol = new QGraphicsPixmapItem(this->box);	//下面的小三角
+	QGraphicsPixmapItem *characterBox = new QGraphicsPixmapItem(this->box);		//角色盒子
+
+	QGraphicsDropShadowEffect *messageShadowEffect = new QGraphicsDropShadowEffect(this); //字下面的阴影
 
 	// 消息列表
 	QStringList messageList;	//消息存储列表
@@ -161,7 +164,6 @@ protected:
 	 * 隐藏Dialog函数
 	 */
 	void hideDialog();
-protected:
 	/**
 	 * @brief showText
 	 * @param index

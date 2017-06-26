@@ -46,6 +46,11 @@ RpgDialog::RpgDialog(QGraphicsScene *parentScene, QObject *parent): QObject(pare
 
 	// 预置输出速度: 快
 	this->slowprint = SpeedFast;
+
+	this->messageShadowEffect->setColor(QColor(Qt::black));
+	this->messageShadowEffect->setBlurRadius(5.0f);
+	this->messageShadowEffect->setOffset(2.0f, 2.0f);
+	this->message->setGraphicsEffect(this->messageShadowEffect);
 }
 
 void RpgDialog::exec(){

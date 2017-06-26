@@ -3,6 +3,7 @@
 
 #if 1
 #include <QtCore>
+#include <QMessageBox>
 
 #define ApplicationName QObject::tr("VRPGV2")
 #define OrganizationName "GT-Soft Studio"
@@ -45,7 +46,7 @@ public:
 		this->versionEditionList.insert(0x0A, "Alpha");
 		this->versionEditionList.insert(0x0B, "Beta");
 		this->versionEditionList.insert(0x0C, "Commercial");
-		this->versionEditionList.insert(0x0D, "Develop");
+		this->versionEditionList.insert(0x0D, "Developing");
 		this->versionEditionList.insert(0x0E, "Enhance");
 		this->versionEditionList.insert(0x0F, "Final");
 		this->versionEditionList.insert(0x10, "Release");
@@ -85,7 +86,23 @@ public:
 			return QString("%1.%2%3").arg(majorVersion).arg(minorVersion).arg((patchVersion == 0)?"":QString("(%1)").arg(patchVersion));
 		}
 	}
+
+	static void showAboutDialog(){
+		QMessageBox msgBox;
+		msgBox.setWindowTitle(QObject::tr("About %1 V%2").arg(ApplicationName).arg(getVersionString()));
+		msgBox.setText("This is About Dialog Content.");
+
+		msgBox.exec();
+	}
+
+	static void showWelcomeDialog(){
+		QMessageBox msgBox;
+		msgBox.setWindowTitle(QObject::tr("Made"));
+		msgBox.setText("ようこそ。");
+
+		msgBox.exec();
+	}
 };
-#endif
+#endif // If Switch
 
 #endif // ABOUT_H
