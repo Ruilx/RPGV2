@@ -304,23 +304,23 @@ public slots:
 //			}
 //		}
 
-		QPixmap *aaa = new QPixmap("data/images/drawing/02.png");
-		titleScene->getRpgDialog()->setCharacterPixmap(*aaa);
-		titleScene->getRpgDialog()->addText("サクラの花が咲く度に");
-		titleScene->getRpgDialog()->addText("こんな気持になるのはいつごろからだっけ");
-		titleScene->getRpgDialog()->addText("昼過ぎの 町外れの校舎");
-		titleScene->getRpgDialog()->addText("散らかった部室 机の上にばら撒かれた楽譜");
-		titleScene->getRpgDialog()->addText("ずっと何かを思い出さないまま");
-		titleScene->getRpgDialog()->addText("誰かの声がする 誰かをずっと呼んている");
-		titleScene->getRpgDialog()->addText("日の光が少しずつ空気を緩めて");
-		titleScene->getRpgDialog()->addText("もうすぐ春がやってくる");
-		titleScene->getRpgDialog()->addText("微睡んだあくびをする 僕の名前を呼ぶ");
-		titleScene->getRpgDialog()->addText("誰かをずっと探している");
-		titleScene->getRpgDialog()->addText("そんな風に目が覚める");
-		titleScene->getRpgDialog()->addText("ここはあの街から随分と離れた都会の片隅");
-		titleScene->getRpgDialog()->addText("遠い昔の思い出は 春の匂いと一緒に");
-		titleScene->getRpgDialog()->addText("今年もまた 僕の元へ");
-		titleScene->getRpgDialog()->exec();
+//		QPixmap *aaa = new QPixmap("data/images/drawing/02.png");
+//		titleScene->getRpgDialog()->setCharacterPixmap(*aaa);
+//		titleScene->getRpgDialog()->addText("サクラの花が咲く度に");
+//		titleScene->getRpgDialog()->addText("こんな気持になるのはいつごろからだっけ");
+//		titleScene->getRpgDialog()->addText("昼過ぎの 町外れの校舎");
+//		titleScene->getRpgDialog()->addText("散らかった部室 机の上にばら撒かれた楽譜");
+//		titleScene->getRpgDialog()->addText("ずっと何かを思い出さないまま");
+//		titleScene->getRpgDialog()->addText("誰かの声がする 誰かをずっと呼んている");
+//		titleScene->getRpgDialog()->addText("日の光が少しずつ空気を緩めて");
+//		titleScene->getRpgDialog()->addText("もうすぐ春がやってくる");
+//		titleScene->getRpgDialog()->addText("微睡んだあくびをする 僕の名前を呼ぶ");
+//		titleScene->getRpgDialog()->addText("誰かをずっと探している");
+//		titleScene->getRpgDialog()->addText("そんな風に目が覚める");
+//		titleScene->getRpgDialog()->addText("ここはあの街から随分と離れた都会の片隅");
+//		titleScene->getRpgDialog()->addText("遠い昔の思い出は 春の匂いと一緒に");
+//		titleScene->getRpgDialog()->addText("今年もまた 僕の元へ");
+//		titleScene->getRpgDialog()->exec();
 
 //		titleScene->getRpgDialog()->setCharacterPixmap(*aab);
 //		titleScene->getRpgDialog()->addText("我做梦都没想到，会有一天，竟然用<r>这种尴尬</r>的方式，和那个女孩子相遇了。");
@@ -340,12 +340,11 @@ public slots:
 //		titleScene->getRpgDialog()->addText("她，从此生死不明。");
 //		titleScene->getRpgDialog()->exec();
 
-		QPixmap *bg = new QPixmap("data/images/background/title.png");
-		titleScene->getRpgBanner()->setBackgroundColor(QColor(Qt::black));
+		QPixmap *bg = new QPixmap("data/images/background/title2.png");
 		titleScene->getRpgBanner()->setForegroundPixmap(*bg);
 		titleScene->getRpgBanner()->setStartOpacity(0.0f);
 		titleScene->getRpgBanner()->setEndOpacity(1.0f);
-		titleScene->getRpgBanner()->setSpeed(1000);
+		titleScene->getRpgBanner()->setSpeed(500);
 		titleScene->getRpgBanner()->exec();
 #endif
 	}

@@ -46,6 +46,7 @@ public:
 
 	explicit RpgBanner(QGraphicsScene *parentScene, QObject *parent = nullptr): QObject(parent){
 		this->parentScene = parentScene;
+		this->setBackgroundColor(QColor(Qt::black));
 		this->background->setZValue(BackgroundZValue);
 		this->foreground->setZValue(0.1f);
 		this->foreground->setGraphicsEffect(this->foregroundEffect);

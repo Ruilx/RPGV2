@@ -15,11 +15,13 @@
  */
 class RpgScene : public QGraphicsScene
 {
-	RpgDialog *dialog = new RpgDialog(this, this);
-	RpgBanner *banner = new RpgBanner(this, this);
+	RpgDialog *dialog = nullptr;
+	RpgBanner *banner = nullptr;
 public:
 	RpgScene(QObject *parent = nullptr) : QGraphicsScene(parent){
-
+		this->setScenePos(0.0f, 0.0f);
+		this->dialog = new RpgDialog(this, this);
+		this->banner = new RpgBanner(this, this);
 	}
 
 	void setSceneRect(const QRectF &rect){
