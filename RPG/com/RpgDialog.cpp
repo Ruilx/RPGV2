@@ -33,6 +33,11 @@ RpgDialog::RpgDialog(QGraphicsScene *parentScene, QObject *parent): QObject(pare
 		this->continueSymbolPixmap[i] = new QPixmap(QPixmap::fromImage(*this->getContinueSymbol(i)));
 	}
 
+	this->box->setZValue(DialogZValue);
+	this->message->setZValue(0.1f);
+	this->continueSymbol->setZValue(0.2f);
+	this->characterBox->setZValue(-0.1f);
+
 	connect(this->continueSymbolTimeLine, &QTimeLine::frameChanged, this, [this](int frame){
 		if(frame < 4 && frame >= 0){
 			this->continueSymbol->setPixmap(*this->continueSymbolPixmap[frame]);
@@ -40,6 +45,7 @@ RpgDialog::RpgDialog(QGraphicsScene *parentScene, QObject *parent): QObject(pare
 	});
 
 	this->messageRect = QRect(messagePaddingH, messagePaddingV, this->getDialogRect().width() - messagePaddingH - messagePaddingH, this->getDialogHeight() - messagePaddingV - messagePaddingV);
+
 	// 取消Cache... 看起来更卡了...
 	//this->message->setCacheMode(QGraphicsItem::DeviceCoordinateCache);
 
@@ -51,36 +57,53 @@ RpgDialog::RpgDialog(QGraphicsScene *parentScene, QObject *parent): QObject(pare
 	this->messageShadowEffect->setBlurRadius(5.0f);
 	this->messageShadowEffect->setOffset(2.0f, 2.0f);
 	this->message->setGraphicsEffect(this->messageShadowEffect);
+
 }
 
 void RpgDialog::exec(){
 	if(this->parentScene == nullptr){
-		qDebug() << "Rpgdialog::exec(): parentScene is not set.(Null)";
+		qDebug() << "RpgDialog::exec(): parentScene is not set.(Null)";
 		return;
 	}
 	for(QPixmap *p: this->continueSymbolPixmap){
 		if(p == nullptr){
-			qDebug() << "Rpgdialog::exec(): continueSymbolPixmap[4] not set.";
+			qDebug() << "RpgDialog::exec(): conti2nueSymbolPixmap[4] not set.";
 			return;
 		}
 	}
 	if(this->isRunning == true){
-		qDebug() << "Dialog is still running, please don't call it repeatly!";
+		qDebug() << "RpgDialog::exec(): Dialog is still running, please don't call it repeatly!";
 		return;
+	}
+	if(this->messageReadyList.isEmpty()){
+		qDebug() << "RpgDialog::exec(): messageReadyList is Empty, show what?";
+		return;
+	}else{
+		this->messageList.clear();
+		this->messageList.append(this->messageReadyList);
 	}
 
 	this->box->setPixmap(QPixmap::fromImage(this->getDialogImage()));
-	this->box->setPos(this->getDialogPosition() + this->getViewportOffset());
-	this->box->setZValue(DialogZValue + 0.0f);
+	//this->box->setPos(this->getDialogPosition() + this->getViewportOffset());
+	this->box->setPos(this->getDialogPosition() + this->parentScene->sceneRect().topLeft());
+	//this->box->setZValue(DialogZValue);
 
 	this->message->setTextWidth(this->messageRect.width());
 	this->message->setPos(this->messageRect.topLeft());
-	this->message->setZValue(DialogZValue + 1.0f);
+	//this->message->setZValue(0.3f);
 
 	this->continueSymbol->setPixmap(*this->continueSymbolPixmap[0]);
 	this->continueSymbol->setPos((this->getDialogRect().width() - this->continueSymbolPixmap[0]->width()) / 2, (this->getDialogHeight() - this->continueSymbolPixmap[0]->width()));
-	this->continueSymbol->setZValue(DialogZValue + 1.0f);
+	//this->continueSymbol->setZValue(0.2f);
 	this->continueSymbol->setVisible(false);
+
+	if(!this->characterBoxPixmap.isNull()){
+		this->characterBox->setPixmap(this->characterBoxPixmap);
+		this->characterBox->setPos(ScreenWidth - this->characterBox->pixmap().width(), -(ScreenHeight * 0.8 - this->getDialogHeight() - this->getMarginV()) + (ScreenHeight * 0.8 - this->characterBox->pixmap().height()));
+		this->characterBox->setFlag(QGraphicsItem::ItemStacksBehindParent, true);
+		//this->characterBox->setZValue( - 1.0f);
+		//this->characterBox->stackBefore(this->box);
+	}
 
 	this->showDialog();
 }
@@ -97,6 +120,7 @@ void RpgDialog::hideDialog(){
 		this->continueSymbolTimeLine->stop();
 	}
 	this->box->hide();
+	this->parentScene->removeItem(this->box);
 	this->clearText();
 	emit this->quitDialogMode();
 	this->isRunning = false;

@@ -52,7 +52,7 @@ int main(int argc, char *argv[])
 	Global::applicationFont.setBold(false);
 	Global::applicationFont.setPixelSize(22);
 
-	About::showWelcomeDialog();
+	//About::showWelcomeDialog();
 
 	Mainw w;
 	w.show();

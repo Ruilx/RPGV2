@@ -34,8 +34,12 @@ class RpgDialog : public QObject, public RpgDialogBase
 	QGraphicsDropShadowEffect *messageShadowEffect = new QGraphicsDropShadowEffect(this); //字下面的阴影
 
 	// 消息列表
-	QStringList messageList;	//消息存储列表
-	int messageIndex = 0;		//现在正在显示的消息序号
+	QStringList messageList;		//运行时消息存储列表
+	QStringList messageReadyList;	//消息存储缓存
+	int messageIndex = 0;			//现在正在显示的消息序号
+
+	// 立绘
+	QPixmap characterBoxPixmap;
 
 	// 消息
 	int messagePaddingH = 10;
@@ -87,14 +91,14 @@ public:
 	 * @param text 添加的文字
 	 * 在文本列表中添加一条文字
 	 */
-	void addText(const QString &text){ this->messageList.append(text); }
+	void addText(const QString &text){ this->messageReadyList.append(text); }
 
 	/**
 	 * @brief addText
 	 * @param textList 添加的文本列表
 	 * 在文本列表中添加一堆文字
 	 */
-	void addText(const QStringList &textList){ this->messageList.append(textList); }
+	void addText(const QStringList &textList){ this->messageReadyList.append(textList); }
 
 	/**
 	 * @brief setSlowprint
@@ -145,6 +149,23 @@ public:
 	void setGraphicsScene(QGraphicsScene *scene){
 		this->parentScene = scene;
 //		this->setViewportOffset(QPointF(this->parentScene->sceneRect().left(), this->parentScene->sceneRect().top()));
+	}
+
+	void setCharacterPixmap(const QPixmap &character){
+		QPixmap _t;
+		if((double(character.height()) > ScreenHeight * 0.8)){
+			_t = character.scaledToHeight(int(double(ScreenHeight) * 0.8), Qt::SmoothTransformation);
+			if(_t.width() >= (ScreenWidth >> 1)){
+				_t = _t.scaledToWidth(ScreenWidth >> 1, Qt::SmoothTransformation);
+			}
+		}
+		this->characterBoxPixmap = _t;
+
+		//if(this->characterBox->pixmap().isNull() || (this->getDialogRect().width() - messagePaddingH - this->characterBox->pixmap().width()) < (this->getDialogRect().width() >> 2)){
+			this->messageRect = QRect(messagePaddingH, messagePaddingV, this->getDialogRect().width() - messagePaddingH - messagePaddingH, this->getDialogHeight() - messagePaddingV - messagePaddingV);
+		//}else{
+		//	this->messageRect = QRect(messagePaddingH, messagePaddingV, this->getDialogRect().width() - messagePaddingH - this->characterBox->pixmap().width(), this->getDialogHeight() - messagePaddingV - messagePaddingV);
+		//}
 	}
 
 	/**

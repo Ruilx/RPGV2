@@ -172,6 +172,21 @@ public:
 			this->quitDialogMode();
 		});
 
+		connect(titleScene->getRpgBanner(), &RpgBanner::enterAutoMode, this, [this](){
+			this->modeStack.push(AutoMode);
+			this->enterAutoMode();
+		});
+
+		connect(titleScene->getRpgBanner(), &RpgBanner::quitAutoMode, this, [this](){
+			if(this->modeStack.top() == AutoMode){
+				this->modeStack.pop();
+			}else{
+				qDebug() << "RpgWidget::[RpgDialog::quitAutoMode LambdaMoc]: Current Mode Stack top is not autoMode!";
+				return;
+			}
+			this->quitAutoMode();
+		});
+
 		connect(this, &RpgWidget::dialogModeKeyClick, titleScene->getRpgDialog(), &RpgDialog::receiveKey);
 
 		this->modeStack.push(NormalMode);
@@ -212,6 +227,17 @@ signals:
 	void itemModeKeyClick(int key, Qt::KeyboardModifiers mod);
 
 public slots:
+	/**
+	 * @brief enterAutoMode, exitAutoMode
+	 * 进入或退出自动模式(接受自动引导模块传来的信号), 槽
+	 */
+	void enterAutoMode(){
+		qDebug() << "[DEBUG][System] Enter [Auto] Mode.";
+	}
+	void quitAutoMode(){
+		qDebug() << "[DEBUG][System] Quit [Auto] Mode.";
+	}
+
 	/**
 	 * @brief enterDialogMode, exitDialogMode
 	 * 进入/退出对话模式(接受对话模块传来的信号), 槽
@@ -258,7 +284,7 @@ public slots:
 	 * 构建成功, 窗口显示后自动进行的函数
 	 */
 	void ready(){
-		qDebug() << "Ready...";
+		qDebug() << "[Debug][System] Ready...";
 		RpgScene *titleScene = this->mapList.value("titlescene", nullptr);
 		if(titleScene == nullptr){
 			qDebug() << "RpgWidget::ready(): titleScene(\"titlescene\") not exist.";
@@ -266,20 +292,37 @@ public slots:
 		}
 
 #ifdef DEBUG
-		int blockCol = titleScene->width() / MapBlockWidth;
-		int blockRow = titleScene->height() / MapBlockHeight;
-		RpgTileSetBase rpgTileSetBase("data/images/tilesets/016-ForestTown02.png");
-		for(int i = 0; i < blockRow; i++){
-			for(int j = 0; j < blockCol; j++){
-				RpgMapBlock *block = new RpgMapBlock(j, i, rpgTileSetBase.getRpgTilePixmap(3, 0) , true, titleScene, nullptr, this);
-				//qDebug() << QPixmap::fromImage(*rpgTileSetBase->getRpgTile(0, 0));
-				//block->addPixmap();
-				block->show();
-			}
-		}
-#endif
+//		int blockCol = titleScene->width() / MapBlockWidth;
+//		int blockRow = titleScene->height() / MapBlockHeight;
+//		RpgTileSetBase rpgTileSetBase("data/images/tilesets/016-ForestTown02.png");
+//		for(int i = 0; i < blockRow; i++){
+//			for(int j = 0; j < blockCol; j++){
+//				RpgMapBlock *block = new RpgMapBlock(j, i, rpgTileSetBase.getRpgTilePixmap(2, 0) , true, titleScene, nullptr, this);
+//				//qDebug() << QPixmap::fromImage(*rpgTileSetBase->getRpgTile(0, 0));
+//				//block->addPixmap();
+//				block->show();
+//			}
+//		}
 
-		titleScene->getRpgDialog()->addText("'あなたのことが…<r>すき</r>ですよ！'");
+		QPixmap *aaa = new QPixmap("data/images/drawing/02.png");
+		titleScene->getRpgDialog()->setCharacterPixmap(*aaa);
+		titleScene->getRpgDialog()->addText("サクラの花が咲く度に");
+		titleScene->getRpgDialog()->addText("こんな気持になるのはいつごろからだっけ");
+		titleScene->getRpgDialog()->addText("昼過ぎの 町外れの校舎");
+		titleScene->getRpgDialog()->addText("散らかった部室 机の上にばら撒かれた楽譜");
+		titleScene->getRpgDialog()->addText("ずっと何かを思い出さないまま");
+		titleScene->getRpgDialog()->addText("誰かの声がする 誰かをずっと呼んている");
+		titleScene->getRpgDialog()->addText("日の光が少しずつ空気を緩めて");
+		titleScene->getRpgDialog()->addText("もうすぐ春がやってくる");
+		titleScene->getRpgDialog()->addText("微睡んだあくびをする 僕の名前を呼ぶ");
+		titleScene->getRpgDialog()->addText("誰かをずっと探している");
+		titleScene->getRpgDialog()->addText("そんな風に目が覚める");
+		titleScene->getRpgDialog()->addText("ここはあの街から随分と離れた都会の片隅");
+		titleScene->getRpgDialog()->addText("遠い昔の思い出は 春の匂いと一緒に");
+		titleScene->getRpgDialog()->addText("今年もまた 僕の元へ");
+		titleScene->getRpgDialog()->exec();
+
+//		titleScene->getRpgDialog()->setCharacterPixmap(*aab);
 //		titleScene->getRpgDialog()->addText("我做梦都没想到，会有一天，竟然用<r>这种尴尬</r>的方式，和那个女孩子相遇了。");
 //		titleScene->getRpgDialog()->addText("私は一日持っていた夢の中でそれを考えなかった、私は非常に恥ずかしい状況でその女の子に会った");
 //		titleScene->getRpgDialog()->addText("但是当我遇见她的时候，她的心情异常的平静，好像并没有对此感到吃惊。");
@@ -295,7 +338,16 @@ public slots:
 //		titleScene->getRpgDialog()->addText("眼看着我离她越来越远，我极力挣扎着。我只记得我被营救出去的那一刻，后面出现了<y>爆炸</y>。");
 //		titleScene->getRpgDialog()->addText("一声刻骨铭心的爆炸。");
 //		titleScene->getRpgDialog()->addText("她，从此生死不明。");
-		titleScene->getRpgDialog()->exec();
+//		titleScene->getRpgDialog()->exec();
+
+		QPixmap *bg = new QPixmap("data/images/background/title.png");
+		titleScene->getRpgBanner()->setBackgroundColor(QColor(Qt::black));
+		titleScene->getRpgBanner()->setForegroundPixmap(*bg);
+		titleScene->getRpgBanner()->setStartOpacity(0.0f);
+		titleScene->getRpgBanner()->setEndOpacity(1.0f);
+		titleScene->getRpgBanner()->setSpeed(1000);
+		titleScene->getRpgBanner()->exec();
+#endif
 	}
 };
 

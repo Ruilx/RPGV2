@@ -35,14 +35,14 @@
   * 道具栏: 102 ~ 103
   * 菜单栏: 110 ~ 111
   */
-#define BackgroundZValue -1
-#define LineZValue(line) (line)
-#define SpiritZValue(line) (line + 0.4)
-#define ThingZValue(line) (line + 0.5)
-#define DialogZValue 100
-#define FrontZValue 101
-#define ItemZValue 102
-#define MenuZValue 110
+#define BackgroundZValue -1				//背景图层
+#define LineZValue(line) (line)			//行图层
+#define SpiritZValue(line) (line + 0.4)	//精灵图层
+#define ThingZValue(line) (line + 0.5)	//物品图层
+#define DialogZValue 100				//对话框图层
+#define FrontZValue 101					//前端(迷雾)图层
+#define ItemZValue 102					//道具图层
+#define MenuZValue 110					//菜单图层
 
 class Global{
 public:
