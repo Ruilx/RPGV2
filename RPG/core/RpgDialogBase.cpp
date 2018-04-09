@@ -164,7 +164,7 @@ void RpgDialogBase::renderDialog(){
 		p.end();
 	}
 
-	this->renderedSelectBarImage = QImage(this->selectBarRect.size(), QImage::Format_ARGB32_Premultiplied);
+	this->renderedSelectBarImage = QImage(this->selectBarScaleRect.size(), QImage::Format_ARGB32_Premultiplied);
 	this->renderedSelectBarImage.fill(Qt::transparent);
 	QPainter p2(&this->renderedSelectBarImage);{
 		int width = this->renderedSelectBarImage.width();

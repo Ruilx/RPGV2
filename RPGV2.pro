@@ -23,7 +23,11 @@ SOURCES += main.cpp\
     RPG/Global.cpp \
     RPG/com/RpgScene.cpp \
     RPG/core/RpgTileSetBase.cpp \
-    RPG/com/RpgBanner.cpp
+    RPG/com/RpgBanner.cpp \
+    RPG/com/RpgChoice.cpp \
+    ExternalFont.cpp \
+    RPG/com/RpgScript.cpp \
+    RPG/com/RpgVar.cpp
 
 HEADERS  += Mainw.h \
     RPG/About.h \
@@ -36,7 +40,11 @@ HEADERS  += Mainw.h \
     RPG/core/RpgAutoTileBase.h \
     RPG/com/RpgScene.h \
     RPG/core/RpgTileSetBase.h \
-    RPG/com/RpgBanner.h
+    RPG/com/RpgBanner.h \
+    RPG/com/RpgChoice.h \
+    ExternalFont.h \
+    RPG/com/RpgScript.h \
+    RPG/com/RpgVar.h
 
 
 INCLUDEPATH += $$PWD

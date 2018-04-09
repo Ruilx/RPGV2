@@ -44,7 +44,7 @@ RpgDialog::RpgDialog(QGraphicsScene *parentScene, QObject *parent): QObject(pare
 		}
 	});
 
-	this->messageRect = QRect(messagePaddingH, messagePaddingV, this->getDialogRect().width() - messagePaddingH - messagePaddingH, this->getDialogHeight() - messagePaddingV - messagePaddingV);
+	this->messageRect = QRect(messageMarginH, messageMarginV, this->getDialogRect().width() - messageMarginH - messageMarginH, this->getDialogHeight() - messageMarginV - messageMarginV);
 
 	// 取消Cache... 看起来更卡了...
 	//this->message->setCacheMode(QGraphicsItem::DeviceCoordinateCache);
@@ -157,7 +157,7 @@ void RpgDialog::showText(int index){
 void RpgDialog::receiveKey(int key, Qt::KeyboardModifiers mod){
 	qDebug() << tr("RpgDialog::receiveKey(): receive key: %1::%2(%3).").arg(mod).arg(key).arg(QString(QChar(key)).toHtmlEscaped());
 	if(key == Qt::Key_Return || key == Qt::Key_Space){
-		if(this->showTextInProgressFlag  == true){
+		if(this->showTextInProgressFlag == true){
 			// 正在显示字符, 则立即停止slowprint, 直接显示全部的字符
 			this->quickShowFlag = true;
 		}else{

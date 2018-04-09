@@ -191,7 +191,7 @@ public:
 
 		this->modeStack.push(NormalMode);
 
-		QTimer::singleShot(1000, this, &RpgWidget::ready);
+		QTimer::singleShot(2000, this, &RpgWidget::ready);
 
 		this->stage->setRenderHints(QPainter::Antialiasing | QPainter::TextAntialiasing | QPainter::SmoothPixmapTransform);
 	}
@@ -304,6 +304,20 @@ public slots:
 //			}
 //		}
 
+//		QPixmap *bg = new QPixmap("data/images/background/title.png");
+//		titleScene->getRpgBanner()->setForegroundPixmap(*bg);
+//		titleScene->getRpgBanner()->setStartOpacity(0.0f);
+//		titleScene->getRpgBanner()->setEndOpacity(1.0f);
+//		titleScene->getRpgBanner()->setSpeed(RpgBanner::SpeedNormal);
+//		titleScene->getRpgBanner()->exec();
+
+//		titleScene->getRpgChoise()->addChoiceText("The First Choice");
+//		titleScene->getRpgChoise()->addChoiceText("The Second Choice");
+//		titleScene->getRpgChoise()->addChoiceText("The Third Choice");
+//		titleScene->getRpgChoise()->addChoiceText("The Fourth Choice");
+//		titleScene->getRpgChoise()->addChoiceText("The Fifth Choice");
+//		titleScene->getRpgDialog()->exec();
+
 //		QPixmap *aaa = new QPixmap("data/images/drawing/02.png");
 //		titleScene->getRpgDialog()->setCharacterPixmap(*aaa);
 //		titleScene->getRpgDialog()->addText("サクラの花が咲く度に");
@@ -322,6 +336,15 @@ public slots:
 //		titleScene->getRpgDialog()->addText("今年もまた 僕の元へ");
 //		titleScene->getRpgDialog()->exec();
 
+		QPixmap *aaa = new QPixmap("data/images/drawing/02.png");
+		titleScene->getRpgDialog()->setCharacterPixmap(*aaa);
+		titleScene->getRpgDialog()->addText("**测试一段可显示的文字**<r>测试一段红色的文字</r>**<g>测试一段绿色的文字</g>**<b>测试一段蓝色的文字</b>**<y>测试一段黄色的文字<y>**");
+		titleScene->getRpgDialog()->exec();
+
+		titleScene->getRpgDialog()->setCharacterPixmap(QPixmap());
+		titleScene->getRpgDialog()->addText("123456");
+		titleScene->getRpgDialog()->exec();
+
 //		titleScene->getRpgDialog()->setCharacterPixmap(*aab);
 //		titleScene->getRpgDialog()->addText("我做梦都没想到，会有一天，竟然用<r>这种尴尬</r>的方式，和那个女孩子相遇了。");
 //		titleScene->getRpgDialog()->addText("私は一日持っていた夢の中でそれを考えなかった、私は非常に恥ずかしい状況でその女の子に会った");
@@ -339,13 +362,6 @@ public slots:
 //		titleScene->getRpgDialog()->addText("一声刻骨铭心的爆炸。");
 //		titleScene->getRpgDialog()->addText("她，从此生死不明。");
 //		titleScene->getRpgDialog()->exec();
-
-		QPixmap *bg = new QPixmap("data/images/background/title2.png");
-		titleScene->getRpgBanner()->setForegroundPixmap(*bg);
-		titleScene->getRpgBanner()->setStartOpacity(0.0f);
-		titleScene->getRpgBanner()->setEndOpacity(1.0f);
-		titleScene->getRpgBanner()->setSpeed(500);
-		titleScene->getRpgBanner()->exec();
 #endif
 	}
 };

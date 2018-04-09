@@ -73,17 +73,22 @@ public:
 			qDebug() << CodePath() << "ParentScene is nullptr before calling setForegroundPixmap.";
 			return;
 		}
-		_t = pixmap.scaled(this->parentScene->sceneRect().size().toSize(), Qt::KeepAspectRatioByExpanding, Qt::SmoothTransformation);
-		QSize sceneSize = QSize(sceneSize.width(), sceneSize.height());
-		if(_t.width() == this->parentScene->width()){
-			_t = _t.copy(0, (_t.height() - sceneSize.height()) >> 1, _t.width(), sceneSize.height());
-		}else if(_t.height() == this->parentScene->height()){
-			_t = _t.copy((_t.width() - sceneSize.width()) >> 1, 0, sceneSize.width(), _t.height());
+		if(pixmap.size() == QSize(ScreenWidth, ScreenHeight)){
+			_t = pixmap;
 		}else{
-			_t = _t.copy((_t.width() - sceneSize.width()) >> 1,
-						 (_t.height() - sceneSize.height()) >> 1,
-						 sceneSize.width(),
-						 sceneSize.height());
+			_t = pixmap.scaled(this->parentScene->sceneRect().size().toSize(), Qt::KeepAspectRatioByExpanding, Qt::SmoothTransformation);
+			QSize sceneSize = QSize(sceneSize.width(), sceneSize.height());
+			if(_t.width() == this->parentScene->width()){
+				_t = _t.copy(0, (_t.height() - sceneSize.height()) >> 1, _t.width(), sceneSize.height());
+			}else if(_t.height() == this->parentScene->height()){
+				_t = _t.copy((_t.width() - sceneSize.width()) >> 1, 0, sceneSize.width(), _t.height());
+			}else{
+	//			_t = _t.copy((_t.width() - sceneSize.width()) >> 1,
+	//						 (_t.height() - sceneSize.height()) >> 1,
+	//						 sceneSize.width(),
+	//						 sceneSize.height());
+				_t = pixmap;
+			}
 		}
 		this->foreground->setPixmap(_t);
 	}
@@ -202,9 +207,18 @@ public:
 	 */
 	void showBanner(){
 		this->isRunning = true;
-		emit this->enterAutoMode();
-		this->parentScene->addItem(this->background);
-		this->foregroundAnimation->start(QAbstractAnimation::DeleteWhenStopped);
+		if(this->speed == SpeedInfinitly){
+			this->foregroundEffect->setOpacity(this->foregroundAnimation->endValue().toDouble());
+			if(this->foregroundAnimation->state() != QAbstractAnimation::Stopped){
+				this->foregroundAnimation->setCurrentTime(this->foregroundAnimation->totalDuration());
+				this->foregroundAnimation->stop();
+			}
+			this->parentScene->addItem(this->background);
+		}else{
+			//emit this->enterAutoMode();
+			this->parentScene->addItem(this->background);
+			this->foregroundAnimation->start(QAbstractAnimation::DeleteWhenStopped);
+		}
 	}
 
 	/**
@@ -225,7 +239,7 @@ public:
 			this->foregroundAnimation->setCurrentTime(this->foregroundAnimation->totalDuration());
 			this->foregroundAnimation->stop();
 		}
-		emit this->quitAutoMode();
+		//emit this->quitAutoMode();
 		this->isRunning = false;
 	}
 

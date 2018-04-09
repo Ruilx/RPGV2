@@ -5,6 +5,7 @@
 #include <QtWidgets>
 #include <RPG/com/RpgDialog.h>
 #include <RPG/com/RpgBanner.h>
+#include <RPG/com/RpgChoice.h>
 /**
  * @brief The RpgScene class
  * RPGScene类是RPG游戏中的场景类, 其本质是一个QGraphicsScene, 在scene上增加需要的内容
@@ -17,6 +18,7 @@ class RpgScene : public QGraphicsScene
 {
 	RpgDialog *dialog = nullptr;
 	RpgBanner *banner = nullptr;
+	RpgChoice *choise = nullptr;
 public:
 	RpgScene(QObject *parent = nullptr) : QGraphicsScene(parent){
 		this->setScenePos(0.0f, 0.0f);
@@ -34,6 +36,7 @@ public:
 
 	RpgDialog *getRpgDialog(){ return this->dialog; }
 	RpgBanner *getRpgBanner(){ return this->banner; }
+	RpgChoice *getRpgChoise(){ return this->choise; }
 
 
 };

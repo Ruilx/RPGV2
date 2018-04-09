@@ -42,9 +42,9 @@ class RpgDialog : public QObject, public RpgDialogBase
 	QPixmap characterBoxPixmap;
 
 	// 消息
-	int messagePaddingH = 10;
-	int messagePaddingV = 6;
-	QRect messageRect = QRect(messagePaddingH, messagePaddingV, ScreenWidth - messagePaddingH - messagePaddingH, ScreenHeight - messagePaddingV - messagePaddingV);
+	int messageMarginH = 10;
+	int messageMarginV = 6;
+	QRect messageRect = QRect(messageMarginH, messageMarginV, ScreenWidth - messageMarginH - messageMarginH, ScreenHeight - messageMarginV - messageMarginV);
 
 	// Viewport Offset( 一般Scene要比View大, 所以如果要浮于View中间, 则还需要View相对于Scene的视窗大小 )
 	QPointF viewportOffset = QPoint(0, 0);
@@ -139,7 +139,7 @@ public:
 	 * @brief clearText
 	 * 清除文字列表(清空列表)
 	 */
-	void clearText(){ this->messageList.clear(); }
+	void clearText(){ this->messageList.clear(); this->messageReadyList.clear(); }
 
 	/**
 	 * @brief setGraphicsScene
@@ -151,6 +151,11 @@ public:
 //		this->setViewportOffset(QPointF(this->parentScene->sceneRect().left(), this->parentScene->sceneRect().top()));
 	}
 
+	/**
+	 * @brief setCharacterPixmap
+	 * @param character
+	 * 设置对话框的人物框
+	 */
 	void setCharacterPixmap(const QPixmap &character){
 		QPixmap _t;
 		if((double(character.height()) > ScreenHeight * 0.8)){
@@ -162,10 +167,12 @@ public:
 		this->characterBoxPixmap = _t;
 
 		//if(this->characterBox->pixmap().isNull() || (this->getDialogRect().width() - messagePaddingH - this->characterBox->pixmap().width()) < (this->getDialogRect().width() >> 2)){
-			this->messageRect = QRect(messagePaddingH, messagePaddingV, this->getDialogRect().width() - messagePaddingH - messagePaddingH, this->getDialogHeight() - messagePaddingV - messagePaddingV);
+		//	this->messageRect = QRect(messagePaddingH, messagePaddingV, this->getDialogRect().width() - messagePaddingH - messagePaddingH, this->getDialogHeight() - messagePaddingV - messagePaddingV);
 		//}else{
 		//	this->messageRect = QRect(messagePaddingH, messagePaddingV, this->getDialogRect().width() - messagePaddingH - this->characterBox->pixmap().width(), this->getDialogHeight() - messagePaddingV - messagePaddingV);
 		//}
+
+		this->messageRect = QRect(messageMarginH, messageMarginV, this->getDialogRect().width() - messageMarginH - messageMarginH, this->getDialogHeight() - messageMarginV - messageMarginV);
 	}
 
 	/**
