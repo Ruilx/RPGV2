@@ -96,11 +96,11 @@ public:
 	}
 
 	static void showWelcomeDialog(){
-		QMessageBox msgBox;
-		msgBox.setWindowTitle(QObject::tr("Made"));
-		msgBox.setText("ようこそ。");
+		//QMessageBox msgBox;
+		//msgBox.setWindowTitle(QObject::tr("Made"));
+		//msgBox.setText("ようこそ。");
 
-		msgBox.exec();
+		//msgBox.exec();
 	}
 };
 #endif // If Switch

@@ -1,4 +1,5 @@
 *.bak
+*.old
 debug/*
 release/*
 profile/*
@@ -10,3 +11,4 @@ profile/*
 *.Release
 *.Profile
 *.autosave
+Makefile.*

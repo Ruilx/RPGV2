@@ -3,6 +3,8 @@
 
 #include <QtCore>
 #include <QtWidgets>
+#include <QPropertyAnimation>
+#include <QEasingCurve>
 #include <RPG/About.h>
 #include <RPG/Global.h>
 #include <RPG/utils/Utils.h>
@@ -32,6 +34,11 @@ class RpgDialog : public QObject, public RpgDialogBase
 	QGraphicsPixmapItem *characterBox = new QGraphicsPixmapItem(this->box);		//角色盒子
 
 	QGraphicsDropShadowEffect *messageShadowEffect = new QGraphicsDropShadowEffect(this); //字下面的阴影
+
+	QParallelAnimationGroup *entryAniGroup = new QParallelAnimationGroup(this); //加载动画组
+	QGraphicsOpacityEffect *boxOpacityEffect = new QGraphicsOpacityEffect(this); //文本框的透明度(作为动画表示)
+	QGraphicsItemAnimation *characterAnimation = new QGraphicsItemAnimation(this); //头像的动态效果, 复用Animation, 配合下面的timeline进行动作
+	QTimeLine *characterTimeLine = new QTimeLine(300, this); //QGraphicsItemAnimation必须要用Timeline做动画, 不太明白为什么不放在AnimationGroup中
 
 	// 消息列表
 	QStringList messageList;		//运行时消息存储列表
@@ -198,7 +205,58 @@ protected:
 	 * 显示文字列表第Index个文本
 	 */
 	void showText(int index);
+private:
+	// 进入动画或退出动画设置
+	void enterOrExitAnimationSetting(bool enter){
+		this->entryAniGroup->clear();
+		QPropertyAnimation *boxAnimation = new QPropertyAnimation(this->boxOpacityEffect, "opacity");
+		if(enter){
+			// Enter
+			boxAnimation->setDuration(300);
+			boxAnimation->setEasingCurve(QEasingCurve::OutQuad);
+			boxAnimation->setStartValue(0.0f);
+			boxAnimation->setEndValue(1.0f);
+		}else{
+			// Exit
+			boxAnimation->setDuration(300);
+			boxAnimation->setEasingCurve(QEasingCurve::OutQuad);
+			boxAnimation->setStartValue(1.0f);
+			boxAnimation->setEndValue(0.0f);
+		}
+		this->entryAniGroup->addAnimation(boxAnimation);
 
+		if(!this->characterBoxPixmap.isNull()){
+			this->characterTimeLine->setDuration(300);
+			this->characterTimeLine->setFrameRange(0, 100);
+			QEasingCurve characterEasingCurve(QEasingCurve::OutQuad);
+
+			this->characterAnimation->clear();
+			if(enter){
+				// Enter
+				for(int i = 0; i < 100; i++){
+					qreal progress = characterEasingCurve.valueForProgress(i / 100.0f) * 100.0f;
+					characterAnimation->setPosAt(i / 100.0f, this->characterBox->pos() + QPoint(100.0f - progress, 0));
+				}
+			}else{
+				// Exit
+				for(int i = 0; i < 100; i++){
+					qreal progress = characterEasingCurve.valueForProgress(i / 100.0f) * 100.0f;
+					characterAnimation->setPosAt(i / 100.0f, this->characterBox->pos() + QPoint(progress, 0));
+				}
+			}
+		}
+	}
+
+	// 开启动画
+	void enterOrExitAnimationStart(){
+		this->entryAniGroup->start(QAbstractAnimation::KeepWhenStopped);
+		if(!this->characterBoxPixmap.isNull()){
+			if(this->characterTimeLine->state() != QTimeLine::NotRunning){
+				this->characterTimeLine->stop();
+			}
+			this->characterTimeLine->start();
+		}
+	}
 
 signals:
 	/**

@@ -341,27 +341,31 @@ public slots:
 		titleScene->getRpgDialog()->addText("**测试一段可显示的文字**<r>测试一段红色的文字</r>**<g>测试一段绿色的文字</g>**<b>测试一段蓝色的文字</b>**<y>测试一段黄色的文字<y>**");
 		titleScene->getRpgDialog()->exec();
 
-		titleScene->getRpgDialog()->setCharacterPixmap(QPixmap());
-		titleScene->getRpgDialog()->addText("123456");
-		titleScene->getRpgDialog()->exec();
+		QEventLoop eventloop(this);
+		this->connect(titleScene->getRpgDialog(), &RpgDialog::quitDialogMode, &eventloop, &QEventLoop::quit);
+		eventloop.exec();
 
-//		titleScene->getRpgDialog()->setCharacterPixmap(*aab);
-//		titleScene->getRpgDialog()->addText("我做梦都没想到，会有一天，竟然用<r>这种尴尬</r>的方式，和那个女孩子相遇了。");
-//		titleScene->getRpgDialog()->addText("私は一日持っていた夢の中でそれを考えなかった、私は非常に恥ずかしい状況でその女の子に会った");
-//		titleScene->getRpgDialog()->addText("但是当我遇见她的时候，她的心情异常的平静，好像并没有对此感到吃惊。");
-//		titleScene->getRpgDialog()->addText("“难道她认识我？”");
-//		titleScene->getRpgDialog()->addText("她说她看到我就有一种似曾相识的感觉。");
-//		titleScene->getRpgDialog()->addText("<b>似曾相识的感觉？</b>我倒是记得一位和她很像的女生，跟我关系非常好，但是相比之下，这么让人相敬如宾的女孩子我还是头一回见。");
-//		titleScene->getRpgDialog()->addText("不对。一定不是她，她在那场灾难中没有活下来，即便活下来了，烧伤的痕迹应该也能看出来，<g>即便是她</g>，那么这三年她是怎么生活过来的。");
-//		titleScene->getRpgDialog()->addText("一大堆问题忽然全部堆到我的脑海里，我飞速的计算着，飞速的猜测着，但是并没有任何结果。");
-//		titleScene->getRpgDialog()->addText("当时只是尴尬了说了一句：“对不起”便匆匆离去。但之后真的回味无穷。");
-//		titleScene->getRpgDialog()->addText("真的是她吗，我不相信。三年前，我亲眼看到她被大火淹没，从此再无音信。");
-//		titleScene->getRpgDialog()->addText("……");
-//		titleScene->getRpgDialog()->addText("我当时真的傻眼了，我想冲回去救她，但是被其他人拦住强制拖出了火灾区。");
-//		titleScene->getRpgDialog()->addText("眼看着我离她越来越远，我极力挣扎着。我只记得我被营救出去的那一刻，后面出现了<y>爆炸</y>。");
-//		titleScene->getRpgDialog()->addText("一声刻骨铭心的爆炸。");
-//		titleScene->getRpgDialog()->addText("她，从此生死不明。");
+//		titleScene->getRpgDialog()->setCharacterPixmap(QPixmap());
+//		titleScene->getRpgDialog()->addText("123456");
 //		titleScene->getRpgDialog()->exec();
+
+		titleScene->getRpgDialog()->setCharacterPixmap(*aaa);
+		titleScene->getRpgDialog()->addText("我做梦都没想到，会有一天，竟然用<r>这种尴尬</r>的方式，和那个女孩子相遇了。");
+		titleScene->getRpgDialog()->addText("私は一日持っていた夢の中でそれを考えなかった、私は非常に恥ずかしい状況でその女の子に会った");
+		titleScene->getRpgDialog()->addText("但是当我遇见她的时候，她的心情异常的平静，好像并没有对此感到吃惊。");
+		titleScene->getRpgDialog()->addText("“难道她认识我？”");
+		titleScene->getRpgDialog()->addText("她说她看到我就有一种似曾相识的感觉。");
+		titleScene->getRpgDialog()->addText("<b>似曾相识的感觉？</b>我倒是记得一位和她很像的女生，跟我关系非常好，但是相比之下，这么让人相敬如宾的女孩子我还是头一回见。");
+		titleScene->getRpgDialog()->addText("不对。一定不是她，她在那场灾难中没有活下来，即便活下来了，烧伤的痕迹应该也能看出来，<g>即便是她</g>，那么这三年她是怎么生活过来的。");
+		titleScene->getRpgDialog()->addText("一大堆问题忽然全部堆到我的脑海里，我飞速的计算着，飞速的猜测着，但是并没有任何结果。");
+		titleScene->getRpgDialog()->addText("当时只是尴尬了说了一句：“对不起”便匆匆离去。但之后真的回味无穷。");
+		titleScene->getRpgDialog()->addText("真的是她吗，我不相信。三年前，我亲眼看到她被大火淹没，从此再无音信。");
+		titleScene->getRpgDialog()->addText("……");
+		titleScene->getRpgDialog()->addText("我当时真的傻眼了，我想冲回去救她，但是被其他人拦住强制拖出了火灾区。");
+		titleScene->getRpgDialog()->addText("眼看着我离她越来越远，我极力挣扎着。我只记得我被营救出去的那一刻，后面出现了<y>爆炸</y>。");
+		titleScene->getRpgDialog()->addText("一声刻骨铭心的爆炸。");
+		titleScene->getRpgDialog()->addText("她，从此生死不明。");
+		titleScene->getRpgDialog()->exec();
 #endif
 	}
 };

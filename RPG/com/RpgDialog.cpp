@@ -36,7 +36,9 @@ RpgDialog::RpgDialog(QGraphicsScene *parentScene, QObject *parent): QObject(pare
 	this->box->setZValue(DialogZValue);
 	this->message->setZValue(0.1f);
 	this->continueSymbol->setZValue(0.2f);
-	this->characterBox->setZValue(-0.1f);
+	if(!this->characterBoxPixmap.isNull()){
+		this->characterBox->setZValue(-0.1f);
+	}
 
 	connect(this->continueSymbolTimeLine, &QTimeLine::frameChanged, this, [this](int frame){
 		if(frame < 4 && frame >= 0){
@@ -58,6 +60,13 @@ RpgDialog::RpgDialog(QGraphicsScene *parentScene, QObject *parent): QObject(pare
 	this->messageShadowEffect->setOffset(2.0f, 2.0f);
 	this->message->setGraphicsEffect(this->messageShadowEffect);
 
+	//this->boxOpacityEffect->setOpacity(0.0f);
+	this->boxOpacityEffect->setOpacity(1.0f);
+	this->box->setGraphicsEffect(this->boxOpacityEffect);
+
+	// 头像位置动画设置
+	characterAnimation->setItem(this->characterBox);
+	characterAnimation->setTimeLine(this->characterTimeLine);
 }
 
 void RpgDialog::exec(){
@@ -105,6 +114,7 @@ void RpgDialog::exec(){
 		//this->characterBox->stackBefore(this->box);
 	}
 
+	this->enterOrExitAnimationSetting(true);
 	this->showDialog();
 }
 
@@ -112,6 +122,7 @@ void RpgDialog::showDialog(){
 	this->isRunning = true;
 	emit this->enterDialogMode();
 	this->parentScene->addItem(this->box);
+	this->enterOrExitAnimationStart();
 	this->showText(this->messageIndex);
 }
 
@@ -119,6 +130,8 @@ void RpgDialog::hideDialog(){
 	if(this->continueSymbolTimeLine->state() != QTimeLine::NotRunning){
 		this->continueSymbolTimeLine->stop();
 	}
+	this->enterOrExitAnimationStart();
+	Utils::msleep(300);
 	this->box->hide();
 	this->parentScene->removeItem(this->box);
 	this->clearText();
@@ -165,6 +178,7 @@ void RpgDialog::receiveKey(int key, Qt::KeyboardModifiers mod){
 			this->messageIndex ++;
 			if(this->messageIndex >= this->messageList.length()){
 				// 如果会话全部完成
+				this->enterOrExitAnimationSetting(false);
 				this->hideDialog();
 				// 重置会话信息位置
 				this->messageIndex = 0;
