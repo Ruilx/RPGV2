@@ -331,13 +331,13 @@ protected:
 	void showChoice(){
 		this->isRunning = true;
 		emit this->enterDialogMode();
+		this->showChoiceBox(this->messageCurrentIndex);
 		this->box->show();
 		if(this->choiceBarAnimation->state() == QAbstractAnimation::Stopped){
 			this->choiceBarAnimation->start();
 		}
 		this->enterOrExitAnimationStart();
 		this->showText(this->messageIndex, false);
-		this->showChoiceBox(this->messageCurrentIndex);
 		this->slowprintBackup = this->slowprint;
 		this->setSlowprint(SpeedInfinitly);
 	}
@@ -445,7 +445,6 @@ protected:
 			qDebug() << CodePath() << ": index is out of range: " << index << "</>[0," << ChoiceBuff << "]";
 		}
 		this->choiceSymbol->setPos(messageMarginH, this->messagesRect.top() + messageMarginV + (messageSpecingV + this->getSelectBarImage().height()) * index);
-		qDebug() << "Choice show[" << index << "].pos = " << this->choiceSymbol->pos();
 //		if(!this->choiceSymbol->isVisible()){
 //			this->choiceSymbol->setVisible(true);
 //		}
@@ -503,7 +502,7 @@ public slots:
 				this->messageCurrentIndex = 0;
 				this->messageIndex = 0;
 			}
-		}else if(key == Qt::Key_Up){
+		}else if(key == Qt::Key_Up || key == Qt::Key_W){
 			// 显示上一个选项 [光标希望向上走!]
 			if(this->messageList.length() == 1){
 				// 如果列表只有一个选项, 啥都不做
@@ -535,7 +534,7 @@ public slots:
 					}
 				}
 			}
-		}else if(key == Qt::Key_Down){
+		}else if(key == Qt::Key_Down || key == Qt::Key_S){
 			// 显示下一个选项 [光标希望向下走!]
 			if(this->messageList.length() == 1){
 				// 如果列表只有一个选项, 啥都不做

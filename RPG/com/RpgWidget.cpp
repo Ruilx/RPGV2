@@ -207,10 +207,11 @@ void RpgWidget::ready(){
 	titleScene->getRpgDialog()->exec();
 	titleScene->getRpgDialog()->waitingForDialogComplete();
 
-	titleScene->getRpgChoise()->addChoiceText("第一项");
-	titleScene->getRpgChoise()->addChoiceText("第二项");
-	titleScene->getRpgChoise()->addChoiceText("第三项");
-	titleScene->getRpgChoise()->addChoiceText("第四项");
+	titleScene->getRpgChoise()->addChoiceText("第一选项");
+	titleScene->getRpgChoise()->addChoiceText("第二选项");
+	titleScene->getRpgChoise()->addChoiceText("第三选项");
+	titleScene->getRpgChoise()->addChoiceText("第四选项");
+	titleScene->getRpgChoise()->addChoiceText("第五选项");
 	titleScene->getRpgChoise()->exec();
 	qDebug() << "Selected:" << titleScene->getRpgChoise()->waitingForChooseComplete();
 
