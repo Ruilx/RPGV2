@@ -18,12 +18,13 @@ class RpgScene : public QGraphicsScene
 {
 	RpgDialog *dialog = nullptr;
 	RpgBanner *banner = nullptr;
-	RpgChoice *choise = nullptr;
+	RpgChoice *choice = nullptr;
 public:
 	RpgScene(QObject *parent = nullptr) : QGraphicsScene(parent){
 		this->setScenePos(0.0f, 0.0f);
 		this->dialog = new RpgDialog(this, this);
 		this->banner = new RpgBanner(this, this);
+		this->choice = new RpgChoice(this, this);
 	}
 
 	void setSceneRect(const QRectF &rect){
@@ -31,12 +32,12 @@ public:
 		//this->dialog->setViewportOffset(QPointF(rect.left(), rect.top()));
 	}
 	inline void setSceneRect(qreal x, qreal y, qreal w, qreal h) { this->setSceneRect(QRectF(x, y, w, h)); }
-	void setScenePos(const QPointF &point){ this->setSceneRect(point.x(), point.y(), ScreenWidthF, ScreenHeightF); }
+	inline void setScenePos(const QPointF &point){ this->setSceneRect(point.x(), point.y(), ScreenWidthF, ScreenHeightF); }
 	inline void setScenePos(qreal left, qreal top){ this->setScenePos(QPointF(left, top)); }
 
-	RpgDialog *getRpgDialog(){ return this->dialog; }
-	RpgBanner *getRpgBanner(){ return this->banner; }
-	RpgChoice *getRpgChoise(){ return this->choise; }
+	RpgDialog *getRpgDialog() const{ Q_ASSERT_X(this->dialog, "RpgDialog Nulled", "Dialog not found!"); return this->dialog; }
+	RpgBanner *getRpgBanner() const{ Q_ASSERT_X(this->banner, "RpgBanner Nulled", "Banner not found!"); return this->banner; }
+	RpgChoice *getRpgChoise() const{ Q_ASSERT_X(this->choice, "RpgChoice Nulled", "Choice not found!"); return this->choice; }
 
 
 };

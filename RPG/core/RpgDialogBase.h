@@ -53,7 +53,7 @@ private:
 	// 各个图片在原图中的位置坐标
 	const QRect backgroundRect					= QRect(  0,  0, 128, 128);
 	const QRect backgroundBorderRect			= QRect(128,  0,  64,  64);
-	const QRect selectBarRect					= QRect(160, 64,  32,  32);
+	const QRect selectBarRect					= QRect(128, 64,  32,  32);
 	const QRect continueSymbolRect				= QRect(160, 64,  32,  32);
 
 	const QRect backgroundBorderLeftTopRect		= QRect( 0,  0, 16, 16);

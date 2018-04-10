@@ -28,22 +28,22 @@ class RpgDialog : public QObject, public RpgDialogBase
 	// 指定显示在哪个Scene上
 	QGraphicsScene *parentScene = nullptr;
 	// 构成
-	QGraphicsPixmapItem *box = new QGraphicsPixmapItem(nullptr);				//那蓝色的盒子
-	QGraphicsTextItem *message = new QGraphicsTextItem(this->box);				//中间的字
-	QGraphicsPixmapItem *continueSymbol = new QGraphicsPixmapItem(this->box);	//下面的小三角
-	QGraphicsPixmapItem *characterBox = new QGraphicsPixmapItem(this->box);		//角色盒子
+	QGraphicsPixmapItem *box = new QGraphicsPixmapItem(nullptr);				// 那蓝色的盒子
+	QGraphicsTextItem *message = new QGraphicsTextItem(this->box);				// 中间的字
+	QGraphicsPixmapItem *continueSymbol = new QGraphicsPixmapItem(this->box);	// 下面的小三角
+	QGraphicsPixmapItem *characterBox = new QGraphicsPixmapItem(this->box);		// 角色盒子
 
-	QGraphicsDropShadowEffect *messageShadowEffect = new QGraphicsDropShadowEffect(this); //字下面的阴影
+	QGraphicsDropShadowEffect *messageShadowEffect = new QGraphicsDropShadowEffect(this); // 字下面的阴影
 
-	QParallelAnimationGroup *entryAniGroup = new QParallelAnimationGroup(this); //加载动画组
-	QGraphicsOpacityEffect *boxOpacityEffect = new QGraphicsOpacityEffect(this); //文本框的透明度(作为动画表示)
-	QGraphicsItemAnimation *characterAnimation = new QGraphicsItemAnimation(this); //头像的动态效果, 复用Animation, 配合下面的timeline进行动作
-	QTimeLine *characterTimeLine = new QTimeLine(300, this); //QGraphicsItemAnimation必须要用Timeline做动画, 不太明白为什么不放在AnimationGroup中
+	QParallelAnimationGroup *entryAniGroup = new QParallelAnimationGroup(this); // 加载动画组
+	QGraphicsOpacityEffect *boxOpacityEffect = new QGraphicsOpacityEffect(this); // 文本框的透明度(作为动画表示)
+	QGraphicsItemAnimation *characterAnimation = new QGraphicsItemAnimation(this); // 头像的动态效果, 复用Animation, 配合下面的timeline进行动作
+	QTimeLine *characterTimeLine = new QTimeLine(300, this); // QGraphicsItemAnimation必须要用Timeline做动画, 不太明白为什么不放在AnimationGroup中
 
 	// 消息列表
-	QStringList messageList;		//运行时消息存储列表
-	QStringList messageReadyList;	//消息存储缓存
-	int messageIndex = 0;			//现在正在显示的消息序号
+	QStringList messageList;		// 运行时消息存储列表
+	QStringList messageReadyList;	// 消息存储缓存
+	int messageIndex = 0;			// 现在正在显示的消息序号
 
 	// 立绘
 	QPixmap characterBoxPixmap;
@@ -54,7 +54,7 @@ class RpgDialog : public QObject, public RpgDialogBase
 	QRect messageRect = QRect(messageMarginH, messageMarginV, ScreenWidth - messageMarginH - messageMarginH, ScreenHeight - messageMarginV - messageMarginV);
 
 	// Viewport Offset( 一般Scene要比View大, 所以如果要浮于View中间, 则还需要View相对于Scene的视窗大小 )
-	QPointF viewportOffset = QPoint(0, 0);
+//	QPointF viewportOffset = QPoint(0, 0);
 
 public:
 	/**
@@ -128,19 +128,19 @@ public:
 	 */
 	void setTextColor(const QColor &color){ this->message->setDefaultTextColor(color); }
 
-	/**
-	 * @brief getViewportOffset
-	 * @return QPoint
-	 * 获得Viewport的偏移坐标
-	 */
-	QPointF getViewportOffset() const { return this->viewportOffset; }
+//	/**
+//	 * @brief getViewportOffset
+//	 * @return QPoint
+//	 * 获得Viewport的偏移坐标
+//	 */
+//	QPointF getViewportOffset() const { return this->viewportOffset; }
 
-	/**
-	 * @brief setViewportOffset
-	 * @param offset
-	 * 设置Viewport的偏移坐标
-	 */
-	void setViewportOffset(const QPointF &offset){ this->viewportOffset = offset; }
+//	/**
+//	 * @brief setViewportOffset
+//	 * @param offset
+//	 * 设置Viewport的偏移坐标
+//	 */
+//	void setViewportOffset(const QPointF &offset){ this->viewportOffset = offset; }
 
 	/**
 	 * @brief clearText
@@ -187,6 +187,12 @@ public:
 	 * 开始执行并进入Dialog模式
 	 */
 	void exec();
+	/**
+	 * @brief waitingForDialogComplete
+	 * @return -1失败(因为还未启动) 0 成功
+	 * 等待对话框关闭
+	 */
+	int waitingForDialogComplete();
 protected:
 	/**
 	 * @brief showDialog
@@ -206,57 +212,17 @@ protected:
 	 */
 	void showText(int index);
 private:
-	// 进入动画或退出动画设置
-	void enterOrExitAnimationSetting(bool enter){
-		this->entryAniGroup->clear();
-		QPropertyAnimation *boxAnimation = new QPropertyAnimation(this->boxOpacityEffect, "opacity");
-		if(enter){
-			// Enter
-			boxAnimation->setDuration(300);
-			boxAnimation->setEasingCurve(QEasingCurve::OutQuad);
-			boxAnimation->setStartValue(0.0f);
-			boxAnimation->setEndValue(1.0f);
-		}else{
-			// Exit
-			boxAnimation->setDuration(300);
-			boxAnimation->setEasingCurve(QEasingCurve::OutQuad);
-			boxAnimation->setStartValue(1.0f);
-			boxAnimation->setEndValue(0.0f);
-		}
-		this->entryAniGroup->addAnimation(boxAnimation);
-
-		if(!this->characterBoxPixmap.isNull()){
-			this->characterTimeLine->setDuration(300);
-			this->characterTimeLine->setFrameRange(0, 100);
-			QEasingCurve characterEasingCurve(QEasingCurve::OutQuad);
-
-			this->characterAnimation->clear();
-			if(enter){
-				// Enter
-				for(int i = 0; i < 100; i++){
-					qreal progress = characterEasingCurve.valueForProgress(i / 100.0f) * 100.0f;
-					characterAnimation->setPosAt(i / 100.0f, this->characterBox->pos() + QPoint(100.0f - progress, 0));
-				}
-			}else{
-				// Exit
-				for(int i = 0; i < 100; i++){
-					qreal progress = characterEasingCurve.valueForProgress(i / 100.0f) * 100.0f;
-					characterAnimation->setPosAt(i / 100.0f, this->characterBox->pos() + QPoint(progress, 0));
-				}
-			}
-		}
-	}
-
-	// 开启动画
-	void enterOrExitAnimationStart(){
-		this->entryAniGroup->start(QAbstractAnimation::KeepWhenStopped);
-		if(!this->characterBoxPixmap.isNull()){
-			if(this->characterTimeLine->state() != QTimeLine::NotRunning){
-				this->characterTimeLine->stop();
-			}
-			this->characterTimeLine->start();
-		}
-	}
+	/**
+	 * @brief enterOrExitAnimationSetting
+	 * @param enter
+	 * 进入动画或退出动画设置
+	 */
+	void enterOrExitAnimationSetting(bool enter);
+	/**
+	 * @brief enterOrExitAnimationStart
+	 * 开启动画
+	 */
+	void enterOrExitAnimationStart();
 
 signals:
 	/**

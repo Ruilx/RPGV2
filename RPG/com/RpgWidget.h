@@ -68,65 +68,7 @@ class RpgWidget : public QWidget
 	 * @param event
 	 * 判断按键离开的事件
 	 */
-	void keyReleaseEvent(QKeyEvent *event){
-		// 用户按下的按键
-		int key = event->key();
-		// 用户是否使用了Shift, Ctrl, Alt, Win(Meta)键对按键进行修饰(一块按下了)
-		Qt::KeyboardModifiers mod = event->modifiers();
-		if(key == Qt::Key_Escape){
-			// 如果用户按下了ESC键, 任何情况下都可以进入系统菜单
-			if(this->modeStack.top() == SystemMenuMode){
-				// 如果已经在系统菜单模式, 则退出系统菜单模式
-				//TODO: 系统菜单还没有写, 这里输出一条debug代替
-				qDebug() << "RpgWidget: KeyReleaseEvent: User Release ESCAPE key in SystemMenuMode.";
-				event->accept();
-				return;
-			}else{
-				//TODO: 系统菜单还没写, 这里输出一条debug代替
-				qDebug() << "RpgWidget: KeyReleaseEvent: User Released ESCAPE key.";
-				event->accept();
-				return;
-			}
-		}
-		switch(this->modeStack.top()){
-			case AutoMode:{
-				// 自动模式下不接受任何按键.
-				break;
-			}
-			case NormalMode:{
-				// 普通模式, 接受W, A, S, D, Space, Return, ArrowU, ArrowD, ArrowL, ArrowR, Z(道具栏)
-				//TODO: 没有写相关的运动函数, 这里输出一条Debug代替
-				qDebug() << tr("RpgWidget: KeyReleaseEvent: User Release %1(%2) Key in NormalMode.").arg(key).arg(event->text().toHtmlEscaped());
-				event->accept();
-				break;
-			}
-			case SystemMenuMode:{
-				// 系统菜单模式, 接受W, A, S, D, ArrowU, ArrowD, ArrowL, ArrowR, Space, Return, Esc(前面已经处理过了)
-				//TODO: 没有写系统菜单栏目, 这里输出一条Debug代替
-				qDebug() << tr("RpgWidget: KeyReleaseEvent: User Release %1(%2) Key in SystemMenuMode.").arg(key).arg(event->text().toHtmlEscaped());
-				event->accept();
-				break;
-			}
-			case DialogMode:{
-				// 对话模式, 接受Return, Space
-				emit this->dialogModeKeyClick(key, mod);
-				event->accept();
-				break;
-			}
-			case ItemMode:{
-				// 道具栏(背包)模式, 接受W, A, S, D, ArrowU, ArrowD, ArrowL, ArrowR, Space, Return
-				//TODO: 没有写系统背包栏目, 这里输出一条Debug代替
-				qDebug() << tr("RpgWidget: KeyReleaseEvent: User Release %1(%2) Key in ItemMode.").arg(key).arg(event->text().toHtmlEscaped());
-				event->accept();
-				break;
-			}
-			default:{
-				qDebug() << tr("RpgWidget: KeyReleaseEvent: Cannot recongized which mode it is? User Release %1(%2) Key.").arg(key).arg(event->text().toHtmlEscaped());
-				event->ignore();
-				break;
-			}
-		}
-	}
+	void keyReleaseEvent(QKeyEvent *event);
 
 public:
 	/**
@@ -134,67 +76,7 @@ public:
 	 * @param parent
 	 * RpgWidget构造函数
 	 */
-	explicit RpgWidget(QWidget *parent = nullptr): QWidget(parent){
-
-		// 新建一个Scene, 然后加入地图列表
-		RpgScene *titleScene = new RpgScene(this);
-		this->mapList.insert("titlescene", titleScene);
-		// 设置显示偏移量
-		titleScene->setScenePos(0.0f, 0.0f);
-		// 设置当前地图
-		this->stage->setScene(titleScene);
-		this->stage->setFixedSize(ScreenWidth + 2, ScreenHeight + 2);
-		this->stage->scale(1.0f, 1.0f);
-		//this->stage->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
-		//this->stage->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
-		QPalette pal;{
-			pal.setColor(QPalette::Base, Qt::black);
-		}
-		this->stage->setPalette(pal);
-
-		QVBoxLayout *mainLay = new QVBoxLayout;
-		this->setLayout(mainLay);
-		mainLay->addWidget(this->stage);
-		mainLay->setMargin(0);
-
-		connect(titleScene->getRpgDialog(), &RpgDialog::enterDialogMode, this, [this](){
-			this->modeStack.push(DialogMode);
-			this->enterDialogMode();
-		});
-
-		connect(titleScene->getRpgDialog(), &RpgDialog::quitDialogMode, this, [this](){
-			if(this->modeStack.top() == DialogMode){
-				this->modeStack.pop();
-			}else{
-				qDebug() << "RpgWidget::[RpgDialog::quitDialogMode LambdaMoc]: Current Mode Stack top is not dialogMode!";
-				return;
-			}
-			this->quitDialogMode();
-		});
-
-		connect(titleScene->getRpgBanner(), &RpgBanner::enterAutoMode, this, [this](){
-			this->modeStack.push(AutoMode);
-			this->enterAutoMode();
-		});
-
-		connect(titleScene->getRpgBanner(), &RpgBanner::quitAutoMode, this, [this](){
-			if(this->modeStack.top() == AutoMode){
-				this->modeStack.pop();
-			}else{
-				qDebug() << "RpgWidget::[RpgDialog::quitAutoMode LambdaMoc]: Current Mode Stack top is not autoMode!";
-				return;
-			}
-			this->quitAutoMode();
-		});
-
-		connect(this, &RpgWidget::dialogModeKeyClick, titleScene->getRpgDialog(), &RpgDialog::receiveKey);
-
-		this->modeStack.push(NormalMode);
-
-		QTimer::singleShot(2000, this, &RpgWidget::ready);
-
-		this->stage->setRenderHints(QPainter::Antialiasing | QPainter::TextAntialiasing | QPainter::SmoothPixmapTransform);
-	}
+	explicit RpgWidget(QWidget *parent = nullptr);
 
 signals:
 	/**
@@ -283,91 +165,7 @@ public slots:
 	 * @brief ready
 	 * 构建成功, 窗口显示后自动进行的函数
 	 */
-	void ready(){
-		qDebug() << "[Debug][System] Ready...";
-		RpgScene *titleScene = this->mapList.value("titlescene", nullptr);
-		if(titleScene == nullptr){
-			qDebug() << "RpgWidget::ready(): titleScene(\"titlescene\") not exist.";
-			return;
-		}
-
-#ifdef DEBUG
-//		int blockCol = titleScene->width() / MapBlockWidth;
-//		int blockRow = titleScene->height() / MapBlockHeight;
-//		RpgTileSetBase rpgTileSetBase("data/images/tilesets/016-ForestTown02.png");
-//		for(int i = 0; i < blockRow; i++){
-//			for(int j = 0; j < blockCol; j++){
-//				RpgMapBlock *block = new RpgMapBlock(j, i, rpgTileSetBase.getRpgTilePixmap(2, 0) , true, titleScene, nullptr, this);
-//				//qDebug() << QPixmap::fromImage(*rpgTileSetBase->getRpgTile(0, 0));
-//				//block->addPixmap();
-//				block->show();
-//			}
-//		}
-
-//		QPixmap *bg = new QPixmap("data/images/background/title.png");
-//		titleScene->getRpgBanner()->setForegroundPixmap(*bg);
-//		titleScene->getRpgBanner()->setStartOpacity(0.0f);
-//		titleScene->getRpgBanner()->setEndOpacity(1.0f);
-//		titleScene->getRpgBanner()->setSpeed(RpgBanner::SpeedNormal);
-//		titleScene->getRpgBanner()->exec();
-
-//		titleScene->getRpgChoise()->addChoiceText("The First Choice");
-//		titleScene->getRpgChoise()->addChoiceText("The Second Choice");
-//		titleScene->getRpgChoise()->addChoiceText("The Third Choice");
-//		titleScene->getRpgChoise()->addChoiceText("The Fourth Choice");
-//		titleScene->getRpgChoise()->addChoiceText("The Fifth Choice");
-//		titleScene->getRpgDialog()->exec();
-
-//		QPixmap *aaa = new QPixmap("data/images/drawing/02.png");
-//		titleScene->getRpgDialog()->setCharacterPixmap(*aaa);
-//		titleScene->getRpgDialog()->addText("サクラの花が咲く度に");
-//		titleScene->getRpgDialog()->addText("こんな気持になるのはいつごろからだっけ");
-//		titleScene->getRpgDialog()->addText("昼過ぎの 町外れの校舎");
-//		titleScene->getRpgDialog()->addText("散らかった部室 机の上にばら撒かれた楽譜");
-//		titleScene->getRpgDialog()->addText("ずっと何かを思い出さないまま");
-//		titleScene->getRpgDialog()->addText("誰かの声がする 誰かをずっと呼んている");
-//		titleScene->getRpgDialog()->addText("日の光が少しずつ空気を緩めて");
-//		titleScene->getRpgDialog()->addText("もうすぐ春がやってくる");
-//		titleScene->getRpgDialog()->addText("微睡んだあくびをする 僕の名前を呼ぶ");
-//		titleScene->getRpgDialog()->addText("誰かをずっと探している");
-//		titleScene->getRpgDialog()->addText("そんな風に目が覚める");
-//		titleScene->getRpgDialog()->addText("ここはあの街から随分と離れた都会の片隅");
-//		titleScene->getRpgDialog()->addText("遠い昔の思い出は 春の匂いと一緒に");
-//		titleScene->getRpgDialog()->addText("今年もまた 僕の元へ");
-//		titleScene->getRpgDialog()->exec();
-
-		QPixmap *aaa = new QPixmap("data/images/drawing/02.png");
-		titleScene->getRpgDialog()->setCharacterPixmap(*aaa);
-		titleScene->getRpgDialog()->addText("**测试一段可显示的文字**<r>测试一段红色的文字</r>**<g>测试一段绿色的文字</g>**<b>测试一段蓝色的文字</b>**<y>测试一段黄色的文字<y>**");
-		titleScene->getRpgDialog()->exec();
-
-		QEventLoop eventloop(this);
-		this->connect(titleScene->getRpgDialog(), &RpgDialog::quitDialogMode, &eventloop, &QEventLoop::quit);
-		eventloop.exec();
-
-//		titleScene->getRpgDialog()->setCharacterPixmap(QPixmap());
-//		titleScene->getRpgDialog()->addText("123456");
-//		titleScene->getRpgDialog()->exec();
-
-		titleScene->getRpgDialog()->setCharacterPixmap(*aaa);
-		titleScene->getRpgDialog()->addText("我做梦都没想到，会有一天，竟然用<r>这种尴尬</r>的方式，和那个女孩子相遇了。");
-		titleScene->getRpgDialog()->addText("私は一日持っていた夢の中でそれを考えなかった、私は非常に恥ずかしい状況でその女の子に会った");
-		titleScene->getRpgDialog()->addText("但是当我遇见她的时候，她的心情异常的平静，好像并没有对此感到吃惊。");
-		titleScene->getRpgDialog()->addText("“难道她认识我？”");
-		titleScene->getRpgDialog()->addText("她说她看到我就有一种似曾相识的感觉。");
-		titleScene->getRpgDialog()->addText("<b>似曾相识的感觉？</b>我倒是记得一位和她很像的女生，跟我关系非常好，但是相比之下，这么让人相敬如宾的女孩子我还是头一回见。");
-		titleScene->getRpgDialog()->addText("不对。一定不是她，她在那场灾难中没有活下来，即便活下来了，烧伤的痕迹应该也能看出来，<g>即便是她</g>，那么这三年她是怎么生活过来的。");
-		titleScene->getRpgDialog()->addText("一大堆问题忽然全部堆到我的脑海里，我飞速的计算着，飞速的猜测着，但是并没有任何结果。");
-		titleScene->getRpgDialog()->addText("当时只是尴尬了说了一句：“对不起”便匆匆离去。但之后真的回味无穷。");
-		titleScene->getRpgDialog()->addText("真的是她吗，我不相信。三年前，我亲眼看到她被大火淹没，从此再无音信。");
-		titleScene->getRpgDialog()->addText("……");
-		titleScene->getRpgDialog()->addText("我当时真的傻眼了，我想冲回去救她，但是被其他人拦住强制拖出了火灾区。");
-		titleScene->getRpgDialog()->addText("眼看着我离她越来越远，我极力挣扎着。我只记得我被营救出去的那一刻，后面出现了<y>爆炸</y>。");
-		titleScene->getRpgDialog()->addText("一声刻骨铭心的爆炸。");
-		titleScene->getRpgDialog()->addText("她，从此生死不明。");
-		titleScene->getRpgDialog()->exec();
-#endif
-	}
+	void ready();
 };
 
 #endif // RPGWIDGET_H

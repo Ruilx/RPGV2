@@ -3,12 +3,8 @@
 //RpgDialog *RpgDialog::_instance = nullptr;
 
 RpgDialog::RpgDialog(QGraphicsScene *parentScene, QObject *parent): QObject(parent), RpgDialogBase(){
-	//this->parentScene = parentScene;
 	this->setGraphicsScene(parentScene);
 	this->setTextColor(QColor(Qt::white));
-	//		QFont font = QApplication::font();
-	//		font.setPixelSize(22);
-	//		this->setFont(font);
 	this->message->setFont(Global::dialogFont);
 
 	this->continueSymbolTimeLine->setFrameRange(0, 3);
@@ -47,10 +43,11 @@ RpgDialog::RpgDialog(QGraphicsScene *parentScene, QObject *parent): QObject(pare
 	});
 
 	this->messageRect = QRect(messageMarginH, messageMarginV, this->getDialogRect().width() - messageMarginH - messageMarginH, this->getDialogHeight() - messageMarginV - messageMarginV);
+	this->message->setTextWidth(this->messageRect.width());
+	this->message->setPos(this->messageRect.topLeft());
 
 	// 取消Cache... 看起来更卡了...
 	//this->message->setCacheMode(QGraphicsItem::DeviceCoordinateCache);
-
 
 	// 预置输出速度: 快
 	this->slowprint = SpeedFast;
@@ -67,6 +64,10 @@ RpgDialog::RpgDialog(QGraphicsScene *parentScene, QObject *parent): QObject(pare
 	// 头像位置动画设置
 	characterAnimation->setItem(this->characterBox);
 	characterAnimation->setTimeLine(this->characterTimeLine);
+
+	// 预载入位置, 不过不显示
+	this->box->hide();
+	this->parentScene->addItem(this->box);
 }
 
 void RpgDialog::exec(){
@@ -89,16 +90,15 @@ void RpgDialog::exec(){
 		return;
 	}else{
 		this->messageList.clear();
-		this->messageList.append(this->messageReadyList);
+		this->messageList = this->messageReadyList;
 	}
 
+	// 设置对话框背景, 支持每次对话框形状不同
 	this->box->setPixmap(QPixmap::fromImage(this->getDialogImage()));
 	//this->box->setPos(this->getDialogPosition() + this->getViewportOffset());
 	this->box->setPos(this->getDialogPosition() + this->parentScene->sceneRect().topLeft());
 	//this->box->setZValue(DialogZValue);
 
-	this->message->setTextWidth(this->messageRect.width());
-	this->message->setPos(this->messageRect.topLeft());
 	//this->message->setZValue(0.3f);
 
 	this->continueSymbol->setPixmap(*this->continueSymbolPixmap[0]);
@@ -118,10 +118,21 @@ void RpgDialog::exec(){
 	this->showDialog();
 }
 
+int RpgDialog::waitingForDialogComplete(){
+	if(!this->isRunning){
+		qDebug() << CodePath() << ": Not running yet, cannot waiting.";
+		return -1;
+	}
+	QEventLoop eventLoop(this);
+	this->connect(this, &RpgDialog::quitDialogMode, &eventLoop, &QEventLoop::quit);
+	eventLoop.exec();
+	return 0;
+}
+
 void RpgDialog::showDialog(){
 	this->isRunning = true;
 	emit this->enterDialogMode();
-	this->parentScene->addItem(this->box);
+	this->box->show();
 	this->enterOrExitAnimationStart();
 	this->showText(this->messageIndex);
 }
@@ -133,8 +144,10 @@ void RpgDialog::hideDialog(){
 	this->enterOrExitAnimationStart();
 	Utils::msleep(300);
 	this->box->hide();
-	this->parentScene->removeItem(this->box);
+	//this->parentScene->removeItem(this->box);
 	this->clearText();
+	this->characterBoxPixmap = QPixmap();
+	this->characterBox->setPixmap(this->characterBoxPixmap);
 	emit this->quitDialogMode();
 	this->isRunning = false;
 }
@@ -167,7 +180,72 @@ void RpgDialog::showText(int index){
 	this->continueSymbolTimeLine->start();
 }
 
+void RpgDialog::enterOrExitAnimationSetting(bool enter){
+	if(this->entryAniGroup->state() != QParallelAnimationGroup::Stopped){
+		this->entryAniGroup->stop();
+	}
+	this->entryAniGroup->clear();
+	QPropertyAnimation *boxAnimation = new QPropertyAnimation(this->boxOpacityEffect, "opacity"); // 窗口的动画过渡效果
+	if(enter){
+		// Enter
+		boxAnimation->setDuration(300);
+		boxAnimation->setEasingCurve(QEasingCurve::OutQuad);
+		boxAnimation->setStartValue(0.0f);
+		boxAnimation->setEndValue(1.0f);
+	}else{
+		// Exit
+		boxAnimation->setDuration(300);
+		boxAnimation->setEasingCurve(QEasingCurve::OutQuad);
+		boxAnimation->setStartValue(1.0f);
+		boxAnimation->setEndValue(0.0f);
+	}
+	this->entryAniGroup->addAnimation(boxAnimation);
+
+	if(!this->characterBoxPixmap.isNull()){
+		if(this->characterTimeLine->state() != QTimeLine::NotRunning){
+			this->characterTimeLine->setCurrentTime(this->characterTimeLine->duration());
+			this->characterTimeLine->stop();
+			this->characterTimeLine->setCurrentTime(0);
+		}
+		this->characterTimeLine->setDuration(300);
+		this->characterTimeLine->setFrameRange(0, 18);
+		QEasingCurve characterEasingCurve(QEasingCurve::OutQuad);
+
+		this->characterAnimation->clear();
+		if(enter){
+			// Enter
+			for(int i = 0; i < 18; i++){
+				qreal progress = characterEasingCurve.valueForProgress(i / 18.0f) * 100.0f;
+				characterAnimation->setPosAt(i / 18.0f, this->characterBox->pos() + QPoint(100.0f - progress, 0));
+			}
+		}else{
+			// Exit
+			for(int i = 0; i < 18; i++){
+				qreal progress = characterEasingCurve.valueForProgress(i / 18.0f) * 100.0f;
+				characterAnimation->setPosAt(i / 18.0f, this->characterBox->pos() + QPoint(progress, 0));
+			}
+		}
+	}
+}
+
+void RpgDialog::enterOrExitAnimationStart(){
+	if(this->box->isVisible() == false){
+		qWarning() << "Box current visible is false, cannot open animation.";
+		return;
+	}
+	this->entryAniGroup->start(QAbstractAnimation::KeepWhenStopped);
+	if(!this->characterBoxPixmap.isNull()){
+		if(this->characterTimeLine->state() != QTimeLine::NotRunning){
+			this->characterTimeLine->stop();
+		}
+		this->characterTimeLine->start();
+	}
+}
+
 void RpgDialog::receiveKey(int key, Qt::KeyboardModifiers mod){
+	if(!this->isRunning){
+		return;
+	}
 	qDebug() << tr("RpgDialog::receiveKey(): receive key: %1::%2(%3).").arg(mod).arg(key).arg(QString(QChar(key)).toHtmlEscaped());
 	if(key == Qt::Key_Return || key == Qt::Key_Space){
 		if(this->showTextInProgressFlag == true){
