@@ -46,7 +46,7 @@ private:
 	// 上下间隔(px)
 	int paddingV = 5;
 	// 选择框高度(px)
-	int selectBarHeight = 30;
+	int selectBarHeight = 32;
 	// 设置结果的选择框大小
 	QRect selectBarScaleRect = QRect(paddingH, paddingV, ScreenWidth - marginH - marginH - paddingH - paddingH, selectBarHeight);
 

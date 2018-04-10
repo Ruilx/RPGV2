@@ -37,7 +37,7 @@ class RpgChoice : public QObject, public RpgDialogBase
 	QGraphicsPixmapItem *downSymbol = new QGraphicsPixmapItem(this->box);	// 下面的小三角
 	QGraphicsPixmapItem *choiceSymbol = new QGraphicsPixmapItem(this->box);	// 选择框蒙版
 
-	QGraphicsDropShadowEffect *messageShadowEffect = new QGraphicsDropShadowEffect(this); // 字下面的阴影
+	QGraphicsDropShadowEffect *messageShadowEffect[ChoiceBuff]; // 字下面的阴影
 
 	QParallelAnimationGroup *entryAniGroup = new QParallelAnimationGroup(this); // 加载动画组
 	QGraphicsOpacityEffect *boxOpacityEffect = new QGraphicsOpacityEffect(this); // 文本框透明度(作为动画表示)
@@ -103,8 +103,15 @@ public:
 		this->setGraphicsScene(parentScene);
 		for(int i = 0; i < ChoiceBuff; i++){
 			if(this->messages[i] == nullptr){
+				// 字下阴影的设置
+				this->messageShadowEffect[i] = new QGraphicsDropShadowEffect(this);
+				this->messageShadowEffect[i]->setColor(QColor(Qt::black));
+				this->messageShadowEffect[i]->setBlurRadius(5.0f);
+				this->messageShadowEffect[i]->setOffset(2.0f, 2.0f);
+				// 文字框设置
 				this->messages[i] = new QGraphicsTextItem(this->box);
 				this->messages[i]->document()->setDefaultStyleSheet(this->css);
+				this->messages[i]->setGraphicsEffect(this->messageShadowEffect[i]);
 			}
 		}
 		this->setTextColor(QColor(Qt::white));
@@ -174,14 +181,6 @@ public:
 
 		// 预置输出速度: 快
 		this->slowprint = SpeedFast;
-
-		// 字下阴影的设置
-		this->messageShadowEffect->setColor(QColor(Qt::black));
-		this->messageShadowEffect->setBlurRadius(5.0f);
-		this->messageShadowEffect->setOffset(2.0f, 2.0f);
-		for(int i = 0; i < ChoiceBuff; i++){
-			this->messages[i]->setGraphicsEffect(this->messageShadowEffect);
-		}
 
 		// 选择框的进场透明渐变
 		this->boxOpacityEffect->setOpacity(1.0f);
