@@ -212,6 +212,14 @@ void RpgChoice::showText(int index, bool noSpeedRender){
 		msgs.append(this->messageList.at(index + i));
 	}
 
+	for(int i = 0; i < ChoiceBuff; i++){
+		if(this->messageEnabledList.at(index + i) == true){
+			this->messages[i]->setDefaultTextColor(QColor(Qt::white));
+		}else{
+			this->messages[i]->setDefaultTextColor(QColor("#AAAAAA"));
+		}
+	}
+
 	if(noSpeedRender){
 		for(int i = 0; i < qMin(ChoiceBuff, this->messageList.length()); i++){
 			this->messages[i]->setHtml(msgs.at(i));
@@ -327,12 +335,20 @@ void RpgChoice::receiveKey(int key, Qt::KeyboardModifiers mod){
 			this->quickShowFlag = true;
 		}else{
 			// 如果不是, 则意味着用户选中了这个选项, 可以关闭选项框了
-			this->enterOrExitAnimationSetting(false);
-			this->hideChoice();
-			// 重置会话信息位置
+			// 计算选择了哪个选项
 			this->messageChose = this->messageIndex + this->messageCurrentIndex;
-			this->messageCurrentIndex = 0;
-			this->messageIndex = 0;
+			// 如果这个选项可用
+			if(this->messageChose < this->messageList.length() && this->messageEnabledList.at(this->messageChose) == true){
+				this->enterOrExitAnimationSetting(false);
+				this->hideChoice();
+				// 重置会话信息位置
+				this->messageCurrentIndex = 0;
+				this->messageIndex = 0;
+			}else{
+				qDebug() << CodePath() << ": message chose is not vaild or out of range(?).";
+				return;
+			}
+
 		}
 	}else if(key == Qt::Key_Up || key == Qt::Key_W){
 		// 显示上一个选项 [光标希望向上走!]

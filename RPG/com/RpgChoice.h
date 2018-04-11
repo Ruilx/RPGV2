@@ -48,6 +48,7 @@ class RpgChoice : public QObject, public RpgDialogBase
 	// 选项列表
 	QStringList messageList;		// 选项列表
 	QStringList messageReadyList;	// 选项缓存
+	QList<bool> messageEnabledList;	// 选项可用性(可不可以选择)
 	int messageIndex = 0;			// 现在处于第一显示的选项序号[0, len-choiceBuff]
 	int messageCurrentIndex = 0;	// 现在选项的序号[0, choiceBuff]
 	int messageChose = 0;			// 结果选中的序号
@@ -105,12 +106,29 @@ public:
 	 * @brief addChoiceText
 	 * @param text 添加的选择
 	 */
-	void addChoiceText(const QString &text){ this->messageReadyList.append(text); }
+	void addChoiceText(const QString &text){ this->messageReadyList.append(text); this->messageEnabledList.append(true);}
 	/**
 	 * @brief addChoiceText
 	 * @param textList 添加一串选择
 	 */
-	void addChoiceText(const QStringList &textList){ this->messageReadyList.append(textList); }
+	void addChoiceText(const QStringList &textList){
+		this->messageReadyList.append(textList);
+		for(int i = 0; i < textList.length(); i++){
+			this->messageEnabledList.append(true);
+		}
+	}
+	/**
+	 * @brief setChoiceEnabled
+	 * @param choiceIndex
+	 * @param enabled
+	 * 设置某项选项的可用状态
+	 */
+	void setChoiceEnabled(int choiceIndex, bool enabled){
+		if(choiceIndex >= this->messageEnabledList.length()){
+			qDebug() << "choice index is out of range.";
+		}
+		this->messageEnabledList[choiceIndex] = enabled;
+	}
 	/**
 	 * @brief setSlowprint
 	 * @param speed速度

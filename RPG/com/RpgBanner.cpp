@@ -151,6 +151,7 @@ void RpgBanner::finished(){
 		this->foregroundAnimation->stop();
 	}
 	emit this->quitAutoMode();
+	this->canBeInterrupted = false;
 	this->isRunning = false;
 }
 

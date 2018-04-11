@@ -137,6 +137,14 @@ public:
 	 */
 	void setEasingCurveType(QEasingCurve::Type type){ this->foregroundAnimation->setEasingCurve(QEasingCurve(type)); }
 
+	/**
+	 * @brief setCanBeInterrupt
+	 * @param able
+	 * 设置在过渡动画期间用户按下Enter键是否能打断过渡
+	 * able == true 可以打断(默认不能)(而且执行结束之后会重置这个打断状态为无效, 也就是不能打断)(为了防止用户滥用Enter键)
+	 */
+	void setCanBeInterrupt(bool able){ this->canBeInterrupted = able; }
+
 //	/**
 //	 * @brief setViewportOffset
 //	 * @param offset
