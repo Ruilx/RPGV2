@@ -60,6 +60,10 @@ void RpgWidget::keyReleaseEvent(QKeyEvent *event){
 	}
 }
 
+void RpgWidget::closeEvent(QCloseEvent *event){
+	Q_UNUSED(event)
+}
+
 RpgWidget::RpgWidget(QWidget *parent): QWidget(parent){
 
 	// 新建一个Scene, 然后加入地图列表
@@ -147,24 +151,32 @@ void RpgWidget::ready(){
 	}
 
 #ifdef DEBUG
-	int blockCol = titleScene->width() / MapBlockWidth;
-	int blockRow = titleScene->height() / MapBlockHeight;
-	RpgTileSetBase rpgTileSetBase("data/images/tilesets/016-ForestTown02.png");
-	for(int i = 0; i < blockRow; i++){
-		for(int j = 0; j < blockCol; j++){
-			RpgMapBlock *block = new RpgMapBlock(j, i, rpgTileSetBase.getRpgTilePixmap(2, 0) , true, titleScene, nullptr, this);
-			//qDebug() << QPixmap::fromImage(*rpgTileSetBase->getRpgTile(0, 0));
-			//block->addPixmap();
-			block->show();
-		}
-	}
+//	int blockCol = titleScene->width() / MapBlockWidth;
+//	int blockRow = titleScene->height() / MapBlockHeight;
+//	RpgTileSetBase rpgTileSetBase("data/images/tilesets/016-ForestTown02.png");
+//	for(int i = 0; i < blockRow; i++){
+//		for(int j = 0; j < blockCol; j++){
+//			RpgMapBlock *block = new RpgMapBlock(j, i, rpgTileSetBase.getRpgTilePixmap(2, 0) , true, titleScene, nullptr, this);
+//			//qDebug() << QPixmap::fromImage(*rpgTileSetBase->getRpgTile(0, 0));
+//			//block->addPixmap();
+//			block->show();
+//		}
+//	}
 
-	//		QPixmap *bg = new QPixmap("data/images/background/title.png");
-	//		titleScene->getRpgBanner()->setForegroundPixmap(*bg);
-	//		titleScene->getRpgBanner()->setStartOpacity(0.0f);
-	//		titleScene->getRpgBanner()->setEndOpacity(1.0f);
-	//		titleScene->getRpgBanner()->setSpeed(RpgBanner::SpeedNormal);
-	//		titleScene->getRpgBanner()->exec();
+	QPixmap *bg = new QPixmap("data/images/background/title.png");
+	titleScene->getRpgBanner()->setForegroundPixmap(*bg);
+	titleScene->getRpgBanner()->setStartOpacity(0.0f);
+	titleScene->getRpgBanner()->setEndOpacity(1.0f);
+	titleScene->getRpgBanner()->setSpeed(RpgBanner::SpeedNormal);
+	titleScene->getRpgBanner()->exec();
+	titleScene->getRpgBanner()->waitingForBannerComplete();
+
+	Utils::msleep(3000);
+
+	titleScene->getRpgBanner()->setStartOpacity(1.0f);
+	titleScene->getRpgBanner()->setEndOpacity(0.0f);
+	titleScene->getRpgBanner()->execExit();
+	titleScene->getRpgBanner()->waitingForBannerComplete();
 
 	//		titleScene->getRpgChoise()->addChoiceText("The First Choice");
 	//		titleScene->getRpgChoise()->addChoiceText("The Second Choice");
@@ -186,34 +198,36 @@ void RpgWidget::ready(){
 	//		titleScene->getRpgDialog()->addText("123456");
 	//		titleScene->getRpgDialog()->exec();
 
-	QPixmap *aaa = new QPixmap("data/images/drawing/02.png");
+	QPixmap *aaa = new QPixmap("data/images/drawing/03.png");
 	titleScene->getRpgDialog()->setCharacterPixmap(*aaa);
-	titleScene->getRpgDialog()->addText("主人，睡醒了吗");
-	titleScene->getRpgDialog()->addText("主人再不起床的话，太阳都要照到主人的屁屁上了");
-	titleScene->getRpgDialog()->addText("……");
-	titleScene->getRpgDialog()->addText("主人睁开眼睛看看我嘛，诶~ 要不要玩亲亲？");
-	titleScene->getRpgDialog()->addText("……<br>……<br>……");
-	titleScene->getRpgDialog()->addText("嘿嘿，主人的脸好可爱呀，忍不住就要亲上去啦");
-	titleScene->getRpgDialog()->addText("好想跟主人一直一直在一起呢");
-	titleScene->getRpgDialog()->addText("……<br>……<br>……");
-	titleScene->getRpgDialog()->addText("……啊，主人，您醒了呢，呼呼~");
-	titleScene->getRpgDialog()->addText("主人主人，小琳已经为主人做好早饭啦，主人要赶快洗漱然后用餐呢");
-	titleScene->getRpgDialog()->addText("今天天气不错呢，主人今天适合穿这件衣服");
-	titleScene->getRpgDialog()->addText("而且，而且，跟小琳的样子一样呢");
-	titleScene->getRpgDialog()->addText("……嗯？<br>主人穿衣服啦，难道要小琳为主人穿衣服吗，嘿嘿，荣幸之至呢");
-	titleScene->getRpgDialog()->addText("抱抱主人~");
-	titleScene->getRpgDialog()->addText("……<br>……<br>……");
+//	titleScene->getRpgDialog()->addText("主人，睡醒了吗");
+//	titleScene->getRpgDialog()->addText("主人再不起床的话，太阳都要照到主人的屁屁上了");
+//	titleScene->getRpgDialog()->addText("……");
+//	titleScene->getRpgDialog()->addText("主人睁开眼睛看看我嘛，诶~ 要不要玩亲亲？");
+//	titleScene->getRpgDialog()->addText("……<br>……<br>……");
+//	titleScene->getRpgDialog()->addText("嘿嘿，主人的脸好可爱呀，忍不住就要亲上去啦");
+//	titleScene->getRpgDialog()->addText("好想跟主人一直一直在一起呢");
+//	titleScene->getRpgDialog()->addText("……<br>……<br>……");
+//	titleScene->getRpgDialog()->addText("……啊，主人，您醒了呢，呼呼~");
+//	titleScene->getRpgDialog()->addText("主人主人，小琳已经为主人做好早饭啦，主人要赶快洗漱然后用餐呢");
+//	titleScene->getRpgDialog()->addText("今天天气不错呢，主人今天适合穿这件衣服");
+//	titleScene->getRpgDialog()->addText("而且，而且，跟小琳的样子一样呢");
+//	titleScene->getRpgDialog()->addText("……嗯？<br>主人穿衣服啦，难道要小琳为主人穿衣服吗，嘿嘿，荣幸之至呢");
+//	titleScene->getRpgDialog()->addText("抱抱主人~");
+//	titleScene->getRpgDialog()->addText("……<br>……<br>……");
 	titleScene->getRpgDialog()->addText("跟主人一直一直在一起呢");
 	titleScene->getRpgDialog()->exec();
 	titleScene->getRpgDialog()->waitingForDialogComplete();
 
-	titleScene->getRpgChoise()->addChoiceText("第一选项");
-	titleScene->getRpgChoise()->addChoiceText("第二选项");
-	titleScene->getRpgChoise()->addChoiceText("第三选项");
-	titleScene->getRpgChoise()->addChoiceText("第四选项");
-	titleScene->getRpgChoise()->addChoiceText("第五选项");
+	titleScene->getRpgChoise()->addChoiceText("继续游戏");
+	titleScene->getRpgChoise()->addChoiceText("关闭系统");
 	titleScene->getRpgChoise()->exec();
 	qDebug() << "Selected:" << titleScene->getRpgChoise()->waitingForChooseComplete();
+
+	if(titleScene->getRpgChoise()->getChose() == 1){
+		this->setCanBeClose(true);
+		this->doReadyToClose();
+	}
 
 //	titleScene->getRpgDialog()->addText("サクラの花が咲く度に");
 //	titleScene->getRpgDialog()->addText("こんな気持になるのはいつごろからだっけ");

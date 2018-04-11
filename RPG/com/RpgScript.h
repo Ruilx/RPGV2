@@ -11,7 +11,7 @@
  * @brief The RpgScript class
  * RPGScript类
  * 是执行RPG脚本的解析模块
- * 脚本按行存储, 每一行一个指令. 拿到指令后, 传至widget的ready函数进行操作
+ * 脚本是一个Json, 总体一个Json, 每一张地图一个Json, 按照规定的key将会被执行.
  */
 
 class RpgScript : public QObject

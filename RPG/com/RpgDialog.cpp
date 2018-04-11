@@ -120,7 +120,7 @@ void RpgDialog::exec(){
 
 int RpgDialog::waitingForDialogComplete(){
 	if(!this->isRunning){
-		qDebug() << CodePath() << ": Not running yet, cannot waiting.";
+		qDebug() << CodePath() << ": Not running yet, cannot wait.";
 		return -1;
 	}
 	QEventLoop eventLoop(this);

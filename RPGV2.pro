@@ -46,6 +46,30 @@ HEADERS  += Mainw.h \
     RPG/com/RpgScript.h \
     RPG/com/RpgVar.h
 
+OTHER_FILES += data/fonts/msyh.ttc
 
 INCLUDEPATH += $$PWD
 DEPENDPATH += $$PWD
+
+DISTFILES += \
+    data/fonts/A-OTF-FolkPro-Bold.otf \
+    data/fonts/A-OTF-FolkPro-Medium.otf \
+    data/fonts/cinecaption227.ttf \
+    data/fonts/msyh.ttc \
+    data/fonts/msyhbd.ttc \
+    data/images/tilesets/016-ForestTown02.png \
+    data/images/autotiles/test.png \
+    data/images/drawing/001.png \
+    data/images/drawing/01.png \
+    data/images/drawing/002.png \
+    data/images/drawing/02.png \
+    data/images/drawing/03.png \
+    data/images/panoramas/001-Sky01.jpg \
+    data/images/panoramas/002-Sky02.jpg \
+    data/images/panoramas/003-StarlitSky01.jpg \
+    data/images/panoramas/004-CloudySky01.jpg \
+    data/images/panoramas/005-Sunset01.jpg \
+    data/images/panoramas/006-Mountains01.jpg \
+    data/images/panoramas/007-Ocean01.jpg \
+    data/images/skin/redAlpha.png \
+    data/images/skin/blueAlpha.png

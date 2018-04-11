@@ -18,19 +18,6 @@
 class RpgBanner : public QObject
 {
 	Q_OBJECT
-	
-	bool isRunning = false;
-	//指定显示在哪个Scene上
-	QGraphicsScene *parentScene = nullptr;
-	//构成
-	QGraphicsPixmapItem *background = new QGraphicsPixmapItem(nullptr);
-	QGraphicsPixmapItem *foreground = new QGraphicsPixmapItem(this->background);
-	
-	QGraphicsOpacityEffect *foregroundEffect = new QGraphicsOpacityEffect(this);
-	QPropertyAnimation *foregroundAnimation = new QPropertyAnimation(this->foregroundEffect, "opacity", this);
-	
-	QPointF viewportOffset = QPoint(0, 0);
-
 public:
 	/**
 	 * @brief The Speed enum
@@ -42,90 +29,78 @@ public:
 		SpeedFast = 150,
 		SpeedInfinitly = 0
 	};
+
+	/**
+	 * @brief The Layer enum
+	 * 显示Banner在哪一层, 全局最下还是全局最上
+	 */
+	enum Layer{
+		BottomLayer = 0,
+		TopLayer = 1,
+	};
+private:
+	bool isRunning = false;
+	//指定显示在哪个Scene上
+	QGraphicsScene *parentScene = nullptr;
+	//构成
+	QGraphicsPixmapItem *background = new QGraphicsPixmapItem(nullptr);
+	QGraphicsPixmapItem *foreground = new QGraphicsPixmapItem(this->background);
+	
+	QGraphicsOpacityEffect *foregroundEffect = new QGraphicsOpacityEffect(this);
+	QPropertyAnimation *foregroundAnimation = new QPropertyAnimation(this->foregroundEffect, "opacity", this);
+	
+//	QPointF viewportOffset = QPoint(0, 0);
+
 	int speed = SpeedNormal;
+	Layer layer = BottomLayer;
 
-	explicit RpgBanner(QGraphicsScene *parentScene, QObject *parent = nullptr): QObject(parent){
-		this->parentScene = parentScene;
-		this->setBackgroundColor(QColor(Qt::black));
-		this->background->setZValue(BackgroundZValue);
-		this->foreground->setZValue(0.1f);
-		this->foreground->setGraphicsEffect(this->foregroundEffect);
-		this->setStartOpacity(0.0f);
-		this->setEndOpacity(1.0f);
-		this->connect(this->foregroundAnimation, &QPropertyAnimation::finished, this, &RpgBanner::animationFinished);
-	}
+	bool canBeInterrupted = false;
+public:
+	/**
+	 * @brief RpgBanner
+	 * @param parentScene
+	 * @param parent
+	 * RPG Banner控件, 设置父场景之后, 调用显示/退出显示的动画
+	 */
+	explicit RpgBanner(QGraphicsScene *parentScene, QObject *parent = nullptr);
 
-	RpgBanner(qreal startOpacity, qreal endOpacity, QGraphicsScene *parentScene, QObject *parent = nullptr){
-		RpgBanner(parentScene, parent);
-		this->setStartOpacity(startOpacity);
-		this->setEndOpacity(endOpacity);
-		this->setEasingCurveType(QEasingCurve::OutQuad);
-	}
+	/**
+	 * @brief RpgBanner
+	 * @param startOpacity
+	 * @param endOpacity
+	 * @param parentScene
+	 * @param parent
+	 * 暂时不用, 由Scene来控制
+	 */
+	RpgBanner(qreal startOpacity, qreal endOpacity, QGraphicsScene *parentScene, QObject *parent = nullptr);
 
 	/**
 	 * @brief setForegroundPixmap
 	 * @param pixmap
 	 * 设置前端图片Pixmap, 如果不是屏幕大小的会放大到屏幕大小, 并且只裁剪中间一段
 	 */
-	void setForegroundPixmap(const QPixmap &pixmap){
-		QPixmap _t;
-		if(this->parentScene == nullptr){
-			qDebug() << CodePath() << "ParentScene is nullptr before calling setForegroundPixmap.";
-			return;
-		}
-		if(pixmap.size() == QSize(ScreenWidth, ScreenHeight)){
-			_t = pixmap;
-		}else{
-			_t = pixmap.scaled(this->parentScene->sceneRect().size().toSize(), Qt::KeepAspectRatioByExpanding, Qt::SmoothTransformation);
-			QSize sceneSize = QSize(sceneSize.width(), sceneSize.height());
-			if(_t.width() == this->parentScene->width()){
-				_t = _t.copy(0, (_t.height() - sceneSize.height()) >> 1, _t.width(), sceneSize.height());
-			}else if(_t.height() == this->parentScene->height()){
-				_t = _t.copy((_t.width() - sceneSize.width()) >> 1, 0, sceneSize.width(), _t.height());
-			}else{
-	//			_t = _t.copy((_t.width() - sceneSize.width()) >> 1,
-	//						 (_t.height() - sceneSize.height()) >> 1,
-	//						 sceneSize.width(),
-	//						 sceneSize.height());
-				_t = pixmap;
-			}
-		}
-		this->foreground->setPixmap(_t);
-	}
+	void setForegroundPixmap(const QPixmap &pixmap);
 
 	/**
 	 * @brief setBackgroundColor
 	 * @param color
-	 * 设置背景颜色, 从黑过渡或者从白过渡
+	 * 设置背景颜色, 从黑过渡或者从白过渡(其实可以随意选择颜色)
 	 */
-	void setBackgroundColor(const QColor &color){
-		if(this->parentScene == nullptr){
-			qDebug() << CodePath() << "ParentScene is nullptr before calling setBackgroundColor.";
-			return;
-		}
-		QPixmap _t(this->parentScene->width(), this->parentScene->height());
-		_t.fill(color);
-		this->background->setPixmap(_t);
-	}
+	void setBackgroundColor(const QColor &color);
 	
 	/**
 	 * @brief setSpeed
 	 * @param milliseconds
 	 * 设置淡入或淡出速度(毫秒)
 	 */
-	void setSpeed(int milliseconds){
-		//this->foregroundAnimation->setDuration(milliseconds);
-		this->speed = milliseconds;
-	}
+	inline void setSpeed(int milliseconds){ this->speed = milliseconds; }
 	
 	/**
 	 * @brief setParentScene
 	 * @param parentScene
 	 * 设置父Scene
 	 */
-	void setParentScene(QGraphicsScene *parentScene){
-		this->parentScene = parentScene;
-	}
+	inline void setParentScene(QGraphicsScene *parentScene){ this->parentScene = parentScene; }
 
 	/**
 	 * @brief setStartOpacity
@@ -160,88 +135,59 @@ public:
 	 * 设置出现加速度值的type
 	 * @sa QEasingCurve::Type
 	 */
-	void setEasingCurveType(QEasingCurve::Type type){
-		this->foregroundAnimation->setEasingCurve(QEasingCurve(type));
-	}
+	void setEasingCurveType(QEasingCurve::Type type){ this->foregroundAnimation->setEasingCurve(QEasingCurve(type)); }
 
-	/**
-	 * @brief setViewportOffset
-	 * @param offset
-	 * 设置当前SceneBoundingLeftTopPoint
-	 */
-	void setViewportOffset(const QPointF &offset){
-		this->viewportOffset = offset;
-	}
+//	/**
+//	 * @brief setViewportOffset
+//	 * @param offset
+//	 * 设置当前SceneBoundingLeftTopPoint
+//	 */
+//	void setViewportOffset(const QPointF &offset){
+//		this->viewportOffset = offset;
+//	}
 
 	/**
 	 * @brief exec
 	 * 开始执行
 	 */
-	void exec(){
-		if(this->parentScene == nullptr){
-			qDebug() << "RpgBanner::exec(): parentScene is not set. (Null)";
-			return;
-		}
-		if(this->background->pixmap().isNull()){
-			qDebug() << "RpgBanner::exec(): backgroundPixmap is null.";
-			return;
-		}
-		if(this->foreground->pixmap().isNull()){
-			qDebug() << "RpgBanner::exec(): foregroundPixmap is null.";
-			return;
-		}
-		if(this->isRunning == true){
-			qDebug() << "RpgBanner::exec(): RpgBanner is Running, please don't call it repeatly!";
-			return;
-		}
-		this->background->setPos(this->parentScene->sceneRect().topLeft());
-		this->foreground->setPos(this->parentScene->sceneRect().topLeft());
-		this->foregroundAnimation->setDuration(this->speed);
+	void exec();
 
-		this->showBanner();
+	/**
+	 * @brief execExit
+	 * 执行相反的退出函数
+	 */
+	void execExit();
+
+	int waitingForBannerComplete(){
+		if(!this->isRunning){
+			qDebug() << CodePath() << ": Not running yet, cannot wait.";
+			return -1;
+		}
+		QEventLoop eventLoop(this);
+		this->connect(this, &RpgBanner::quitAutoMode, &eventLoop, &QEventLoop::quit);
+		if(this->foregroundAnimation->state() != QAbstractAnimation::Stopped){
+			eventLoop.exec();
+		}
+		return 0;
 	}
-
+protected:
 	/**
 	 * @brief showBanner
 	 * 显示Banner
 	 */
-	void showBanner(){
-		this->isRunning = true;
-		if(this->speed == SpeedInfinitly){
-			this->foregroundEffect->setOpacity(this->foregroundAnimation->endValue().toDouble());
-			if(this->foregroundAnimation->state() != QAbstractAnimation::Stopped){
-				this->foregroundAnimation->setCurrentTime(this->foregroundAnimation->totalDuration());
-				this->foregroundAnimation->stop();
-			}
-			this->parentScene->addItem(this->background);
-		}else{
-			//emit this->enterAutoMode();
-			this->parentScene->addItem(this->background);
-			this->foregroundAnimation->start(QAbstractAnimation::DeleteWhenStopped);
-		}
-	}
+	void showBanner();
 
 	/**
 	 * @brief hideBanner
 	 * 隐藏和删除Banner(删除背景的时候用)
 	 */
-	void hideBanner(){
-		this->background->hide();
-		this->parentScene->removeItem(this->background);
-	}
+	void hideBanner();
 
 	/**
 	 * @brief finished
 	 * 动画结束的时候, 停止动画, 直接跳至动画结尾, 并且退出自动模式
 	 */
-	void finished(){
-		if(this->foregroundAnimation->state() != QAbstractAnimation::Stopped){
-			this->foregroundAnimation->setCurrentTime(this->foregroundAnimation->totalDuration());
-			this->foregroundAnimation->stop();
-		}
-		//emit this->quitAutoMode();
-		this->isRunning = false;
-	}
+	void finished();
 
 signals:
 	/**
@@ -260,13 +206,7 @@ private slots:
 	}
 
 public slots:
-	void receiveKey(int key, Qt::KeyboardModifiers mod){
-		qDebug() << tr("RpgBanner::receiveKey(): receive key: %1::%2(%3).").arg(mod).arg(key).arg(QString(QChar(key)).toHtmlEscaped());
-		//如果按键中断, 直接过渡结束
-		if(key == Qt::Key_Return){
-			this->finished();
-		}
-	}
+	void receiveKey(int key, Qt::KeyboardModifiers mod);
 };
 
 #endif // RPGBANNER_H

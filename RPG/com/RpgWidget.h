@@ -70,6 +70,18 @@ class RpgWidget : public QWidget
 	 */
 	void keyReleaseEvent(QKeyEvent *event);
 
+	/**
+	 * @brief canBeExit
+	 * 是否在不经询问的情况下关闭窗口(退出游戏), 设置为true的时候, 关闭窗口不再询问
+	 */
+	bool canBeClose = false;
+	/**
+	 * @brief closeEvent
+	 * @param event
+	 * 关闭窗口事件(未使用)
+	 */
+	void closeEvent(QCloseEvent *event);
+
 public:
 	/**
 	 * @brief RpgWidget
@@ -77,6 +89,18 @@ public:
 	 * RpgWidget构造函数
 	 */
 	explicit RpgWidget(QWidget *parent = nullptr);
+	/**
+	 * @brief getCanBeClose
+	 * @return
+	 * 获得是否不经过用户同意就关闭窗口
+	 */
+	inline bool getCanBeClose() const{return this->canBeClose;}
+	/**
+	 * @brief setCanBeClose
+	 * @param e
+	 * 设置是否不经过用户同意就关闭窗口
+	 */
+	void setCanBeClose(bool e){ this->canBeClose = e; }
 
 signals:
 	/**
@@ -107,6 +131,11 @@ signals:
 	 * 背包模式下点击了按键, 信号
 	 */
 	void itemModeKeyClick(int key, Qt::KeyboardModifiers mod);
+	/**
+	 * @brief readyToClose
+	 * 游戏想要关闭窗口(和MainW关联, 让MainW关闭窗口)
+	 */
+	void readyToClose();
 
 public slots:
 	/**
@@ -166,6 +195,11 @@ public slots:
 	 * 构建成功, 窗口显示后自动进行的函数
 	 */
 	void ready();
+	/**
+	 * @brief doReadyToClose
+	 * 调用此函数将会发送一个关闭信号给MainW, MainW会协助关闭窗口.
+	 */
+	void doReadyToClose(){ emit this->readyToClose(); }
 };
 
 #endif // RPGWIDGET_H

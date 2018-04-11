@@ -43,6 +43,7 @@
 #define FrontZValue 101					//前端(迷雾)图层
 #define ItemZValue 102					//道具图层
 #define MenuZValue 110					//菜单图层
+#define TopZValue 1000					//最顶上的图层
 
 class Global{
 public:

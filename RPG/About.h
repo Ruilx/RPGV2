@@ -3,6 +3,7 @@
 
 #if 1
 #include <QtCore>
+#include <QApplication>
 #include <QMessageBox>
 
 #define ApplicationName QObject::tr("VRPGV2")
@@ -93,6 +94,10 @@ public:
 		msgBox.setText("This is About Dialog Content.");
 
 		msgBox.exec();
+	}
+
+	static const QString appName(){
+		return QApplication::applicationDisplayName();
 	}
 
 	static void showWelcomeDialog(){
