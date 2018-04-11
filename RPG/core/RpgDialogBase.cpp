@@ -53,10 +53,6 @@ QImage *RpgDialogBase::getContinueSymbol(int index) const{
 	return this->continueSymbol[index];
 }
 
-void RpgDialogBase::setSkinFile(const QString &skinFilename){
-	this->renderSkin(skinFilename);
-}
-
 void RpgDialogBase::renderSkin(const QString &skinFilename){
 	QFileInfo fInfo(skinFilename);
 	qDebug() << "RpgDialogBase::renderSkin: Loading skin file: " << fInfo.absoluteFilePath();
@@ -168,12 +164,12 @@ void RpgDialogBase::renderDialog(){
 		p.end();
 	}
 
-	this->renderedSelectBarImage = QImage(this->selectBarRect.size(), QImage::Format_ARGB32_Premultiplied);
+	this->renderedSelectBarImage = QImage(this->selectBarScaleRect.size(), QImage::Format_ARGB32_Premultiplied);
 	this->renderedSelectBarImage.fill(Qt::transparent);
 	QPainter p2(&this->renderedSelectBarImage);{
 		int width = this->renderedSelectBarImage.width();
 		int height = this->renderedSelectBarImage.height();
-		p2.setCompositionMode(QPainter::CompositionMode_SourceOver);
+		p2.setCompositionMode(QPainter::CompositionMode_Source);
 		// 绘图背景
 		for(int i = 0; i < width - 16; i += 16){
 			for(int j = 0; j < height - 16; j += 16){
@@ -185,9 +181,9 @@ void RpgDialogBase::renderDialog(){
 			p2.drawImage(QRect(i, 0, 16, 16), *this->selectBar[Top]);
 			p2.drawImage(QRect(i, height - 16, 16, 16), *this->selectBar[Bottom]);
 		}
-		for(int i = 16; i < height - 16; i += 16){
-			p2.drawImage(QRect(0, i, 16, 16), *this->selectBar[Left]);
-			p2.drawImage(QRect(width - 16, i, 16, 16), *this->selectBar[Right]);
+		for(int j = 16; j < height - 16; j += 16){
+			p2.drawImage(QRect(0, j, 16, 16), *this->selectBar[Left]);
+			p2.drawImage(QRect(width - 16, j, 16, 16), *this->selectBar[Right]);
 		}
 		int minWidth = qMin(width, 16);
 		int minHeight = qMin(height, 16);

@@ -8,8 +8,14 @@
 #include <RPG/utils/Utils.h>
 #include <RPG/com/RpgDialog.h>
 #include <RPG/core/RpgMapBlock.h>
+#include <RPG/com/RpgScene.h>
+#include <RPG/core/RpgTileSetBase.h>
 
-
+/**
+ * @brief The RpgWidget class
+ * QWidget, 构建的RPG演出台幕
+ * 处理用户输入, 场景调度, 信息发送, 模式栈
+ */
 class RpgWidget : public QWidget
 {
 	Q_OBJECT
@@ -17,7 +23,7 @@ class RpgWidget : public QWidget
 	 * @brief mapList
 	 * 地图的列表, 由名字对应一个地图的scene, 游戏会载入各种地图到相应的场景中
 	 */
-	QHash<QString, QGraphicsScene*> mapList;
+	QHash<QString, RpgScene*> mapList;
 	/**
 	 * @brief stage
 	 * 舞台(窗口)用来看见地图的窗口, 控制舞台显示机制, 对话框等显示.
@@ -33,7 +39,7 @@ class RpgWidget : public QWidget
 	 * @brief dialog
 	 * RPG对话框, 用来显示文字, 并接受Return, Space按键以显示一些字符.
 	 */
-	RpgDialog *dialog;
+	//RpgDialog *dialog;
 	/**
 	 * @brief The Mode enum
 	 * 定义游戏会有哪些模式, 各个模式中按键接受方式, 显示方式等都不相同, 用这个Enum来规范现在
@@ -62,65 +68,19 @@ class RpgWidget : public QWidget
 	 * @param event
 	 * 判断按键离开的事件
 	 */
-	void keyReleaseEvent(QKeyEvent *event){
-		// 用户按下的按键
-		int key = event->key();
-		// 用户是否使用了Shift, Ctrl, Alt, Win(Meta)键对按键进行修饰(一块按下了)
-		Qt::KeyboardModifiers mod = event->modifiers();
-		if(key == Qt::Key_Escape){
-			// 如果用户按下了ESC键, 任何情况下都可以进入系统菜单
-			if(this->modeStack.top() == SystemMenuMode){
-				// 如果已经在系统菜单模式, 则退出系统菜单模式
-				//TODO: 系统菜单还没有写, 这里输出一条debug代替
-				qDebug() << "RpgWidget: KeyReleaseEvent: User Release ESCAPE key in SystemMenuMode.";
-				event->accept();
-				return;
-			}else{
-				//TODO: 系统菜单还没写, 这里输出一条debug代替
-				qDebug() << "RpgWidget: KeyReleaseEvent: User Released ESCAPE key.";
-				event->accept();
-				return;
-			}
-		}
-		switch(this->modeStack.top()){
-			case AutoMode:{
-				// 自动模式下不接受任何按键.
-				break;
-			}
-			case NormalMode:{
-				// 普通模式, 接受W, A, S, D, Space, Return, ArrowU, ArrowD, ArrowL, ArrowR, Z(道具栏)
-				//TODO: 没有写相关的运动函数, 这里输出一条Debug代替
-				qDebug() << tr("RpgWidget: KeyReleaseEvent: User Release %1(%2) Key in NormalMode.").arg(key).arg(event->text().toHtmlEscaped());
-				event->accept();
-				break;
-			}
-			case SystemMenuMode:{
-				// 系统菜单模式, 接受W, A, S, D, ArrowU, ArrowD, ArrowL, ArrowR, Space, Return, Esc(前面已经处理过了)
-				//TODO: 没有写系统菜单栏目, 这里输出一条Debug代替
-				qDebug() << tr("RpgWidget: KeyReleaseEvent: User Release %1(%2) Key in SystemMenuMode.").arg(key).arg(event->text().toHtmlEscaped());
-				event->accept();
-				break;
-			}
-			case DialogMode:{
-				// 对话模式, 接受Return, Space
-				emit this->dialogModeKeyClick(key, mod);
-				event->accept();
-				break;
-			}
-			case ItemMode:{
-				// 道具栏(背包)模式, 接受W, A, S, D, ArrowU, ArrowD, ArrowL, ArrowR, Space, Return
-				//TODO: 没有写系统背包栏目, 这里输出一条Debug代替
-				qDebug() << tr("RpgWidget: KeyReleaseEvent: User Release %1(%2) Key in ItemMode.").arg(key).arg(event->text().toHtmlEscaped());
-				event->accept();
-				break;
-			}
-			default:{
-				qDebug() << tr("RpgWidget: KeyReleaseEvent: Cannot recongized which mode it is? User Release %1(%2) Key.").arg(key).arg(event->text().toHtmlEscaped());
-				event->ignore();
-				break;
-			}
-		}
-	}
+	void keyReleaseEvent(QKeyEvent *event);
+
+	/**
+	 * @brief canBeExit
+	 * 是否在不经询问的情况下关闭窗口(退出游戏), 设置为true的时候, 关闭窗口不再询问
+	 */
+	bool canBeClose = false;
+	/**
+	 * @brief closeEvent
+	 * @param event
+	 * 关闭窗口事件(未使用)
+	 */
+	void closeEvent(QCloseEvent *event);
 
 public:
 	/**
@@ -128,56 +88,19 @@ public:
 	 * @param parent
 	 * RpgWidget构造函数
 	 */
-	explicit RpgWidget(QWidget *parent = nullptr): QWidget(parent){
-		QGraphicsScene *titleScene = new QGraphicsScene(this);
-		this->mapList.insert("titlescene", titleScene);
-		titleScene->setSceneRect(0.0f, 0.0f, ScreenWidth, ScreenHeight);
-
-		this->stage->setScene(titleScene);
-		this->stage->setFixedSize(ScreenWidth + 2, ScreenHeight + 2);
-		this->stage->scale(1.0f, 1.0f);
-		QPalette pal;{
-			pal.setColor(QPalette::Base, Qt::black);
-		}
-		this->stage->setPalette(pal);
-
-		QVBoxLayout *mainLay = new QVBoxLayout;
-		this->setLayout(mainLay);
-		mainLay->addWidget(this->stage);
-		mainLay->setMargin(0);
-
-		//this->dialog = new RpgDialog(titleScene);
-		this->dialog = RpgDialog::getInstance();
-		this->dialog->setGraphicsScene(titleScene);
-		connect(this->dialog, &RpgDialog::enterDialogMode, this, [this](){
-			this->modeStack.push(DialogMode);
-			this->enterDialogMode();
-		});
-
-		connect(this->dialog, &RpgDialog::quitDialogMode, this, [this](){
-			if(this->modeStack.top() == DialogMode){
-				this->modeStack.pop();
-			}else{
-				qDebug() << "RpgWidget::[RpgDialog::quitDialogMode LambdaMoc]: Current Mode Stack top is not dialogMode!";
-				return;
-			}
-			this->quitDialogMode();
-		});
-
-		connect(this, &RpgWidget::dialogModeKeyClick, this->dialog, &RpgDialog::receiveKey);
-
-		this->modeStack.push(NormalMode);
-
-		QTimer::singleShot(1000, this, &RpgWidget::ready);
-	}
+	explicit RpgWidget(QWidget *parent = nullptr);
 	/**
-	 * @brief getRpgDialog
+	 * @brief getCanBeClose
 	 * @return
-	 * 返回Dialog实例
+	 * 获得是否不经过用户同意就关闭窗口
 	 */
-	RpgDialog *getRpgDialog(){
-		return this->dialog;
-	}
+	inline bool getCanBeClose() const{return this->canBeClose;}
+	/**
+	 * @brief setCanBeClose
+	 * @param e
+	 * 设置是否不经过用户同意就关闭窗口
+	 */
+	void setCanBeClose(bool e){ this->canBeClose = e; }
 
 signals:
 	/**
@@ -208,8 +131,24 @@ signals:
 	 * 背包模式下点击了按键, 信号
 	 */
 	void itemModeKeyClick(int key, Qt::KeyboardModifiers mod);
+	/**
+	 * @brief readyToClose
+	 * 游戏想要关闭窗口(和MainW关联, 让MainW关闭窗口)
+	 */
+	void readyToClose();
 
 public slots:
+	/**
+	 * @brief enterAutoMode, exitAutoMode
+	 * 进入或退出自动模式(接受自动引导模块传来的信号), 槽
+	 */
+	void enterAutoMode(){
+		qDebug() << "[DEBUG][System] Enter [Auto] Mode.";
+	}
+	void quitAutoMode(){
+		qDebug() << "[DEBUG][System] Quit [Auto] Mode.";
+	}
+
 	/**
 	 * @brief enterDialogMode, exitDialogMode
 	 * 进入/退出对话模式(接受对话模块传来的信号), 槽
@@ -255,49 +194,12 @@ public slots:
 	 * @brief ready
 	 * 构建成功, 窗口显示后自动进行的函数
 	 */
-	void ready(){
-		qDebug() << "Ready...";
-		QGraphicsScene *titleScene = this->mapList.value("titlescene", nullptr);
-		if(titleScene == nullptr){
-			qDebug() << "RpgWidget::ready(): titleScene(\"titlescene\") not exist.";
-			return;
-		}
-
-		QFont font;{
-			font.setFamily(tr("A-OTF Folk Pro M, Microsoft YaHei Light"));
-			font.setPixelSize(22);
-			font.setBold(true);
-		}
-		dialog->setFont(font);
-		dialog->setSlowprint(RpgDialog::SpeedFast);
-		dialog->setGraphicsScene(titleScene);
-		dialog->addText("我做梦都没想到，会有一天，竟然用<red>这种尴尬</red>的方式，和那个女孩子相遇了。");
-		dialog->addText("但是当我遇见她的时候，她的心情异常的平静，好像并没有对此感到吃惊。");
-		dialog->addText("“难道她认识我？”");
-		dialog->addText("她说她看到我就有一种似曾相识的感觉。");
-		dialog->addText("<blue>似曾相识的感觉？</blue>我倒是记得一位和她很像的女生，跟我关系非常好，但是相比之下，这么让人相敬如宾的女孩子我还是头一回见。");
-		dialog->addText("不对。一定不是她，她在那场灾难中没有活下来，即便活下来了，烧伤的痕迹应该也能看出来，<green>即便是她</green>，那么这三年她是怎么生活过来的。");
-		dialog->addText("一大堆问题忽然全部堆到我的脑海里，我飞速的计算着，飞速的猜测着，但是并没有任何结果。");
-		dialog->addText("当时只是尴尬了说了一句：“对不起”便匆匆离去。但之后真的回味无穷。");
-		dialog->addText("真的是她吗，我不相信。三年前，我亲眼看到她被大火淹没，从此再无音信。");
-		dialog->addText("……");
-		dialog->addText("我当时真的傻眼了，我想冲回去救她，但是被其他人拦住强制拖出了火灾区。");
-		dialog->addText("眼看着我离她越来越远，我极力挣扎着。我只记得我被营救出去的那一刻，后面出现了爆炸。");
-		dialog->addText("一声刻骨铭心的爆炸。");
-		dialog->addText("她，从此生死不明。");
-		dialog->exec();
-
-
-#ifdef _DEBUG
-		int blockCol = titleScene->width() / MapBlockWidth;
-		int blockRow = titleScene->height() / MapBlockHeight;
-		for(int i = 0; i < blockRow; i++){
-			for(int j = 0; j < blockCol; j++){
-				RpgMapBlock *block = new RpgMapBlock(j, i, true, nullptr);
-			}
-		}
-#endif
-	}
+	void ready();
+	/**
+	 * @brief doReadyToClose
+	 * 调用此函数将会发送一个关闭信号给MainW, MainW会协助关闭窗口.
+	 */
+	void doReadyToClose(){ emit this->readyToClose(); }
 };
 
 #endif // RPGWIDGET_H

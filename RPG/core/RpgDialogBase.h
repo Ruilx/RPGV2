@@ -46,14 +46,14 @@ private:
 	// 上下间隔(px)
 	int paddingV = 5;
 	// 选择框高度(px)
-	int selectBarHeight = 30;
+	int selectBarHeight = 32;
 	// 设置结果的选择框大小
 	QRect selectBarScaleRect = QRect(paddingH, paddingV, ScreenWidth - marginH - marginH - paddingH - paddingH, selectBarHeight);
 
 	// 各个图片在原图中的位置坐标
 	const QRect backgroundRect					= QRect(  0,  0, 128, 128);
 	const QRect backgroundBorderRect			= QRect(128,  0,  64,  64);
-	const QRect selectBarRect					= QRect(160, 64,  32,  32);
+	const QRect selectBarRect					= QRect(128, 64,  32,  32);
 	const QRect continueSymbolRect				= QRect(160, 64,  32,  32);
 
 	const QRect backgroundBorderLeftTopRect		= QRect( 0,  0, 16, 16);
@@ -122,10 +122,10 @@ public:
 
 	QRect getDialogRect() const { return this->rect; }
 
-	QPoint getDialogPosition() const { return QPoint(this->rect.left(), this->rect.top()); }
-	QPoint getSelectBarPosition() const { return QPoint(this->selectBarScaleRect.left(), this->selectBarScaleRect.top()); }
+	QPointF getDialogPosition() const { return QPointF(this->rect.left(), this->rect.top()); }
+	QPointF getSelectBarPosition() const { return QPointF(this->selectBarScaleRect.left(), this->selectBarScaleRect.top()); }
 
-	void setSkinFile(const QString &skinFilename);
+	void setSkinFile(const QString &skinFilename){ this->renderSkin(skinFilename); }
 
 protected:
 	void setDialogSkinFilename(const QString &filename);

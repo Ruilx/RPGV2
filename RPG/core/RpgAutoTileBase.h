@@ -342,7 +342,7 @@ private:
 			block.insertImage(Block::ClosedFrame, blockImage.copy(this->adjustRect(this->singleBlockRect, i)));	// 保存封闭块
 			QImage leftTopBase = blockImage.copy(this->leftTopRect);	// 32x32
 			block.insertImage(Block::LeftTopMultiCorner, leftTopBase);		// 保存左上角内拐块
-			QImage rightTopBase = blockImage.copy(this->RightTopRect);	// 32x32
+			QImage rightTopBase = blockImage.copy(this->rightTopRect);	// 32x32
 			block.insertImage(Block::RightTopMultiCorner, rightTopBase);	// 保存右上角内拐块
 			QImage leftBottomBase = blockImage.copy(this->leftBottomRect);	// 32x32
 			block.insertImage(Block::LeftBottomMultiCorner, leftBottomBase); // 保存左下角内拐块
@@ -470,7 +470,7 @@ private:
 				p.setCompositionMode(QPainter::CompositionMode_SourceOver);
 				p.drawImage(rightBottomInnerCornerLocalOffset, rightBottomInnerBase);
 				block.insertImage(Block::RightBottomMultiInnerCorner, backgroundLoad);	// 保存右下角外拐块
-				rightBottomBg = backgroundLoad;
+				rightBottomInnerBg = backgroundLoad;
 				p.drawImage(leftBottomInnerCornerLocalOffset, leftBottomInnerBase);
 				block.insertImage(Block::MultiAreaBottom, backgroundLoad);				// 保存左下角和右下角外拐块
 				multiAreaBottomBg = backgroundLoad;
@@ -483,7 +483,7 @@ private:
 				p.setCompositionMode(QPainter::CompositionMode_SourceOver);
 				p.drawImage(leftBottomInnerCornerLocalOffset, leftBottomInnerBase);
 				block.insertImage(Block::LeftBottomMultiInnerCorner, backgroundLoad);	// 保存左下角外拐块
-				leftBottomBg = backgroundLoad;
+				leftBottomInnerBg = backgroundLoad;
 				p.end();
 			}
 

@@ -3,13 +3,23 @@
 
 #include <QtCore>
 #include <QtWidgets>
+#include <QPropertyAnimation>
+#include <QEasingCurve>
 #include <RPG/About.h>
 #include <RPG/Global.h>
 #include <RPG/utils/Utils.h>
 #include <RPG/core/RpgDialogBase.h>
 
-#define DialogZValue 100.0f
-
+/**
+ * @brief The RpgDialog class
+ * RPGDialog类
+ * 是在GraphicsScene上形成一个类似对话框的文字输出器
+ * 是一个单独的线程控制文字输出
+ * 当设定好显示的内容之后, 之后就交给RpgDialog线程进行显示, 同时调用者会收到进入DialogMode信号
+ * 然后改变输入定向, 并等待RPGDialog结束, 发送退出DialogMode信号.
+ * @abandoned //这个类属于单例模式, 不能将其生成对象, 调用方法: RpgDialog::getInstance()即可得到实例.
+ * dlgasobj 分支: 这个类不再是单例模式, 但用户层不能将其生成对象, 只能使用Scene->getRpgDialog()得到Handle
+ */
 class RpgDialog : public QObject, public RpgDialogBase
 {
 	Q_OBJECT
@@ -18,22 +28,39 @@ class RpgDialog : public QObject, public RpgDialogBase
 	// 指定显示在哪个Scene上
 	QGraphicsScene *parentScene = nullptr;
 	// 构成
-	QGraphicsPixmapItem *box = new QGraphicsPixmapItem(nullptr);
-	QGraphicsTextItem *message = new QGraphicsTextItem(this->box);
-	QGraphicsPixmapItem *continueSymbol = new QGraphicsPixmapItem(this->box);
+	QGraphicsPixmapItem *box = new QGraphicsPixmapItem(nullptr);				// 那蓝色的盒子
+	QGraphicsTextItem *message = new QGraphicsTextItem(this->box);				// 中间的字
+	QGraphicsPixmapItem *continueSymbol = new QGraphicsPixmapItem(this->box);	// 下面的小三角
+	QGraphicsPixmapItem *characterBox = new QGraphicsPixmapItem(this->box);		// 角色盒子
+
+	QGraphicsDropShadowEffect *messageShadowEffect = new QGraphicsDropShadowEffect(this); // 字下面的阴影
+
+	QParallelAnimationGroup *entryAniGroup = new QParallelAnimationGroup(this); // 加载动画组
+	QGraphicsOpacityEffect *boxOpacityEffect = new QGraphicsOpacityEffect(this); // 文本框的透明度(作为动画表示)
+	QGraphicsItemAnimation *characterAnimation = new QGraphicsItemAnimation(this); // 头像的动态效果, 复用Animation, 配合下面的timeline进行动作
+	QTimeLine *characterTimeLine = new QTimeLine(300, this); // QGraphicsItemAnimation必须要用Timeline做动画, 不太明白为什么不放在AnimationGroup中
 
 	// 消息列表
-	QStringList messageList;	//消息存储列表
-	int messageIndex = 0;		//现在正在显示的消息序号
+	QStringList messageList;		// 运行时消息存储列表
+	QStringList messageReadyList;	// 消息存储缓存
+	int messageIndex = 0;			// 现在正在显示的消息序号
+
+	// 立绘
+	QPixmap characterBoxPixmap;
 
 	// 消息
-	int messagePaddingH = 10;
-	int messagePaddingV = 6;
-	QRect messageRect = QRect(messagePaddingH, messagePaddingV, ScreenWidth - messagePaddingH - messagePaddingH, ScreenHeight - messagePaddingV - messagePaddingV);
+	int messageMarginH = 10;
+	int messageMarginV = 6;
+	QRect messageRect = QRect(messageMarginH, messageMarginV, ScreenWidth - messageMarginH - messageMarginH, ScreenHeight - messageMarginV - messageMarginV);
 
-	// 单字输出/速度
-	// 速度列表
+	// Viewport Offset( 一般Scene要比View大, 所以如果要浮于View中间, 则还需要View相对于Scene的视窗大小 )
+//	QPointF viewportOffset = QPoint(0, 0);
+
 public:
+	/**
+	 * @brief The Speed enum
+	 * 单字输出模式, 预先定义了快中慢三个节奏.
+	 */
 	enum Speed{
 		SpeedSlow = 55,
 		SpeedNormal = 30,
@@ -41,12 +68,15 @@ public:
 		SpeedInfinitly = 0
 	};
 private:
-	int slowprint = 0;			// 是否使用单字输出
-	bool showTextInProgressFlag = false; // (流程Flag)正在单字输出显示文字状态
-	bool quickShowFlag = false; // (流程Flag)被用户中断, 下一次将剩下的字符全部显示状态
+	// Num: 单字输出, 0表示不使用单字输出, 数字越小表示输出速度越快
+	int slowprint = 0;
+	// Flag: 正在输出的一个状态
+	bool showTextInProgressFlag = false;
+	// Flag: 被用户中断, 下一次将会显示全部信息
+	bool quickShowFlag = false;
 
-	// 文字CSS
-	const QString css = "red{ color: #FF3333; }green{ color: #33FF33; }blue{ color: #9999FF; }";
+	// String: 文字CSS
+	const QString css = "r{ color: #FF3333; }g{ color: #33FF33; }b{ color: #9999FF; }y{ color: #EEEE33 }";
 
 	// 继续显示的三角形
 	QTimeLine *continueSymbolTimeLine = new QTimeLine(1000, this);
@@ -56,198 +86,166 @@ private:
 	QPixmap *continueSymbolPixmap[4] = {nullptr};
 
 public:
-	// 返回单例模式
-	static RpgDialog *getInstance(){
-		if(_instance == nullptr){
-			_instance = new RpgDialog();
-		}
-		return _instance;
-	}
-protected:
-	// 构造
-	explicit RpgDialog(QGraphicsScene *parentScene = nullptr, QObject *parent = 0): QObject(parent), RpgDialogBase(){
-		this->parentScene = parentScene;
-		this->setTextColor(QColor(Qt::white));
-		QFont font = QApplication::font();
-		font.setPixelSize(22);
-		this->setFont(font);
-
-		this->continueSymbolTimeLine->setFrameRange(0, 3);
-		this->continueSymbolTimeLine->setLoopCount(0);
-
-		this->message->document()->setDefaultStyleSheet(this->css);
-//		QTextOption textOption;
-//		textOption.setWrapMode(QTextOption::WrapAnywhere);
-//		this->message->document()->setDefaultTextOption(textOption);
-//		QTextBlockFormat textBlockFormat = this->message->textCursor().blockFormat();
-//		textBlockFormat.setLineHeight(60, QTextBlockFormat::FixedHeight);
-//		QTextCursor textCursor = this->message->textCursor();{
-//			textCursor.setBlockFormat(textBlockFormat);
-//		}
-//		this->message->setTextCursor(textCursor);
-
-		for(int i = 0 ; i < 4; i++){
-			if(this->continueSymbolPixmap[i] != nullptr){
-				delete this->continueSymbolPixmap[i];
-				this->continueSymbolPixmap[i] = nullptr;
-			}
-			this->continueSymbolPixmap[i] = new QPixmap(QPixmap::fromImage(*this->getContinueSymbol(i)));
-		}
-
-		connect(this->continueSymbolTimeLine, &QTimeLine::frameChanged, this, [this](int frame){
-			if(frame < 4 && frame >= 0){
-				this->continueSymbol->setPixmap(*this->continueSymbolPixmap[frame]);
-			}
-		});
-
-		this->messageRect = QRect(messagePaddingH, messagePaddingV, this->getDialogRect().width() - messagePaddingH - messagePaddingH, this->getDialogHeight() - messagePaddingV - messagePaddingV);
-
-	}
+	/**
+	 * @brief RpgDialog RPG对话窗口构造
+	 * @param parentScene 设置显示到的Scene
+	 * @param parent QObject要用的, 虽然各种不知道这是什么... 需要发送Signal的东西
+	 */
+	explicit RpgDialog(QGraphicsScene *parentScene = nullptr, QObject *parent = 0);
 public:
-	// 在文字列表中添加文字
-	void addText(const QString &text){
-		this->messageList.append(text);
-	}
+	/**
+	 * @brief addText
+	 * @param text 添加的文字
+	 * 在文本列表中添加一条文字
+	 */
+	void addText(const QString &text){ this->messageReadyList.append(text); }
 
-	// 设置缓慢输出
-	void setSlowprint(int speed){
-		this->slowprint = speed;
-	}
+	/**
+	 * @brief addText
+	 * @param textList 添加的文本列表
+	 * 在文本列表中添加一堆文字
+	 */
+	void addText(const QStringList &textList){ this->messageReadyList.append(textList); }
 
-	// 设置字体
-	void setFont(const QFont &font){
-		this->message->setFont(font);
-	}
+	/**
+	 * @brief setSlowprint
+	 * @param speed 速度
+	 * 设置缓慢输出速度
+	 */
+	void setSlowprint(int speed){ this->slowprint = speed; }
 
-	// 设置文字颜色
-	void setTextColor(const QColor &color){
-		this->message->setDefaultTextColor(color);
-	}
+	/**
+	 * @brief setFont
+	 * @param font 字体
+	 * 设置字体
+	 */
+	void setFont(const QFont &font){ this->message->setFont(font); }
 
-	// 清除文字列表
-	void clearText(){
-		this->messageList.clear();
-	}
+	/**
+	 * @brief setTextColor
+	 * @param color
+	 * 设置字体颜色
+	 */
+	void setTextColor(const QColor &color){ this->message->setDefaultTextColor(color); }
 
-	// 设置映射到屏幕Scene
+//	/**
+//	 * @brief getViewportOffset
+//	 * @return QPoint
+//	 * 获得Viewport的偏移坐标
+//	 */
+//	QPointF getViewportOffset() const { return this->viewportOffset; }
+
+//	/**
+//	 * @brief setViewportOffset
+//	 * @param offset
+//	 * 设置Viewport的偏移坐标
+//	 */
+//	void setViewportOffset(const QPointF &offset){ this->viewportOffset = offset; }
+
+	/**
+	 * @brief clearText
+	 * 清除文字列表(清空列表)
+	 */
+	void clearText(){ this->messageList.clear(); this->messageReadyList.clear(); }
+
+	/**
+	 * @brief setGraphicsScene
+	 * @param scene
+	 * 设置对话框显示到的Scene
+	 */
 	void setGraphicsScene(QGraphicsScene *scene){
 		this->parentScene = scene;
+//		this->setViewportOffset(QPointF(this->parentScene->sceneRect().left(), this->parentScene->sceneRect().top()));
 	}
 
-	// 执行且进入Dialog模式
-	void exec(){
-		if(this->parentScene == nullptr){
-			qDebug() << "Rpgdialog::exec(): parentScene is not set.(Null)";
-			return;
-		}
-		for(QPixmap *p: this->continueSymbolPixmap){
-			if(p == nullptr){
-				qDebug() << "Rpgdialog::exec(): continueSymbolPixmap[4] not set.";
-				return;
+	/**
+	 * @brief setCharacterPixmap
+	 * @param character
+	 * 设置对话框的人物框
+	 */
+	void setCharacterPixmap(const QPixmap &character){
+		QPixmap _t;
+		if((double(character.height()) > ScreenHeight * 0.8)){
+			_t = character.scaledToHeight(int(double(ScreenHeight) * 0.8), Qt::SmoothTransformation);
+			if(_t.width() >= (ScreenWidth >> 1)){
+				_t = _t.scaledToWidth(ScreenWidth >> 1, Qt::SmoothTransformation);
 			}
 		}
-		if(this->isRunning == true){
-			qDebug() << "Dialog is still running, please don't call it repeatly!";
-			return;
-		}
+		this->characterBoxPixmap = _t;
 
-		this->box->setPixmap(QPixmap::fromImage(this->getDialogImage()));
-		this->box->setPos(this->getDialogPosition());
-		this->box->setZValue(DialogZValue + 0.0f);
+		//if(this->characterBox->pixmap().isNull() || (this->getDialogRect().width() - messagePaddingH - this->characterBox->pixmap().width()) < (this->getDialogRect().width() >> 2)){
+		//	this->messageRect = QRect(messagePaddingH, messagePaddingV, this->getDialogRect().width() - messagePaddingH - messagePaddingH, this->getDialogHeight() - messagePaddingV - messagePaddingV);
+		//}else{
+		//	this->messageRect = QRect(messagePaddingH, messagePaddingV, this->getDialogRect().width() - messagePaddingH - this->characterBox->pixmap().width(), this->getDialogHeight() - messagePaddingV - messagePaddingV);
+		//}
 
-		this->message->setTextWidth(this->messageRect.width());
-		this->message->setPos(this->messageRect.topLeft());
-		this->message->setZValue(DialogZValue + 1.0f);
-
-		this->continueSymbol->setPixmap(*this->continueSymbolPixmap[0]);
-		this->continueSymbol->setPos((this->getDialogRect().width() - this->continueSymbolPixmap[0]->width()) / 2, (this->getDialogHeight() - this->continueSymbolPixmap[0]->width()));
-		this->continueSymbol->setZValue(DialogZValue + 1.0f);
-		this->continueSymbol->setVisible(false);
-
-		this->showDialog();
+		this->messageRect = QRect(messageMarginH, messageMarginV, this->getDialogRect().width() - messageMarginH - messageMarginH, this->getDialogHeight() - messageMarginV - messageMarginV);
 	}
 
-	// 显示Dialog函数
-	void showDialog(){
-		this->isRunning = true;
-		emit this->enterDialogMode();
-		this->parentScene->addItem(this->box);
-		this->showText(this->messageIndex);
-	}
-
-	// 隐藏Dialog函数
-	void hideDialog(){
-		if(this->continueSymbolTimeLine->state() != QTimeLine::NotRunning){
-			this->continueSymbolTimeLine->stop();
-		}
-		this->box->hide();
-		this->clearText();
-		emit this->quitDialogMode();
-		this->isRunning = false;
-	}
+	/**
+	 * @brief exec
+	 * 开始执行并进入Dialog模式
+	 */
+	void exec();
+	/**
+	 * @brief waitingForDialogComplete
+	 * @return -1失败(因为还未启动) 0 成功
+	 * 等待对话框关闭
+	 */
+	int waitingForDialogComplete();
 protected:
-	// 显示文字函数
-	void showText(int index){
-		if(index >= this->messageList.length()){
-			qDebug() << "RpgDialog::showText(): index is out of range.";
-			return;
-		}
-		QString msg = this->messageList.at(index);
-		this->showTextInProgressFlag = true;
-		this->continueSymbolTimeLine->stop();
-		this->continueSymbol->setVisible(false);
-		if(this->slowprint > 0){
-			this->quickShowFlag = false;
-			for(int i = 0; i < msg.length(); i++){
-				this->message->setHtml(msg.left(i + 1));
-				Utils::msleep(slowprint);
-				if(this->quickShowFlag == true){
-					this->message->setHtml(msg);
-					this->quickShowFlag = false;
-					break;
-				}
-			}
-		}else{
-			this->message->setHtml(msg);
-		}
-		this->showTextInProgressFlag = false;
-		this->continueSymbol->setVisible(true);
-		this->continueSymbolTimeLine->start();
-	}
+	/**
+	 * @brief showDialog
+	 * 显示Dialog函数
+	 */
+	void showDialog();
 
+	/**
+	 * @brief hideDialog
+	 * 隐藏Dialog函数
+	 */
+	void hideDialog();
+	/**
+	 * @brief showText
+	 * @param index
+	 * 显示文字列表第Index个文本
+	 */
+	void showText(int index);
+private:
+	/**
+	 * @brief enterOrExitAnimationSetting
+	 * @param enter
+	 * 进入动画或退出动画设置
+	 */
+	void enterOrExitAnimationSetting(bool enter);
+	/**
+	 * @brief enterOrExitAnimationStart
+	 * 开启动画
+	 */
+	void enterOrExitAnimationStart();
 
 signals:
-	// 信号: 进入Dialog模式
+	/**
+	 * @brief enterDialogMode
+	 * @type SIGNAL
+	 * 信号: 进入Dialog模式
+	 */
 	void enterDialogMode();
-	// 信号: 退出Dialog模式
+	/**
+	 * @brief quitDialogMode
+	 * @type SIGNAL
+	 * 信号: 退出Dialog模式
+	 */
 	void quitDialogMode();
 public slots:
-	void receiveKey(int key, Qt::KeyboardModifiers mod){
-		qDebug() << tr("RpgDialog::receiveKey(): receive key: %1::%2(%3).").arg(mod).arg(key).arg(QString(QChar(key)).toHtmlEscaped());
-		if(key == Qt::Key_Return || key == Qt::Key_Space){
-			if(this->showTextInProgressFlag  == true){
-				// 正在显示字符, 则立即停止slowprint, 直接显示全部的字符
-				this->quickShowFlag = true;
-			}else{
-				// 正在等待玩家操作, 则按下按键之后显示接下来的对话
-				this->messageIndex ++;
-				if(this->messageIndex >= this->messageList.length()){
-					// 如果会话全部完成
-					this->hideDialog();
-					// 重置会话信息位置
-					this->messageIndex = 0;
-					return;
-				}else{
-					// 如果还没有, 则显示接下来的对话
-					this->showText(this->messageIndex);
-				}
-			}
-		}
-	}
-
-private:
-	// 单例模式
-	static RpgDialog *_instance;
+	/**
+	 * @brief receiveKey
+	 * @param key QKey
+	 * @param mod Qt::KeyboardModifiers
+	 * @type SLOT
+	 * 槽: 接收主函数传来的按键中断请求, 用于改变文字或退出Dialog模式
+	 */
+	void receiveKey(int key, Qt::KeyboardModifiers mod);
 };
 
 #endif // RPGDIALOG_H
