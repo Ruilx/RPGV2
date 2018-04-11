@@ -11,4 +11,5 @@ profile/*
 *.Release
 *.Profile
 *.autosave
+Makefile
 Makefile.*
