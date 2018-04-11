@@ -10,3 +10,7 @@ profile/*
 *.Release
 *.Profile
 *.autosave
+*.Debug
+*.Release
+Makefile
+Makefile.*
