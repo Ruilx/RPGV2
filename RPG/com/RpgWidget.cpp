@@ -187,9 +187,9 @@ void RpgWidget::ready(){
 	titleScene->getRpgBanner()->exec();
 	titleScene->getRpgBanner()->waitingForBannerComplete();
 
-	titleScene->getRpgChoise()->addChoiceText("开始游戏");
-	titleScene->getRpgChoise()->addChoiceText("读取进度");
-	titleScene->getRpgChoise()->addChoiceText("退出游戏");
+	titleScene->getRpgChoise()->addChoiceText("はじめから");
+	titleScene->getRpgChoise()->addChoiceText("つづけから");
+	titleScene->getRpgChoise()->addChoiceText("終了する");
 	titleScene->getRpgChoise()->setChoiceEnabled(1, false);
 	titleScene->getRpgChoise()->exec();
 	qDebug() << "Selected:" << titleScene->getRpgChoise()->waitingForChooseComplete();
@@ -255,25 +255,6 @@ void RpgWidget::ready(){
 //	titleScene->getRpgDialog()->addText("遠い昔の思い出は 春の匂いと一緒に");
 //	titleScene->getRpgDialog()->addText("今年もまた 僕の元へ");
 //	titleScene->getRpgDialog()->exec();
-
-	//		titleScene->getRpgDialog()->setCharacterPixmap(*aaa);
-	//		titleScene->getRpgDialog()->addText("……");
-	//		titleScene->getRpgDialog()->addText("她离开这个世界已经三年了。");
-	//		titleScene->getRpgDialog()->addText("三年里，我感觉都是在痛苦中度过的。");
-	//		titleScene->getRpgDialog()->addText("接受了现实，但又很舍不得。");
-	//		titleScene->getRpgDialog()->addText("她说过要一辈子在一起的，就因为那场大火，让我们阴阳两隔。");
-	//		titleScene->getRpgDialog()->addText("大火袭来的一瞬间，她把我推了出去，随后，身后就出现了爆炸，她也被淹没在了火海里没了踪迹。");
-	//		titleScene->getRpgDialog()->addText("火灾扑灭之后的搜救，未见她的踪迹。<br>大家都认为她已经死了，尸骨都没有找到。");
-	//		titleScene->getRpgDialog()->addText("……");
-	//		titleScene->getRpgDialog()->addText("临海公园。");
-	//		titleScene->getRpgDialog()->addText("我已经在这里呆坐了整整三天了。每天疲惫地看着大海，无时不刻回想着那场灾难。");
-	//		titleScene->getRpgDialog()->addText("约定好脆弱，好脆弱……");
-	//		titleScene->getRpgDialog()->addText("");
-	//		titleScene->getRpgDialog()->addText(" ");
-	//		titleScene->getRpgDialog()->addText(" ");
-	//		titleScene->getRpgDialog()->addText(" ");
-	//		titleScene->getRpgDialog()->exec();
-
 	if(title){
 		delete title;
 	}

@@ -42,7 +42,10 @@ RpgDialog::RpgDialog(QGraphicsScene *parentScene, QObject *parent): QObject(pare
 		}
 	});
 
-	this->messageRect = QRect(messageMarginH, messageMarginV, this->getDialogRect().width() - messageMarginH - messageMarginH, this->getDialogHeight() - messageMarginV - messageMarginV);
+	this->setDialogRect(QRect(this->getDialogPosition().toPoint(), QSize(400, 125)));
+
+	this->messageRect = QRect(messageMarginH, messageMarginV, this->getDialogRect().width() - (messageMarginH << 1), this->getDialogHeight() - (messageMarginV << 1));
+
 	this->message->setTextWidth(this->messageRect.width());
 	this->message->setPos(this->messageRect.topLeft());
 

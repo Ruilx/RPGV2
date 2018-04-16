@@ -27,7 +27,9 @@ SOURCES += main.cpp\
     RPG/com/RpgChoice.cpp \
     ExternalFont.cpp \
     RPG/com/RpgScript.cpp \
-    RPG/com/RpgVar.cpp
+    RPG/com/RpgVar.cpp \
+    RPG/core/RpgDialogBase_.cpp \
+    RPG/com/RpgState.cpp
 
 HEADERS  += Mainw.h \
     RPG/About.h \
@@ -44,7 +46,9 @@ HEADERS  += Mainw.h \
     RPG/com/RpgChoice.h \
     ExternalFont.h \
     RPG/com/RpgScript.h \
-    RPG/com/RpgVar.h
+    RPG/com/RpgVar.h \
+    RPG/core/RpgDialogBase_.h \
+    RPG/com/RpgState.h
 
 OTHER_FILES += data/fonts/msyh.ttc
 

@@ -11,6 +11,17 @@
 
 class RpgDialogBase
 {
+//	enum Location{
+//		LocationLeftTop = 0,
+//		LocationTopCenter = 1,
+//		LocationTopRight = 2,
+//		LocationLeftCenter = 3,
+//		LocationCenter = 4,
+//		LocationRightCenter = 5,
+//		LocationLeftBottom = 6,
+//		LocationBottomCenter = 7,
+//		LocationRightBottom = 8,
+//	};
 private:
 	// 对话框背景原作(128x128)未变形的时候
 	QImage *backgroundOrigin = nullptr;
@@ -30,13 +41,17 @@ private:
 
 	// 因为对话框默认宽度是全屏宽的, 这是左右和屏幕边的默认间距, 下和屏幕边框的默认间距, 可以被
 	// setRect()改变, 可以被setRect(QRect())还原.
-	// 左右边距(px)
+	// 左右边距(px)(距离屏幕)
 	int marginH = 10;
-	// 上下边距(px)
+	// 上下边距(px)(距离屏幕)
 	int marginV = 10;
 	// 对话框高度(px);
 	int dialogHeight = 125;
-	// 设置结果的对话框大小
+	// 设置几个常用的对话框位置
+//	const QPoint pointTop = QPoint(marginH, marginV);
+//	const QPoint pointMid = QPoint(marginH, (ScreenHeight - dialogHeight) >> 1);
+//	const QPoint pointBtm = QPoint(marginH, ScreenWidth - marginH - dialogHeight);
+	// 设置结果的对话框大小(默认在下面)
 	QRect rect = QRect(marginH, ScreenHeight - marginV - dialogHeight, ScreenWidth - marginH - marginH, dialogHeight);
 
 	// 选择框默认宽度是对话框宽度减去两个padding宽, 高度是20px的字符上下各增加5px(30px高),

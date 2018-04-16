@@ -51,7 +51,10 @@ class RpgDialog : public QObject, public RpgDialogBase
 	// 消息
 	int messageMarginH = 10;
 	int messageMarginV = 6;
-	QRect messageRect = QRect(messageMarginH, messageMarginV, ScreenWidth - messageMarginH - messageMarginH, ScreenHeight - messageMarginV - messageMarginV);
+	// 消息位置
+	QRect messageRect;
+
+
 
 	// Viewport Offset( 一般Scene要比View大, 所以如果要浮于View中间, 则还需要View相对于Scene的视窗大小 )
 //	QPointF viewportOffset = QPoint(0, 0);
