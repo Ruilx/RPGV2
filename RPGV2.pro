@@ -50,8 +50,6 @@ HEADERS  += Mainw.h \
     RPG/core/RpgDialogBase_.h \
     RPG/com/RpgState.h
 
-OTHER_FILES += data/fonts/msyh.ttc
-
 INCLUDEPATH += $$PWD
 DEPENDPATH += $$PWD
 
@@ -60,6 +58,7 @@ DISTFILES += \
     data/fonts/A-OTF-FolkPro-Medium.otf \
     data/fonts/cinecaption227.ttf \
     data/fonts/msyh.ttc \
+	data/fonts/msyhl.ttc \
     data/fonts/msyhbd.ttc \
     data/images/tilesets/016-ForestTown02.png \
     data/images/autotiles/test.png \

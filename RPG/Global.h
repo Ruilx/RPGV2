@@ -17,9 +17,9 @@
 // 一个Block的高度
 #define MapBlockHeight 32
 
-#ifndef DEBUG
+#ifndef QT_DEBUG
 // 调试模式
-#define DEBUG 1
+#define QT_DEBUG 1
 #endif
 
 /**
@@ -53,8 +53,8 @@ public:
 	static QFont applicationFont;
 };
 
-#ifdef DEBUG
-#	define CodePath() "[File: " __FILE__ " Line:" + QString::number(__LINE__) + "]"
+#ifdef QT_DEBUG
+#	define CodePath() "[" __FILE__ ":" + QString::number(__LINE__) + "]" __FUNCTION__ ": "
 #else
 #	define CodePath() ""
 #endif

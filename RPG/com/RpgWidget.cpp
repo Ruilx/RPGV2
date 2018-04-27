@@ -150,7 +150,7 @@ void RpgWidget::ready(){
 		return;
 	}
 
-#ifdef DEBUG
+#ifdef QT_DEBUG
 //	int blockCol = titleScene->width() / MapBlockWidth;
 //	int blockRow = titleScene->height() / MapBlockHeight;
 //	RpgTileSetBase rpgTileSetBase("data/images/tilesets/016-ForestTown02.png");

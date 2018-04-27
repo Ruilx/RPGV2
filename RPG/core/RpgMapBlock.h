@@ -3,7 +3,7 @@
 
 #include <QtCore>
 #include <QGraphicsPixmapItem>
-#include <RPG/Core/RpgTileSetBase.h>
+#include <RPG/core/RpgTileSetBase.h>
 #include <RPG/com/RpgScene.h>
 #include <RPG/Global.h>
 

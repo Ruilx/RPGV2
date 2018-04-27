@@ -94,7 +94,6 @@ void RpgDialogBase::renderSkin(const QString &skinFilename){
 	QImage continueSymbol = skin.copy(continueSymbolRect);
 
 	this->backgroundOrigin				= new QImage(background);
-	this->renderBackground();
 	this->backgroundBorder[LeftTop]		= new QImage(backgroundBorder.copy(backgroundBorderLeftTopRect));
 	this->backgroundBorder[Top]			= new QImage(backgroundBorder.copy(backgroundBorderTopRect));
 	this->backgroundBorder[RightTop]	= new QImage(backgroundBorder.copy(backgroundBorderRightTopRect));

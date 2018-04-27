@@ -19,6 +19,10 @@ int main(int argc, char *argv[])
 		QMessageBox::critical(nullptr, ApplicationName, QObject::tr("Cannot open the font file: %1").arg("data/fonts/msyh.ttc"), QMessageBox::Ok);
 		return 1;
 	}
+	if(!fonts.addFont("simplifyChineseCharactersSupport", "./data/fonts/msyhl.ttc")){
+		QMessageBox::critical(nullptr, ApplicationName, QObject::tr("Cannot open the font file: %1").arg("data/fonts/msyhl.ttc"), QMessageBox::Ok);
+		return 1;
+	}
 	QString dialogFontFamilyString = fonts.getDefaultFontIndex("dialogFont");
 	if(dialogFontFamilyString.isEmpty()){
 		QMessageBox::critical(nullptr, ApplicationName, QObject::tr("Cannot resolve the font file: %1").arg("data/fonts/A-OTF-FolkPro-Medium.otf"), QMessageBox::Ok);
@@ -29,8 +33,13 @@ int main(int argc, char *argv[])
 		QMessageBox::critical(nullptr, ApplicationName, QObject::tr("Cannot resolve the font file: %1").arg("data/fonts/msyh.ttc"), QMessageBox::Ok);
 		return 1;
 	}
+	QString simplifyChineseCharactersSupport = fonts.getDefaultFontIndex("simplifyChineseCharactersSupport");
+	if(simplifyChineseCharactersSupport.isEmpty()){
+		QMessageBox::critical(nullptr, ApplicationName, QObject::tr("Cannot resolve the font file: %1").arg("data/fonts/msyhl.ttc"), QMessageBox::Ok);
+		return 1;
+	}
 	Global::dialogFont = QFont(dialogFontFamilyString);
-	Global::dialogFont.insertSubstitution(Global::dialogFont.family(), "Microsoft YaHei Light");
+	Global::dialogFont.insertSubstitution(Global::dialogFont.family(), simplifyChineseCharactersSupport);
 	Global::dialogFont.setPixelSize(22);
 	Global::dialogFont.setBold(true);
 	Global::applicationFont = QFont(applicationFontFamilyString);
