@@ -17,7 +17,6 @@ SOURCES += main.cpp\
     RPG/com/RpgWidget.cpp \
     RPG/utils/Utils.cpp \
     RPG/com/RpgDialog.cpp \
-    RPG/core/RpgDialogBase.cpp \
     RPG/core/RpgMapBlock.cpp \
     RPG/core/RpgAutoTileBase.cpp \
     RPG/Global.cpp \
@@ -28,8 +27,9 @@ SOURCES += main.cpp\
     ExternalFont.cpp \
     RPG/com/RpgScript.cpp \
     RPG/com/RpgVar.cpp \
-    RPG/core/RpgDialogBase_.cpp \
-    RPG/com/RpgState.cpp
+    RPG/com/RpgState.cpp \
+    RPG/core/RpgDialogBase_Old.cpp \
+    RPG/core/RpgDialogBase.cpp
 
 HEADERS  += Mainw.h \
     RPG/About.h \
@@ -37,7 +37,6 @@ HEADERS  += Mainw.h \
     RPG/com/RpgWidget.h \
     RPG/utils/Utils.h \
     RPG/com/RpgDialog.h \
-    RPG/core/RpgDialogBase.h \
     RPG/core/RpgMapBlock.h \
     RPG/core/RpgAutoTileBase.h \
     RPG/com/RpgScene.h \
@@ -47,8 +46,9 @@ HEADERS  += Mainw.h \
     ExternalFont.h \
     RPG/com/RpgScript.h \
     RPG/com/RpgVar.h \
-    RPG/core/RpgDialogBase_.h \
-    RPG/com/RpgState.h
+    RPG/com/RpgState.h \
+    RPG/core/RpgDialogBase_Old.h \
+    RPG/core/RpgDialogBase.h
 
 INCLUDEPATH += $$PWD
 DEPENDPATH += $$PWD

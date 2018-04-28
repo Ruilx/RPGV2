@@ -2,8 +2,10 @@
 
 
 
-RpgChoice::RpgChoice(QGraphicsScene *parentScene, QObject *parent): QObject(parent), RpgDialogBase(){
+RpgChoice::RpgChoice(QGraphicsScene *parentScene, QObject *parent): QObject(parent){
 	this->setGraphicsScene(parentScene);
+
+	// 选项文字框和阴影设置
 	for(int i = 0; i < ChoiceBuff; i++){
 		if(this->messages[i] == nullptr){
 			// 字下阴影的设置
@@ -20,6 +22,7 @@ RpgChoice::RpgChoice(QGraphicsScene *parentScene, QObject *parent): QObject(pare
 	this->setTextColor(QColor(Qt::white));
 	this->setFont(Global::dialogFont);
 
+	// 上线三角形时间轴
 	this->upSymbolTimeLine->setFrameRange(0, 3);
 	this->upSymbolTimeLine->setLoopCount(0);
 	this->downSymbolTimeLine->setFrameRange(0, 3);
@@ -30,23 +33,18 @@ RpgChoice::RpgChoice(QGraphicsScene *parentScene, QObject *parent): QObject(pare
 	//		i->document()->setDefaultStyleSheet(this->css);
 	//	}
 
+	// 上下三角形图形处理
 	QMatrix upDownMirror;
 	upDownMirror.rotate(180);
+
 	for(int i = 0; i < 4; i++){
-		if(this->downSymbolPixmap[i] != nullptr){
-			delete this->downSymbolPixmap[i];
-			this->downSymbolPixmap[i] = nullptr;
-		}
-		QPixmap triangle = QPixmap::fromImage(*this->getContinueSymbol(i));
-		this->downSymbolPixmap[i] = new QPixmap(triangle);
-		if(this->upSymbolPixmap[i] != nullptr){
-			delete this->upSymbolPixmap[i];
-			this->downSymbolPixmap[i] = nullptr;
-		}
+		QPixmap triangle = this->skin.getContinueSymbolImage(i);
+		this->downSymbolPixmap[i] = triangle;
 		QPixmap upTriangle = triangle.transformed(upDownMirror, Qt::SmoothTransformation);
-		this->upSymbolPixmap[i] = new QPixmap(upTriangle);
+		this->upSymbolPixmap[i] = upTriangle;
 	}
 
+	// ZValue设置
 	this->box->setZValue(DialogZValue);
 	for(QGraphicsTextItem *i: this->messages){
 		i->setZValue(0.1f);
@@ -55,17 +53,19 @@ RpgChoice::RpgChoice(QGraphicsScene *parentScene, QObject *parent): QObject(pare
 	this->downSymbol->setZValue(0.3f);
 	this->choiceSymbol->setZValue(0.5f);
 
+	// 上下三角形时间轴触发设置
 	connect(this->upSymbolTimeLine, &QTimeLine::frameChanged, this, [this](int frame){
 		if(frame < 4 && frame >= 0){
-			this->upSymbol->setPixmap(*this->upSymbolPixmap[frame]);
+			this->upSymbol->setPixmap(this->upSymbolPixmap[frame]);
 		}
 	});
 	connect(this->downSymbolTimeLine, &QTimeLine::frameChanged, this, [this](int frame){
 		if(frame < 4 && frame >= 0){
-			this->downSymbol->setPixmap(*this->downSymbolPixmap[frame]);
+			this->downSymbol->setPixmap(this->downSymbolPixmap[frame]);
 		}
 	});
 
+	// 选择框透明度设置
 	this->choiceSymbol->setGraphicsEffect(this->choiceBarOpacityEffect);
 	this->choiceBarAnimation->setEasingCurve(QEasingCurve::Linear);
 	this->choiceBarAnimation->setStartValue(1.0f);
@@ -74,11 +74,15 @@ RpgChoice::RpgChoice(QGraphicsScene *parentScene, QObject *parent): QObject(pare
 	this->choiceBarAnimation->setDuration(1500);
 	this->choiceBarAnimation->setLoopCount(-1);
 
-	this->messagesRect = QRect(messageMarginH, messageMarginV, this->getDialogRect().width() - messageMarginH - messageMarginH, this->getDialogHeight() - messageMarginV - messageMarginV);
+	// 对话框坐标
+	this->dialogPos = QPoint(this->marginH, ScreenHeight - this->marginV - this->skin.getDialogSize().height());
+
+	// 选项框设置
+	this->messagesRect = QRect(messageMarginH, messageMarginV, this->skin.getDialogSize().width() - messageMarginH - messageMarginH, this->skin.getDialogSize().height() - messageMarginV - messageMarginV);
 	for(int i = 0; i < ChoiceBuff; i++){
 		this->messages[i]->setTextWidth(this->messagesRect.width());
 		//this->messages[i]->setPos(this->messagesRect.topLeft() + QPoint(0, this->messagesRect.height() + this->messageSpecingV * i));
-		this->messages[i]->setPos(messageMarginH, messageMarginV + (messageSpecingV + this->getSelectBarImage().height()) * i);
+		this->messages[i]->setPos(messageMarginH, messageMarginV + (messageSpecingV + this->skin.getSelectBarSize().height()) * i);
 	}
 
 	// 预置输出速度: 快
@@ -98,16 +102,26 @@ void RpgChoice::exec(){
 		qDebug() << CodePath() << ": parentScene is not set.(Null)";
 		return;
 	}
-	for(QPixmap *p: this->upSymbolPixmap){
-		if(p == nullptr){
-			qDebug() << CodePath() << ": upSymbolPixmap[4] not set.";
-			return;
+//	for(QPixmap *p: this->upSymbolPixmap){
+//		if(p == nullptr){
+//			qDebug() << CodePath() << ": upSymbolPixmap[4] not set.";
+//			return;
+//		}
+//	}
+//	for(QPixmap *p: this->downSymbolPixmap){
+//		if(p == nullptr){
+//			qDebug() << CodePath() << ": downSymbolPixmap[4] not set.";
+//			return;
+//		}
+//	}
+	for(const QPixmap &p: this->upSymbolPixmap){
+		if(p.isNull()){
+			qDebug() << CodePath() << "upSymbolPixmap[4] not set.";
 		}
 	}
-	for(QPixmap *p: this->downSymbolPixmap){
-		if(p == nullptr){
-			qDebug() << CodePath() << ": downSymbolPixmap[4] not set.";
-			return;
+	for(const QPixmap &p: this->downSymbolPixmap){
+		if(p.isNull()){
+			qDebug() << CodePath() << "downSymbolPixmap[4] not set.";
 		}
 	}
 	if(this->isRunning == true){
@@ -123,22 +137,22 @@ void RpgChoice::exec(){
 	}
 
 	// 设置对话框背景, 支持每次对话框形状不同
-	this->box->setPixmap(QPixmap::fromImage(this->getDialogImage()));
-	this->box->setPos(this->getDialogPosition() + this->parentScene->sceneRect().topLeft());
+	this->box->setPixmap(this->skin.getDialogImage());
+	this->box->setPos(this->dialogPos + this->parentScene->sceneRect().topLeft());
 
-	this->choiceSymbol->setPixmap(QPixmap::fromImage(this->getSelectBarImage()));
+	this->choiceSymbol->setPixmap(this->skin.getSelectBarImage());
 
 	//		for(int i = 0; i < ChoiceBuff; i++){
 	//			this->messages[i]->setTextWidth(this->messagesRect.width());
 	//			this->messages[i]->setPos(this->messagesRect.topLeft() + QPoint(0, this->messagesRect.height() + this->messageSpecingV) * i);
 	//		}
 
-	this->upSymbol->setPixmap(*this->upSymbolPixmap[0]);
-	this->upSymbol->setPos((this->getDialogRect().width() - this->upSymbolPixmap[0]->width()) / 2, /*this->upSymbolPixmap[0]->height() / 2*/ 0);
+	this->upSymbol->setPixmap(this->upSymbolPixmap[0]);
+	this->upSymbol->setPos((this->skin.getDialogSize().width() - this->skin.getContinueSymbolSize().width()) / 2, /*this->upSymbolPixmap[0]->height() / 2*/ 0);
 	this->upSymbol->setVisible(false);
 
-	this->downSymbol->setPixmap(*this->downSymbolPixmap[0]);
-	this->downSymbol->setPos((this->getDialogRect().width() - this->downSymbolPixmap[0]->width()) / 2, this->getDialogRect().height() - this->downSymbolPixmap[0]->height());
+	this->downSymbol->setPixmap(this->downSymbolPixmap[0]);
+	this->downSymbol->setPos((this->skin.getDialogSize().width() - this->skin.getContinueSymbolSize().width()) / 2, this->skin.getDialogSize().height() - this->skin.getContinueSymbolSize().height());
 	this->downSymbol->setVisible(false);
 
 	this->enterOrExitAnimationSetting(true);
@@ -285,7 +299,7 @@ void RpgChoice::showChoiceBox(int index){
 	if(index < 0 || index >= qMin(ChoiceBuff, this->messageList.length())){
 		qDebug() << CodePath() << ": index is out of range: " << index << "</>[0," << ChoiceBuff << "]";
 	}
-	this->choiceSymbol->setPos(messageMarginH, this->messagesRect.top() + messageMarginV + (messageSpecingV + this->getSelectBarImage().height()) * index);
+	this->choiceSymbol->setPos(messageMarginH, this->messagesRect.top() + messageMarginV + (messageSpecingV + this->skin.getSelectBarSize().height()) * index);
 	//		if(!this->choiceSymbol->isVisible()){
 	//			this->choiceSymbol->setVisible(true);
 	//		}

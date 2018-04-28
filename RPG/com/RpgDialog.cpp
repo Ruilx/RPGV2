@@ -2,7 +2,7 @@
 
 //RpgDialog *RpgDialog::_instance = nullptr;
 
-RpgDialog::RpgDialog(QGraphicsScene *parentScene, QObject *parent): QObject(parent), RpgDialogBase(){
+RpgDialog::RpgDialog(QGraphicsScene *parentScene, QObject *parent): QObject(parent){
 	this->setGraphicsScene(parentScene);
 	this->setTextColor(QColor(Qt::white));
 	this->message->setFont(Global::dialogFont);
@@ -21,14 +21,7 @@ RpgDialog::RpgDialog(QGraphicsScene *parentScene, QObject *parent): QObject(pare
 	//		}
 	//		this->message->setTextCursor(textCursor);
 
-	for(int i = 0 ; i < 4; i++){
-		if(this->continueSymbolPixmap[i] != nullptr){
-			delete this->continueSymbolPixmap[i];
-			this->continueSymbolPixmap[i] = nullptr;
-		}
-		this->continueSymbolPixmap[i] = new QPixmap(QPixmap::fromImage(*this->getContinueSymbol(i)));
-	}
-
+	// ZValue设置
 	this->box->setZValue(DialogZValue);
 	this->message->setZValue(0.1f);
 	this->continueSymbol->setZValue(0.2f);
@@ -36,15 +29,21 @@ RpgDialog::RpgDialog(QGraphicsScene *parentScene, QObject *parent): QObject(pare
 		this->characterBox->setZValue(-0.1f);
 	}
 
+	// 三角形动画时间轴
 	connect(this->continueSymbolTimeLine, &QTimeLine::frameChanged, this, [this](int frame){
 		if(frame < 4 && frame >= 0){
-			this->continueSymbol->setPixmap(*this->continueSymbolPixmap[frame]);
+			this->continueSymbol->setPixmap(this->skin.getContinueSymbolImage(frame));
 		}
 	});
 
-	this->setDialogRect(QRect(this->getDialogPosition().toPoint(), QSize(400, 125)));
+	//this->setDialogRect(QRect(this->getDialogPosition().toPoint(), QSize(400, 125)));
+	//this->setDialogSize(QSize(ScreenWidth - MarginH - Margin, Height));
 
-	this->messageRect = QRect(messageMarginH, messageMarginV, this->getDialogRect().width() - (messageMarginH << 1), this->getDialogHeight() - (messageMarginV << 1));
+	// 对话框坐标
+	this->dialogPos = QPoint(this->marginH, ScreenHeight - this->marginV - this->skin.getDialogSize().height());
+
+	// 消息框大小
+	this->messageRect = QRect(messageMarginH, messageMarginV, this->skin.getDialogSize().width() - (messageMarginH << 1), this->skin.getDialogSize().height() - (messageMarginV << 1));
 
 	this->message->setTextWidth(this->messageRect.width());
 	this->message->setPos(this->messageRect.topLeft());
@@ -55,11 +54,13 @@ RpgDialog::RpgDialog(QGraphicsScene *parentScene, QObject *parent): QObject(pare
 	// 预置输出速度: 快
 	this->slowprint = SpeedFast;
 
+	// 字下阴影
 	this->messageShadowEffect->setColor(QColor(Qt::black));
 	this->messageShadowEffect->setBlurRadius(5.0f);
 	this->messageShadowEffect->setOffset(2.0f, 2.0f);
 	this->message->setGraphicsEffect(this->messageShadowEffect);
 
+	// 窗口过渡句柄
 	//this->boxOpacityEffect->setOpacity(0.0f);
 	this->boxOpacityEffect->setOpacity(1.0f);
 	this->box->setGraphicsEffect(this->boxOpacityEffect);
@@ -78,8 +79,8 @@ void RpgDialog::exec(){
 		qDebug() << "RpgDialog::exec(): parentScene is not set.(Null)";
 		return;
 	}
-	for(QPixmap *p: this->continueSymbolPixmap){
-		if(p == nullptr){
+	for(int i = 0; i < 4; i++){
+		if(this->skin.getContinueSymbolImage(i).isNull()){
 			qDebug() << "RpgDialog::exec(): conti2nueSymbolPixmap[4] not set.";
 			return;
 		}
@@ -97,21 +98,17 @@ void RpgDialog::exec(){
 	}
 
 	// 设置对话框背景, 支持每次对话框形状不同
-	this->box->setPixmap(QPixmap::fromImage(this->getDialogImage()));
-	//this->box->setPos(this->getDialogPosition() + this->getViewportOffset());
-	this->box->setPos(this->getDialogPosition() + this->parentScene->sceneRect().topLeft());
-	//this->box->setZValue(DialogZValue);
+	this->box->setPixmap(this->skin.getDialogImage());
+	this->box->setPos(QPointF(this->dialogPos) + this->parentScene->sceneRect().topLeft());
 
-	//this->message->setZValue(0.3f);
-
-	this->continueSymbol->setPixmap(*this->continueSymbolPixmap[0]);
-	this->continueSymbol->setPos((this->getDialogRect().width() - this->continueSymbolPixmap[0]->width()) / 2, (this->getDialogHeight() - this->continueSymbolPixmap[0]->width()));
+	this->continueSymbol->setPixmap(this->skin.getContinueSymbolImage(0));
+	this->continueSymbol->setPos((this->skin.getDialogSize().width() - this->skin.getContinueSymbolSize().width()) / 2, (this->skin.getDialogSize().height() - this->skin.getContinueSymbolSize().width()));
 	//this->continueSymbol->setZValue(0.2f);
 	this->continueSymbol->setVisible(false);
 
 	if(!this->characterBoxPixmap.isNull()){
 		this->characterBox->setPixmap(this->characterBoxPixmap);
-		this->characterBox->setPos(ScreenWidth - this->characterBox->pixmap().width(), -(ScreenHeight * 0.8 - this->getDialogHeight() - this->getMarginV()) + (ScreenHeight * 0.8 - this->characterBox->pixmap().height()));
+		this->characterBox->setPos(ScreenWidth - this->characterBox->pixmap().width(), -(ScreenHeight * 0.8 - this->skin.getDialogSize().height() - this->marginV) + (ScreenHeight * 0.8 - this->characterBox->pixmap().height()));
 		this->characterBox->setFlag(QGraphicsItem::ItemStacksBehindParent, true);
 		//this->characterBox->setZValue( - 1.0f);
 		//this->characterBox->stackBefore(this->box);

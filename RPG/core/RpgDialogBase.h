@@ -9,61 +9,61 @@
 
 #define DialogFilename "data/images/skin/blueAlpha.png" //(192x128)
 
+/**
+ * @brief The RpgDialogBase_ class
+ * 重写加载对话框类
+ *
+ * 只提供图片, 可以设置大小, 根据大小渲染相应的图片.
+ * 设置项目:
+ * --> 基准图片
+ * --> 对话框大小
+ * ----> 对话框宽
+ * ----> 对话框高
+ * --> 对话框padding
+ * ----> 对话框H padding
+ * ----> 对话框V padding
+ * --> 选择框大小
+ * ----> 选择框宽
+ * ----> 选择框高
+ * 给定项目:
+ * --> 对话框背景图片
+ * --> 选择框背景图片
+ * --> 三角形背景图片
+ * 2018/04/28 在获取Pixmap的时候才进行渲染
+ * --- 更换记录: 考虑到在开始的时候就去渲染的话会出现改变一次皮肤或大小都会重新渲染一次
+ * --- 就会出现频繁内存读写而调用者并不想要某些渲染的结果导致无效率计算.
+ * 2018/04/28 返回换成QPixmap
+ * --- 同步Item的Pixmap, 不需要每次都转换一次..
+ *
+ */
 class RpgDialogBase
 {
-//	enum Location{
-//		LocationLeftTop = 0,
-//		LocationTopCenter = 1,
-//		LocationTopRight = 2,
-//		LocationLeftCenter = 3,
-//		LocationCenter = 4,
-//		LocationRightCenter = 5,
-//		LocationLeftBottom = 6,
-//		LocationBottomCenter = 7,
-//		LocationRightBottom = 8,
-//	};
+protected:
+	// 预定的对话框大小是屏幕整体宽度减去两个marginH, 高度固定125.
+	const int MarginH = 10;
+	const int MarginV = 10;
+	const int Height = 125;
+
+	// 预定的选择框大小宽度是对话框宽度减去两个paddingH,
+	// 高度预定为32, 可以根据字体高度进行二次设定
+	const int PaddingH = 10;
+	const int PaddingV = 5;
+	const int SelectBarHeight = 32;
+
 private:
 	// 对话框背景原作(128x128)未变形的时候
-	QImage *backgroundOrigin = nullptr;
-	// 对话框背景变化(根据设置大小)已变形
-	QImage *background = nullptr;
-	// 对话框边框的9个图标(16x16)
-	QImage *backgroundBorder[9] = {nullptr};
-	// 选择框边框的9个图标(16x16)
-	QImage *selectBar[9] = {nullptr};
-	// 继续的小三角形的4个动画(16x16)
-	QImage *continueSymbol[4] = {nullptr};
+	QImage backgroundOrigin;
+	// 对话框背景成品(已变形)
+	QImage background;
+	// 对话框的9个图标
+	QImage backgroundBorder[9];
+	// 选择框边框的9个图标
+	QImage selectBar[9];
+	// 继续的小三角图标
+	QPixmap continueSymbol[4];
 
-	// 已经做好的对话框背景图片
-	QImage renderedDialogImage;
-	// 已经做好的选择框的背景图片
-	QImage renderedSelectBarImage;
-
-	// 因为对话框默认宽度是全屏宽的, 这是左右和屏幕边的默认间距, 下和屏幕边框的默认间距, 可以被
-	// setRect()改变, 可以被setRect(QRect())还原.
-	// 左右边距(px)(距离屏幕)
-	int marginH = 10;
-	// 上下边距(px)(距离屏幕)
-	int marginV = 10;
-	// 对话框高度(px);
-	int dialogHeight = 125;
-	// 设置几个常用的对话框位置
-//	const QPoint pointTop = QPoint(marginH, marginV);
-//	const QPoint pointMid = QPoint(marginH, (ScreenHeight - dialogHeight) >> 1);
-//	const QPoint pointBtm = QPoint(marginH, ScreenWidth - marginH - dialogHeight);
-	// 设置结果的对话框大小(默认在下面)
-	QRect rect = QRect(marginH, ScreenHeight - marginV - dialogHeight, ScreenWidth - marginH - marginH, dialogHeight);
-
-	// 选择框默认宽度是对话框宽度减去两个padding宽, 高度是20px的字符上下各增加5px(30px高),
-	// 可以被setSelectBarRect()改变, 可以被setSelectBarRect(QRect())还原
-	// 左右间隔(px)
-	int paddingH = 10;
-	// 上下间隔(px)
-	int paddingV = 5;
-	// 选择框高度(px)
-	int selectBarHeight = 32;
-	// 设置结果的选择框大小
-	QRect selectBarScaleRect = QRect(paddingH, paddingV, ScreenWidth - marginH - marginH - paddingH - paddingH, selectBarHeight);
+	QSize dialogSize = QSize(ScreenWidth - MarginH - MarginH, Height);
+	QSize selectBarSize = QSize(ScreenWidth - MarginH - MarginH - PaddingH - PaddingH, SelectBarHeight);
 
 	// 各个图片在原图中的位置坐标
 	const QRect backgroundRect					= QRect(  0,  0, 128, 128);
@@ -112,40 +112,36 @@ private:
 		RightBottom = 8		// 右下角 ↘
 	};
 
-	// 重新变换skin文件的时候需要重新载入图像区块
-	void renderSkin(const QString &skinFilename);
-	// 重新设置背景图片或大小的时候需要重新计算背景图片大小
-	void renderBackground();
-	// 组合背景图片和边框, 获得最后的图片.(加上边框的图片, 选择框, 继续的小三角形)
-	void renderDialog();
+	// 被调用的背景处理
+	const QPixmap renderBackground();
+	// 被调用的对话框的皮肤(会自动调用renderBackground函数)
+	const QPixmap renderDialog();
+	// 被调用的选项框的皮肤
+	const QPixmap renderSelectBar();
+	// 重新加载皮肤文件的时候进行处理和图片重绘
+	void renderSkin(const QString &skinFileName);
 
 public:
 	RpgDialogBase(const QString &skinFilename = QString());
 
-	int getDialogHeight() const;
-	void setDialogHeight(int height);
-	void setMargin(int h, int v);
-	int getMarginH() const;
-	int getMarginV() const;
-	void setPadding(int h, int v);
-	int getPaddingH() const;
-	int getPaddingV() const;
+	inline const QSize getDialogSize() const { return this->dialogSize; }
+	inline const QSize getSelectBarSize() const { return this->selectBarSize; }
+	inline const QSize getContinueSymbolSize() const { return QSize(16, 16); }
+	void setDialogSize(const QSize &size){ this->dialogSize = size; }
+	void setSelectBarSize(const QSize &size){ this->selectBarSize = size; }
 
-	QImage &getDialogImage();
-	QImage &getSelectBarImage();
-	QImage *getContinueSymbol(int index) const;
+	const QPixmap getDialogImage(){ return this->renderDialog(); }
+	const QPixmap getSelectBarImage(){ return this->renderSelectBar(); }
+	const QPixmap getContinueSymbolImage(int index) {
+		if(index < 0 || index >= 4){
+			return QPixmap();
+		}else{
+			return this->continueSymbol[index];
+		}
+	}
 
-	QRect getDialogRect() const { return this->rect; }
+	void loadDialogSkin(const QString &filename){ this->renderSkin(filename); }
 
-	QPointF getDialogPosition() const { return QPointF(this->rect.left(), this->rect.top()); }
-	QPointF getSelectBarPosition() const { return QPointF(this->selectBarScaleRect.left(), this->selectBarScaleRect.top()); }
-
-	void setSkinFile(const QString &skinFilename){ this->renderSkin(skinFilename); }
-
-protected:
-	void setDialogSkinFilename(const QString &filename);
-	void setDialogRect(const QRect &rect);
-	void setSelectBarRect(const QRect &rect);
 
 };
 

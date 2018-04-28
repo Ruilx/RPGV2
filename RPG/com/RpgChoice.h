@@ -19,12 +19,15 @@
  * 当设定好显示的设置文字之后, 之后就交给RpgChoice线程进行显示, 同时调用者会收到进入DialogMode信号
  * 然后改变输入定向, 并等待RPGChoice结束, 发送退出DialogMode的信号
  * dlgasobj 分支: 类并非单例模式, 但用户层不能将其生成对象, 只能使用Scene->getRpgDialog()得到handle
- *
+ * -> dlgasobj 已合并至master.
+ * 2018/04/28 RpgDialog 不再继承RpgDialogBase, RpgDialogBase作为其中的实现对象进行调用
  */
 
-class RpgChoice : public QObject, public RpgDialogBase
+class RpgChoice : public QObject/*, public RpgDialogBase*/
 {
 	Q_OBJECT
+	// DialogBase
+	RpgDialogBase skin;
 	// 标志: 是否在运行
 	bool isRunning = false;
 	// 指定显示在哪个Scene上
@@ -53,15 +56,19 @@ class RpgChoice : public QObject, public RpgDialogBase
 	int messageCurrentIndex = 0;	// 现在选项的序号[0, choiceBuff]
 	int messageChose = 0;			// 结果选中的序号
 
+	// 对话框(对话框相对于屏幕整体的左右最大宽度的隔离值)
+	int marginH = 10;
+	int marginV = 10;
+
 	// 消息
 	int messageMarginH = 10;
 	int messageMarginV = 6;
 	int messageSpecingV = 2;
+	// 消息位置
 	QRect messagesRect = QRect(messageMarginH, messageMarginV, ScreenWidth - messageMarginH - messageMarginH, ScreenHeight - messageMarginV - messageMarginV);
 
-	// Viewport Offset?
-//	QPointF viewportOffset = QPoint(0, 0);
-
+	// 对话框相对窗口的位置(构造函数中初始化)
+	QPoint dialogPos;
 public:
 	/**
 	 * @brief RpgChoice
@@ -91,8 +98,8 @@ private:
 
 	// 对话框图片, 需要预先转换成Pixmap的Image
 	QPixmap dialogPixmap;
-	QPixmap *upSymbolPixmap[4] = {nullptr};
-	QPixmap *downSymbolPixmap[4] = {nullptr};
+	QPixmap upSymbolPixmap[4];
+	QPixmap downSymbolPixmap[4];
 
 public:
 	/**
@@ -152,18 +159,6 @@ public:
 			this->messages[i]->setDefaultTextColor(color);
 		}
 	}
-//	/**
-//	 * @brief getViewportOffset
-//	 * @return
-//	 * 获得Viewport的偏移坐标
-//	 */
-//	QPointF getViewportOffset() const { return this->viewportOffset; }
-//	/**
-//	 * @brief setViewportOffset
-//	 * @param offset
-//	 * 设置Viewport的偏移坐标
-//	 */
-//	void setViewportOffset(const QPointF &offset){ this->viewportOffset = offset; }
 	/**
 	 * @brief clearChoiceText
 	 * 清除文字选项
@@ -259,7 +254,3 @@ public slots:
 };
 
 #endif // RPGCHOICE_H
-
-/** 废弃代码
- if(this->messageIndex > 0 && this->messageIndex < this->messageList.length() - (ChoiceBuff -1))
- */

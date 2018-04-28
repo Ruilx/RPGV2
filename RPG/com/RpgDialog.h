@@ -19,10 +19,14 @@
  * 然后改变输入定向, 并等待RPGDialog结束, 发送退出DialogMode信号.
  * @abandoned //这个类属于单例模式, 不能将其生成对象, 调用方法: RpgDialog::getInstance()即可得到实例.
  * dlgasobj 分支: 这个类不再是单例模式, 但用户层不能将其生成对象, 只能使用Scene->getRpgDialog()得到Handle
+ * -> dlgasobj 已合并至master.
+ * 2018/04/28 RpgDialog 不再继承RpgDialogBase, RpgDialogBase作为其中的实现对象进行调用
  */
-class RpgDialog : public QObject, public RpgDialogBase
+class RpgDialog : public QObject/*, public RpgDialogBase*/
 {
 	Q_OBJECT
+	// DialogBase
+	RpgDialogBase skin;
 	// 标志: 是否在运行
 	bool isRunning = false;
 	// 指定显示在哪个Scene上
@@ -48,16 +52,18 @@ class RpgDialog : public QObject, public RpgDialogBase
 	// 立绘
 	QPixmap characterBoxPixmap;
 
+	// 对话框(对话框对于屏幕整体的左右最大宽度的隔离值)
+	int marginH = 10;
+	int marginV = 10;
+
 	// 消息
 	int messageMarginH = 10;
 	int messageMarginV = 6;
 	// 消息位置
 	QRect messageRect;
 
-
-
-	// Viewport Offset( 一般Scene要比View大, 所以如果要浮于View中间, 则还需要View相对于Scene的视窗大小 )
-//	QPointF viewportOffset = QPoint(0, 0);
+	// 对话框相对窗口位置(构造函数中初始化)
+	QPoint dialogPos;
 
 public:
 	/**
@@ -158,7 +164,6 @@ public:
 	 */
 	void setGraphicsScene(QGraphicsScene *scene){
 		this->parentScene = scene;
-//		this->setViewportOffset(QPointF(this->parentScene->sceneRect().left(), this->parentScene->sceneRect().top()));
 	}
 
 	/**
@@ -182,7 +187,7 @@ public:
 		//	this->messageRect = QRect(messagePaddingH, messagePaddingV, this->getDialogRect().width() - messagePaddingH - this->characterBox->pixmap().width(), this->getDialogHeight() - messagePaddingV - messagePaddingV);
 		//}
 
-		this->messageRect = QRect(messageMarginH, messageMarginV, this->getDialogRect().width() - messageMarginH - messageMarginH, this->getDialogHeight() - messageMarginV - messageMarginV);
+		this->messageRect = QRect(messageMarginH, messageMarginV, this->skin.getDialogSize().width() - messageMarginH - messageMarginH, this->skin.getDialogSize().height() - messageMarginV - messageMarginV);
 	}
 
 	/**
