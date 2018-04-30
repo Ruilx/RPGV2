@@ -22,7 +22,7 @@
  * -> dlgasobj 已合并至master.
  * 2018/04/28 RpgDialog 不再继承RpgDialogBase, RpgDialogBase作为其中的实现对象进行调用
  */
-class RpgDialog : public QObject/*, public RpgDialogBase*/
+class RpgDialog : public QObject
 {
 	Q_OBJECT
 	// DialogBase

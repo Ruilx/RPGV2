@@ -138,6 +138,7 @@ void RpgDialog::showDialog(){
 }
 
 void RpgDialog::hideDialog(){
+	this->isRunning = false;
 	if(this->continueSymbolTimeLine->state() != QTimeLine::NotRunning){
 		this->continueSymbolTimeLine->stop();
 	}
@@ -149,7 +150,7 @@ void RpgDialog::hideDialog(){
 	this->characterBoxPixmap = QPixmap();
 	this->characterBox->setPixmap(this->characterBoxPixmap);
 	emit this->quitDialogMode();
-	this->isRunning = false;
+
 }
 
 void RpgDialog::showText(int index){

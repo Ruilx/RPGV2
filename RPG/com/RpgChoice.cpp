@@ -188,6 +188,7 @@ void RpgChoice::showChoice(){
 }
 
 void RpgChoice::hideChoice(){
+	this->isRunning = false;
 	if(this->upSymbolTimeLine->state() != QTimeLine::NotRunning){
 		this->upSymbolTimeLine->stop();
 	}
@@ -207,7 +208,6 @@ void RpgChoice::hideChoice(){
 		i->document()->clear();
 	}
 	emit this->quitDialogMode();
-	this->isRunning = false;
 }
 
 void RpgChoice::showText(int index, bool noSpeedRender){

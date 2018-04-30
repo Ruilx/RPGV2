@@ -13,6 +13,7 @@
  * 每一个组件在一个Scene只能出现一次, Scene中存储着地图的地图块, 精灵等
  *
  * --> RpgDialog类不再是单例模式, 而是以Scene返回方式获取.
+ * --> RpgChoice类不再是单例模式, 而是以Scene返回方式获取.
  */
 class RpgScene : public QGraphicsScene
 {

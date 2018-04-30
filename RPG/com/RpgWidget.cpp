@@ -163,6 +163,8 @@ void RpgWidget::ready(){
 //		}
 //	}
 
+	RpgMusic::instance()->addMusic("title", "data/sounds/title.mp3");
+
 	QPixmap *bg = new QPixmap("data/images/background/title2.png");
 	titleScene->getRpgBanner()->setForegroundPixmap(*bg);
 	titleScene->getRpgBanner()->setStartOpacity(0.0f);
@@ -180,6 +182,9 @@ void RpgWidget::ready(){
 
 	Utils::msleep(1000);
 
+
+	RpgMusic::instance()->playMusic("title");
+
 	QPixmap *title = new QPixmap("data/images/background/title.png");
 	titleScene->getRpgBanner()->setForegroundPixmap(*title);
 	titleScene->getRpgBanner()->setStartOpacity(0.0f);
@@ -196,6 +201,7 @@ void RpgWidget::ready(){
 
 	if(titleScene->getRpgChoise()->getChose() == 2){
 		this->setCanBeClose(true);
+		RpgMusic::instance()->stopMusic();
 		this->doReadyToClose();
 	}
 

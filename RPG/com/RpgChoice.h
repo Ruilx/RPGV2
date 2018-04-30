@@ -23,7 +23,7 @@
  * 2018/04/28 RpgDialog 不再继承RpgDialogBase, RpgDialogBase作为其中的实现对象进行调用
  */
 
-class RpgChoice : public QObject/*, public RpgDialogBase*/
+class RpgChoice : public QObject
 {
 	Q_OBJECT
 	// DialogBase

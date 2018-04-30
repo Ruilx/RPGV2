@@ -54,7 +54,7 @@ public:
 };
 
 #ifdef QT_DEBUG
-#	define CodePath() "[" __FILE__ ":" % QString::number(__LINE__) % "]" % __FUNCTION__ % ": "
+#	define CodePath() "[" __FILE__ ":" % QString::number(__LINE__) % "]" % __func__ % ": "
 #else
 #	define CodePath() ""
 #endif

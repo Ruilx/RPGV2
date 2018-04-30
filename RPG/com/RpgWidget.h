@@ -10,6 +10,7 @@
 #include <RPG/core/RpgMapBlock.h>
 #include <RPG/com/RpgScene.h>
 #include <RPG/core/RpgTileSetBase.h>
+#include <RPG/com/RpgMusic.h>
 
 /**
  * @brief The RpgWidget class
