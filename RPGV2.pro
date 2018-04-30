@@ -28,8 +28,8 @@ SOURCES += main.cpp\
     RPG/com/RpgScript.cpp \
     RPG/com/RpgVar.cpp \
     RPG/com/RpgState.cpp \
-    RPG/core/RpgDialogBase_Old.cpp \
-    RPG/core/RpgDialogBase.cpp
+    RPG/core/RpgDialogBase.cpp \
+    RPG/com/RpgMusic.cpp
 
 HEADERS  += Mainw.h \
     RPG/About.h \
@@ -47,8 +47,8 @@ HEADERS  += Mainw.h \
     RPG/com/RpgScript.h \
     RPG/com/RpgVar.h \
     RPG/com/RpgState.h \
-    RPG/core/RpgDialogBase_Old.h \
-    RPG/core/RpgDialogBase.h
+    RPG/core/RpgDialogBase.h \
+    RPG/com/RpgMusic.h
 
 INCLUDEPATH += $$PWD
 DEPENDPATH += $$PWD
