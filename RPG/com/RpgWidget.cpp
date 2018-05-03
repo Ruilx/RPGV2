@@ -163,7 +163,8 @@ void RpgWidget::ready(){
 //		}
 //	}
 
-	RpgMusic::instance()->addMusic("title", "data/sounds/title.mp3");
+	RpgMusic::instance()->addMusic("title", "data/sounds/月光（オルゴール）.mp3");
+	RpgMusic::instance()->addMusic("op1", "data/sounds/雨の日に.mp3");
 
 	QPixmap *bg = new QPixmap("data/images/background/title2.png");
 	titleScene->getRpgBanner()->setForegroundPixmap(*bg);
@@ -185,32 +186,34 @@ void RpgWidget::ready(){
 
 	RpgMusic::instance()->playMusic("title");
 
-	QPixmap *title = new QPixmap("data/images/background/title.png");
+	QPixmap *title = new QPixmap("data/images/background/タイトル画面_背景.jpg");
+	QPixmap mix_title = QPixmap("data/images/background/mix/タイトルロゴ.png");
+	QPixmap mix_character = QPixmap("data/images/background/mix/タイトル_キャラ01.png");
+	QPainter p(title);{
+		p.setCompositionMode(QPainter::CompositionMode_SourceOver);
+		p.drawPixmap((7), (title->height() - mix_character.height()), mix_character);
+		p.drawPixmap((title->width() - mix_title.width()) / 2, -5, mix_title);
+		p.end();
+	}
 	titleScene->getRpgBanner()->setForegroundPixmap(*title);
 	titleScene->getRpgBanner()->setStartOpacity(0.0f);
 	titleScene->getRpgBanner()->setEndOpacity(1.0f);
 	titleScene->getRpgBanner()->exec();
 	titleScene->getRpgBanner()->waitingForBannerComplete();
 
-	titleScene->getRpgChoise()->addChoiceText("はじめから");
-	titleScene->getRpgChoise()->addChoiceText("つづけから");
-	titleScene->getRpgChoise()->addChoiceText("終了する");
+	titleScene->getRpgChoise()->addChoiceText("始める");
+	titleScene->getRpgChoise()->addChoiceText("続ける");
+	titleScene->getRpgChoise()->addChoiceText("開発資料室");
+	titleScene->getRpgChoise()->addChoiceText("終わる");
 	titleScene->getRpgChoise()->setChoiceEnabled(1, false);
 	titleScene->getRpgChoise()->exec();
 	qDebug() << "Selected:" << titleScene->getRpgChoise()->waitingForChooseComplete();
 
-	if(titleScene->getRpgChoise()->getChose() == 2){
+	if(titleScene->getRpgChoise()->getChose() == 3){
 		this->setCanBeClose(true);
 		RpgMusic::instance()->stopMusic();
 		this->doReadyToClose();
 	}
-
-	//		titleScene->getRpgChoise()->addChoiceText("The First Choice");
-	//		titleScene->getRpgChoise()->addChoiceText("The Second Choice");
-	//		titleScene->getRpgChoise()->addChoiceText("The Third Choice");
-	//		titleScene->getRpgChoise()->addChoiceText("The Fourth Choice");
-	//		titleScene->getRpgChoise()->addChoiceText("The Fifth Choice");
-	//		titleScene->getRpgDialog()->exec();
 
 //	QPixmap *aaa = new QPixmap("data/images/drawing/03.png");
 //	titleScene->getRpgDialog()->setCharacterPixmap(*aaa);
@@ -225,26 +228,35 @@ void RpgWidget::ready(){
 	//		titleScene->getRpgDialog()->addText("123456");
 	//		titleScene->getRpgDialog()->exec();
 
-	QPixmap *aaa = new QPixmap("data/images/drawing/03.png");
-	titleScene->getRpgDialog()->setCharacterPixmap(*aaa);
-	titleScene->getRpgDialog()->addText("主人，睡醒了吗");
-	titleScene->getRpgDialog()->addText("主人再不起床的话，太阳都要照到主人的屁屁上了");
-	titleScene->getRpgDialog()->addText("……");
-	titleScene->getRpgDialog()->addText("主人睁开眼睛看看我嘛，诶~ 要不要玩亲亲？");
-	titleScene->getRpgDialog()->addText("……<br>……<br>……");
-	titleScene->getRpgDialog()->addText("嘿嘿，主人的脸好可爱呀，忍不住就要亲上去啦");
-	titleScene->getRpgDialog()->addText("好想跟主人一直一直在一起呢");
-	titleScene->getRpgDialog()->addText("……<br>……<br>……");
-	titleScene->getRpgDialog()->addText("……啊，主人，您醒了呢，呼呼~");
-	titleScene->getRpgDialog()->addText("主人主人，小琳已经为主人做好早饭啦，主人要赶快洗漱然后用餐呢");
-	titleScene->getRpgDialog()->addText("今天天气不错呢，主人今天适合穿这件衣服");
-	titleScene->getRpgDialog()->addText("而且，而且，跟小琳的样子一样呢");
-	titleScene->getRpgDialog()->addText("……嗯？<br>主人穿衣服啦，难道要小琳为主人穿衣服吗，嘿嘿，荣幸之至呢");
-	titleScene->getRpgDialog()->addText("抱抱主人~");
-	titleScene->getRpgDialog()->addText("……<br>……<br>……");
-	titleScene->getRpgDialog()->addText("跟主人一直一直在一起呢");
+	RpgMusic::instance()->playMusic("op1");
+
+	RpgAutoTileBase aTileImage("data/images/autotiles/test.png", "test");
+	aTileImage._dumpImage(0);
+
+	titleScene->getRpgDialog()->addText("Autotile已经导出.");
 	titleScene->getRpgDialog()->exec();
 	titleScene->getRpgDialog()->waitingForDialogComplete();
+
+//	QPixmap *aaa = new QPixmap("data/images/drawing/03.png");
+//	titleScene->getRpgDialog()->setCharacterPixmap(*aaa);
+//	titleScene->getRpgDialog()->addText("主人，睡醒了吗");
+//	titleScene->getRpgDialog()->addText("主人再不起床的话，太阳都要照到主人的屁屁上了");
+//	titleScene->getRpgDialog()->addText("……");
+//	titleScene->getRpgDialog()->addText("主人睁开眼睛看看我嘛，诶~ 要不要玩亲亲？");
+//	titleScene->getRpgDialog()->addText("……<br>……<br>……");
+//	titleScene->getRpgDialog()->addText("嘿嘿，主人的脸好可爱呀，忍不住就要亲上去啦");
+//	titleScene->getRpgDialog()->addText("好想跟主人一直一直在一起呢");
+//	titleScene->getRpgDialog()->addText("……<br>……<br>……");
+//	titleScene->getRpgDialog()->addText("……啊，主人，您醒了呢，呼呼~");
+//	titleScene->getRpgDialog()->addText("主人主人，小琳已经为主人做好早饭啦，主人要赶快洗漱然后用餐呢");
+//	titleScene->getRpgDialog()->addText("今天天气不错呢，主人今天适合穿这件衣服");
+//	titleScene->getRpgDialog()->addText("而且，而且，跟小琳的样子一样呢");
+//	titleScene->getRpgDialog()->addText("……嗯？<br>主人穿衣服啦，难道要小琳为主人穿衣服吗，嘿嘿，荣幸之至呢");
+//	titleScene->getRpgDialog()->addText("抱抱主人~");
+//	titleScene->getRpgDialog()->addText("……<br>……<br>……");
+//	titleScene->getRpgDialog()->addText("跟主人一直一直在一起呢");
+//	titleScene->getRpgDialog()->exec();
+//	titleScene->getRpgDialog()->waitingForDialogComplete();
 
 //	titleScene->getRpgDialog()->addText("サクラの花が咲く度に");
 //	titleScene->getRpgDialog()->addText("こんな気持になるのはいつごろからだっけ");

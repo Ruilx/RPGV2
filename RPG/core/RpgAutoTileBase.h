@@ -76,7 +76,7 @@ class Block{
 //	 */
 	/**
 	 * @brief imageMap
-	 * QMap Image from unsigned int8 to QImage*
+	 * QMap Image from unsigned int8 to QPixmap
 	 * Key: quint8 Note:
 	 *       Bit7 Bit6     Bit5  Bit4        Bit3   Bit2       Bit1 Bit0
 	 * 0b       x    x        x     x           x      x          x    x -> x=0 pass, x=1 block
@@ -90,10 +90,10 @@ class Block{
 	 *  bottomRight   x    x     1      1
 	 *  [ x = no effect, 1 = force to set 1 ]
 	 */
-	QMap<quint8, QImage*> imageMap;
+	QMap<quint8, QPixmap> imageMap;
 public:
 	/*
-	 * quint8 will be one of below:
+	 * The key(quint8) will be one of below:
 	 */
 	enum BlockType{
 		None						= 0x00,
@@ -129,7 +129,7 @@ public:
 		RightSingleTee				= 0xBA,
 		VerticalPassedSingleLine	= 0xBB,
 		RightBottomSingleCorner		= 0xBE,
-		TopPassedFrame				= 0xBF,
+		TopPassedSingleLine			= 0xBF,
 		TopMulti					= 0xE0,
 		TopMultiTeeLeft				= 0xE2,
 		LeftTopMultiCorner			= 0xE3,
@@ -139,8 +139,8 @@ public:
 		HorizonalPassedSingleLine	= 0xEE,
 		RightPassedSingleLine		= 0xEF,
 		RightTopMultiCorner			= 0xF8,
+		RightTopSingleCorner		= 0xFA,
 		BottomPassedSingleLine		= 0xFB,
-		RightTopSingleCorner		= 0xFB,
 		LeftPassedSingleLine		= 0xFE,
 		ClosedFrame					= 0xFF
 	};
@@ -166,12 +166,12 @@ public:
 	};
 
 	~Block(){
-		for(QImage *p : this->imageMap.values()){
-			if(p != nullptr){
-				delete p;
-				p = nullptr;
-			}
-		}
+//		for(QImage *p : this->imageMap.values()){
+//			if(p != nullptr){
+//				delete p;
+//				p = nullptr;
+//			}
+//		}
 		this->imageMap.clear();
 	}
 
@@ -180,12 +180,47 @@ public:
 	}
 
 	void insertImage(BlockType type, const QImage &image){
-		QImage *i = new QImage(image);
+//		QImage *i = new QImage(image);
+//		this->imageMap.insert(type, i);
+		QPixmap i = QPixmap::fromImage(image);
+		if(i.isNull()){
+			qDebug() << CodePath() << "Image is null.";
+			return;
+		}
 		this->imageMap.insert(type, i);
+		qDebug() << CodePath() << "Image information:" << image;
+
 	}
 
-	QImage *getImage(BlockLocation location){
-		return this->imageMap.value(location, nullptr);
+	void insertImage(BlockType type, const QPixmap &pixmap){
+		this->imageMap.insert(type, pixmap);
+	}
+
+	QPixmap getImage(BlockLocation location){
+		return this->imageMap.value(location, QPixmap());
+	}
+
+	int getCount() const{
+		return this->imageMap.count();
+	}
+
+	void _dumpAllImages(const QString &dirpath = QString())const {
+		QString _dirPath = dirpath;
+		if(dirpath.isEmpty()){
+			_dirPath = QDir::currentPath();
+		}
+		QDir dir(_dirPath);
+		if(!dir.exists()){
+			QDir::current().mkpath(_dirPath);
+		}
+		int count = 0;
+		for(QMap<quint8, QPixmap>::ConstIterator i = this->imageMap.constBegin(); i != this->imageMap.constEnd(); i++){
+			if(!i.value().isNull()){
+				i.value().save(dir.path() % "0x" % QString::number(i.key(), 16) % ".png");
+				count ++;
+			}
+		}
+		qDebug() << CodePath() << "Successfully dumped" << count << "/ 47 block image(s) at:" << dir.path();
 	}
 };
 
@@ -276,67 +311,25 @@ private:
 	}
 
 	void renderBlock(const QString &autoTileFileName){
-		QImage blockImage;
-		blockImage.load(autoTileFileName);
-		if(blockImage.isNull()){
+		QImage blockImageOrigin;
+		blockImageOrigin.load(autoTileFileName);
+		if(blockImageOrigin.isNull()){
 			qDebug() << "RpgAutoTileBase::renderBlock: load block texture failed.";
 			return;
 		}
-		if(blockImage.height() < AutoTileImageBlockHeight || blockImage.width() < AutoTileImageBlockWidth){
+		if(blockImageOrigin.height() < AutoTileImageBlockHeight || blockImageOrigin.width() < AutoTileImageBlockWidth){
 			qDebug() << "RpgAutoTileBase::renderBlock: load block texture is not fit.";
 			return;
 		}
-		int count = blockImage.width() / AutoTileImageBlockWidth;
+		int count = blockImageOrigin.width() / AutoTileImageBlockWidth;
 		for(int i = 0; i < count; i++){
 			Block block;
-//			block.singleBlockImage = blockImage.copy(this->adjustRect(this->singleBlockRect, i));
 
-//			QImage background = blockImage.copy(this->adjustRect(this->backgroundRect, i));
-//			QImage backgroundOld = background;
-//			QPainter p(&background);{
-//				p.setCompositionMode(QPainter::CompositionMode_SourceOver);
-//				p.drawImage(this->rightBottomOutCornerLocalOffset, blockImage.copy(this->rightBottomOutCornerRect));
-//				p.end();
-//			}
-//			block.outCornerImage[RightBottomCorner] = new QImage(background);
-//			background = backgroundOld;
-
-//			QPainter p2(&background);{
-//				p2.setCompositionMode(QPainter::CompositionMode_SourceOver);
-//				p2.drawImage(this->leftBottomOutCornerLocalOffset, blockImage.copy(this->leftBottomOutCornerRect));
-//				p2.end();
-//			}
-//			block.outCornerImage[LeftBottomCorner] = new QImage(background);
-//			background = backgroundOld;
-
-//			QPainter p3(&background);{
-//				p3.setCompositionMode(QPainter::CompositionMode_SourceOver);
-//				p3.drawImage(this->rightTopOutCornerLocalOffset, blockImage.copy(this->rightTopOutCornerRect));
-//				p3.end();
-//			}
-//			block.outCornerImage[RightTopCorner] = new QImage(background);
-//			background = backgroundOld;
-
-//			QPainter p4(&background);{
-//				p4.setCompositionMode(QPainter::CompositionMode_SourceOver);
-//				p4.drawImage(this->leftBottomOutCornerLocalOffset, blockImage.copy(this->leftTopOutCornerRect));
-//				p4.end();
-//			}
-//			block.outCornerImage[LeftBottomCorner] = new QImage(background);
-
-//			block.blockImage[LeftTop] = new QImage(blockImage.copy(this->leftTopRect));
-//			block.blockImage[Top] = new QImage(blockImage.copy(this->topRect));
-//			block.blockImage[RightTop] = new QImage(blockImage.copy(this->rightTopRect));
-//			block.blockImage[Left] = new QImage(blockImage.copy(this->leftRect));
-//			block.blockImage[Center] = new QImage(blockImage.copy(this->centerRect));
-//			block.blockImage[Right] = new QImage(blockImage.copy(this->rightRect));
-//			block.blockImage[LeftBottom] = new QImage(blockImage.copy(this->leftBottomRect));
-//			block.blockImage[Bottom] = new QImage(blockImage.copy(this->bottomRect));
-//			block.blockImage[RightBottom] = new QImage(blockImage.copy(this->rightBottomRect));
+			QImage blockImage = blockImageOrigin.copy(adjustRect(QRect(0, 0, AutoTileImageBlockWidth, AutoTileImageBlockHeight), count));
 
 			// 背景草地
 			QImage backgroundBase = blockImage.copy(this->centerRect); // 32x32
-			block.insertImage(Block::None, backgroundBase);		// 保存草丛块
+			block.insertImage(Block::None, backgroundBase);		// 保存背景块
 
 			// 1x1单独的块
 			block.insertImage(Block::ClosedFrame, blockImage.copy(this->adjustRect(this->singleBlockRect, i)));	// 保存封闭块
@@ -348,6 +341,35 @@ private:
 			block.insertImage(Block::LeftBottomMultiCorner, leftBottomBase); // 保存左下角内拐块
 			QImage rightBottomBase = blockImage.copy(this->rightBottomRect);	// 32x32
 			block.insertImage(Block::RightBottomMultiCorner, rightBottomBase);	// 保存右下角内拐块
+			{
+				QPainter p(&leftTopBase);
+				p.setCompositionMode(QPainter::CompositionMode_Source);
+				p.drawImage(leftBottomHHalfLocalOffset, leftBottomBase, QRect(leftBottomHHalfLocalOffset, QSize(32, 16)));
+				block.insertImage(Block::RightPassedSingleLine, leftTopBase);	// 保存右缺口块
+				p.end();
+			}
+			{
+				QPainter p(&leftTopBase);
+				p.setCompositionMode(QPainter::CompositionMode_Source);
+				p.drawImage(rightTopVHalfLocalOffset, rightTopBase, QRect(rightTopVHalfLocalOffset, QSize(16, 32)));
+				block.insertImage(Block::BottomPassedSingleLine, leftTopBase);	// 保存下缺口块
+				p.end();
+			}
+			{
+				QPainter p(&rightTopBase);
+				p.setCompositionMode(QPainter::CompositionMode_Source);
+				p.drawImage(bottomHHalfLocalOffset, rightBottomBase, QRect(bottomHHalfLocalOffset, QSize(32, 16)));
+				block.insertImage(Block::LeftPassedSingleLine, rightTopBase);	// 保存左缺口块
+				p.end();
+			}
+			{
+				QPainter p(&rightBottomBase);
+				p.setCompositionMode(QPainter::CompositionMode_Source);
+				p.drawImage(leftTopVHalfLocalOffset, leftBottomBase, QRect(leftTopVHalfLocalOffset, QSize(16, 32)));
+				block.insertImage(Block::TopPassedSingleLine, rightBottomBase);	// 保存上缺口块
+				p.end();
+			}
+
 
 			// 内拐的块, 四个方向, 半成品
 			QImage leftTopInnerBase = blockImage.copy(this->leftTopInnerCornerRect);	// 16x16
@@ -365,7 +387,7 @@ private:
 			}
 			{
 				QPainter p(&rightTopBase);
-				p.setCompositionMode(QPainter::CompositionMode_SourceOut);
+				p.setCompositionMode(QPainter::CompositionMode_SourceOver);
 				p.drawImage(leftBottomInnerCornerLocalOffset, rightTopInnerBase);
 				block.insertImage(Block::RightTopSingleCorner, rightTopBase);	// 保存右上角单行块
 				p.end();
@@ -597,6 +619,42 @@ private:
 				p.end();
 			}
 
+			// 单边
+			{
+				QImage backgroundLoad = backgroundBase;
+				QPainter p(&backgroundLoad);
+				p.setCompositionMode(QPainter::CompositionMode_SourceOver);
+				p.drawImage(leftTopHHalfLocalOffset, leftBase);
+				block.insertImage(Block::LeftMulti, backgroundLoad);					// 保存左边的边
+				p.end();
+			}
+			{
+				QImage backgroundLoad = backgroundBase;
+				QPainter p(&backgroundLoad);
+				p.setCompositionMode(QPainter::CompositionMode_SourceOver);
+				p.drawImage(topHHalfLocalOffset, topBase);
+				block.insertImage(Block::TopMulti, backgroundLoad);						// 保存上边的边
+				p.end();
+			}
+			{
+				QImage backgroundLoad = backgroundBase;
+				QPainter p(&backgroundLoad);
+				p.setCompositionMode(QPainter::CompositionMode_SourceOver);
+				p.drawImage(rightBottomHHalfLocalOffset, rightBase);
+				block.insertImage(Block::RightMulti, backgroundLoad);					// 保存右边的边
+				p.end();
+			}
+			{
+				QImage backgroundLoad = backgroundBase;
+				QPainter p(&backgroundLoad);
+				p.setCompositionMode(QPainter::CompositionMode_SourceOver);
+				p.drawImage(bottomHHalfLocalOffset, bottomBase);
+				block.insertImage(Block::BottomMulti, backgroundLoad);					// 保存下边的边
+				p.end();
+			}
+			qDebug() << CodePath() << "this->blockImageList.length:" << this->blockImageList.length();
+			this->blockImageList.append(block);
+			qDebug() << CodePath() << "this->blockImageList.length new:" << this->blockImageList.length();
 		}
 	}
 
@@ -608,6 +666,7 @@ public:
 		}
 		if(!autoTileFileName.isEmpty()){
 			this->renderBlock(autoTileFileName);
+			this->blockImageList.at(0).getCount();
 		}
 	}
 
@@ -625,6 +684,16 @@ public:
 	void setAutoTileFileName(const QString &filename){
 		this->blockImageList.clear();
 		this->renderBlock(filename);
+	}
+
+	// Debug
+	void _dumpImage(int index = 0){
+		if((this->blockImageList.length() > index)){
+			this->blockImageList.at(index)._dumpAllImages();
+		}else{
+			qDebug() << CodePath() << "Index is out of range.";
+		}
+
 	}
 
 //	// 得到1x1地图块的画面

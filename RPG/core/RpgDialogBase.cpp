@@ -6,7 +6,7 @@ const QPixmap RpgDialogBase::renderBackground(){
 	QPixmap backgroundCopy = QPixmap::fromImage(this->backgroundOrigin.scaled(this->dialogSize, Qt::IgnoreAspectRatio, Qt::SmoothTransformation));
 
 	QPainter p(&background);{
-		p.setCompositionMode(QPainter::CompositionMode_Source);
+		p.setCompositionMode(QPainter::CompositionMode_SourceOver);
 		QRectF area(2, 2, background.width() -4, background.height() -4);
 		p.drawPixmap(area, backgroundCopy, area);
 		p.end();
@@ -20,11 +20,11 @@ const QPixmap RpgDialogBase::renderDialog(){
 		int width = this->dialogSize.width();
 		int height = this->dialogSize.height();
 		p.setCompositionMode(QPainter::CompositionMode_SourceOver);
-		for(int i = 16; i < width; i += 16){
+		for(int i = 16; i < width - 16; i += 16){
 			p.drawImage(QRect(i, 0, 16, 16), this->backgroundBorder[Top]);
 			p.drawImage(QRect(i, height - 16, 16, 16), this->backgroundBorder[Bottom]);
 		}
-		for(int i = 16; i < height; i += 16){
+		for(int i = 16; i < height - 16; i += 16){
 			p.drawImage(QRect(0, i, 16, 16), this->backgroundBorder[Left]);
 			p.drawImage(QRect(width - 16, i, 16, 16), this->backgroundBorder[Right]);
 		}

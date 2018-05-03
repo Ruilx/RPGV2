@@ -11,6 +11,7 @@
 #include <RPG/com/RpgScene.h>
 #include <RPG/core/RpgTileSetBase.h>
 #include <RPG/com/RpgMusic.h>
+#include <RPG/core/RpgAutoTileBase.h>
 
 /**
  * @brief The RpgWidget class

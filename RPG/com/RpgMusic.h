@@ -27,7 +27,7 @@ class RpgMusic : public QObject
 	int loop = -1;
 	int currentLoop = 0;
 
-	void volumeTransition(bool upward, int duration = 750){
+	void volumeTransition(bool upward, int duration = 250){
 		if(upward){
 			this->volumeAnimation->setStartValue(0);
 			this->volumeAnimation->setEndValue(this->volume);
@@ -54,25 +54,36 @@ public:
 
 		connect(this->music, &QMediaPlayer::stateChanged, this, [this](QMediaPlayer::State state){
 			if(state == QMediaPlayer::PlayingState){
-				if(this->currentLoop > 0)
+				if(this->currentLoop >= 0)
 				qInfo() << CodePath() << "Start playing: '" << this->music->media().canonicalUrl().url(QUrl::PreferLocalFile) << "'";
 				emit this->started();
 				return;
-			}else{
-				if(this->loop > 0 && this->currentLoop < this->loop){
-					this->music->play();
-					this->currentLoop++;
-				}else if(this->loop > 0 && this->currentLoop >= this->loop){
+			}else if(state == QMediaPlayer::StoppedState){
+				if(this->loop > 0 && this->currentLoop >= this->loop){
 					qInfo() << CodePath() << "Stopped: '" << this->music->media().canonicalUrl().url(QUrl::PreferLocalFile) << "'";
 					emit this->stopped();
 					this->currentLoop = 0;
 					return;
-				}else{
-					// loop = -1 // inf
-					this->music->play();
 				}
 			}
 		});
+
+		connect(this->music, &QMediaPlayer::mediaStatusChanged, [this](QMediaPlayer::MediaStatus status){
+			if(status == QMediaPlayer::EndOfMedia){
+				// 如果loop是无限循环, currentLoop是当前已经循环了几遍了, 如果loop有值, currentLoop要与其比较判断是否要继续播放下去
+				if(this->loop < 0 || (this->loop > 0 && this->currentLoop < this->loop)){
+					this->music->setPosition(0);
+					this->music->play();
+					currentLoop++;
+				}
+			}
+		});
+	}
+
+	~RpgMusic(){
+		if(this->isRunning()){
+			this->stopMusic();
+		}
 	}
 
 	void addMusic(const QString &musicName, const QString &fileName){
@@ -88,6 +99,10 @@ public:
 
 	void clearMusic(){
 		this->musicMap.clear();
+	}
+
+	bool isRunning() const{
+		return this->music->state() == QMediaPlayer::PlayingState;
 	}
 
 	QString getMusic(const QString &musicName){

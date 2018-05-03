@@ -7,7 +7,7 @@
 #include <QtCore>
 #include <QtWidgets>
 
-#define DialogFilename "data/images/skin/blueAlpha.png" //(192x128)
+#define DialogFilename "data/images/skin/blackAlpha.png" //(192x128)
 
 /**
  * @brief The RpgDialogBase_ class

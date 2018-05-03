@@ -3,6 +3,7 @@
 
 #include <QtCore>
 #include <QtWidgets>
+#include <QJSEngine>
 #include <RPG/About.h>
 #include <RPG/Global.h>
 #include <RPG/utils/Utils.h>
