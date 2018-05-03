@@ -10,22 +10,6 @@
 #define AutoTileImageBlockHeight 128
 
 class Block{
-//	QImage singleBlockImage;
-//	QImage *outCornerImage[4];
-//	QImage *blockImage[9];
-//	~Block_t(){
-//		for(int i = 0; i < 4; i++){
-//			if(outCornerImage[i] != nullptr){
-//				delete outCornerImage[i];
-//			}
-//		}
-//		for(int i = 0; i < 9; i++){
-//			if(blockImage[i] != nullptr){
-//				delete blockImage[i];
-//			}
-//		}
-//	}
-
 //	QImage *singleBlockImage;
 //	/* ┌┐
 //	 * └┘
@@ -166,12 +150,6 @@ public:
 	};
 
 	~Block(){
-//		for(QImage *p : this->imageMap.values()){
-//			if(p != nullptr){
-//				delete p;
-//				p = nullptr;
-//			}
-//		}
 		this->imageMap.clear();
 	}
 
@@ -180,8 +158,6 @@ public:
 	}
 
 	void insertImage(BlockType type, const QImage &image){
-//		QImage *i = new QImage(image);
-//		this->imageMap.insert(type, i);
 		QPixmap i = QPixmap::fromImage(image);
 		if(i.isNull()){
 			qDebug() << CodePath() << "Image is null.";
@@ -189,7 +165,6 @@ public:
 		}
 		this->imageMap.insert(type, i);
 		qDebug() << CodePath() << "Image information:" << image;
-
 	}
 
 	void insertImage(BlockType type, const QPixmap &pixmap){
@@ -216,7 +191,7 @@ public:
 		int count = 0;
 		for(QMap<quint8, QPixmap>::ConstIterator i = this->imageMap.constBegin(); i != this->imageMap.constEnd(); i++){
 			if(!i.value().isNull()){
-				i.value().save(dir.path() % "0x" % QString::number(i.key(), 16) % ".png");
+				i.value().save(dir.path() % "/0x" % QString::number(i.key(), 16) % ".png");
 				count ++;
 			}
 		}
@@ -234,6 +209,7 @@ private:
 
 	const QRect singleBlockRect = QRect(0, 0, 32, 32);				// ClosedFrame
 	const QRect backgroundRect = QRect(32, 0, 32, 32);				// Unknown
+	const QRect singleHubRect = QRect(64, 0, 32, 32);				// SingleHub
 	const QRect rightBottomInnerCornerRect = QRect(64, 0, 16, 16);	// RightBottomMultiInnerCorner
 	const QRect leftBottomInnerCornerRect = QRect(80, 0, 16, 16);		// LeftBottomMultiInnerCorner
 	const QRect rightTopInnerCornerRect = QRect(64, 16, 16, 16);		// RightTopMultiInnerCorner
@@ -266,7 +242,7 @@ private:
 	const QRect rightTopVHalfRect = QRect(64, 32, 16, 32);			// rightTop32 Right		// Maybe unused. replaced by rightTop
 	const QRect rightBottomVHalfRect = QRect(64, 96, 16, 32);		// rightBottom32 Right
 	const QRect leftVHalfRect = QRect(0, 64, 16, 32);				// left32 Left			// Maybe unused. replaced by left
-	const QRect rightVHalfRect = QRect(80, 96, 16, 32);				// right32 Right
+	const QRect rightVHalfRect = QRect(80, 64, 16, 32);				// right32 Right
 
 	const QPoint leftTopHHalfLocalOffset = QPoint(0, 0);
 	const QPoint leftBottomHHalfLocalOffset = QPoint(0, 16);
@@ -281,6 +257,11 @@ private:
 	const QPoint rightBottomVHalfLocalOffset = QPoint(16, 0);
 	const QPoint leftHHalfLocalOffset = QPoint(0, 0);
 	const QPoint rightHHalfLocalOffset = QPoint(16, 0);
+
+	const QPoint leftTopPos = QPoint(0, 0);
+	const QPoint leftBottomPos = QPoint(0, 16);
+	const QPoint rightTopPos = QPoint(16, 0);
+	const QPoint rightBottomPos = QPoint(16, 16);
 
 public:
 	/**
@@ -306,357 +287,11 @@ public:
 		LeftTopCorner = 3
 	};
 private:
-	QRect adjustRect(QRect original, int offset = 0){
+	inline QRect adjustRect(QRect original, int offset = 0)const {
 		return QRect(original.left() * (offset + 1), original.top(), original.width(), original.height());
 	}
 
-	void renderBlock(const QString &autoTileFileName){
-		QImage blockImageOrigin;
-		blockImageOrigin.load(autoTileFileName);
-		if(blockImageOrigin.isNull()){
-			qDebug() << "RpgAutoTileBase::renderBlock: load block texture failed.";
-			return;
-		}
-		if(blockImageOrigin.height() < AutoTileImageBlockHeight || blockImageOrigin.width() < AutoTileImageBlockWidth){
-			qDebug() << "RpgAutoTileBase::renderBlock: load block texture is not fit.";
-			return;
-		}
-		int count = blockImageOrigin.width() / AutoTileImageBlockWidth;
-		for(int i = 0; i < count; i++){
-			Block block;
-
-			QImage blockImage = blockImageOrigin.copy(adjustRect(QRect(0, 0, AutoTileImageBlockWidth, AutoTileImageBlockHeight), count));
-
-			// 背景草地
-			QImage backgroundBase = blockImage.copy(this->centerRect); // 32x32
-			block.insertImage(Block::None, backgroundBase);		// 保存背景块
-
-			// 1x1单独的块
-			block.insertImage(Block::ClosedFrame, blockImage.copy(this->adjustRect(this->singleBlockRect, i)));	// 保存封闭块
-			QImage leftTopBase = blockImage.copy(this->leftTopRect);	// 32x32
-			block.insertImage(Block::LeftTopMultiCorner, leftTopBase);		// 保存左上角内拐块
-			QImage rightTopBase = blockImage.copy(this->rightTopRect);	// 32x32
-			block.insertImage(Block::RightTopMultiCorner, rightTopBase);	// 保存右上角内拐块
-			QImage leftBottomBase = blockImage.copy(this->leftBottomRect);	// 32x32
-			block.insertImage(Block::LeftBottomMultiCorner, leftBottomBase); // 保存左下角内拐块
-			QImage rightBottomBase = blockImage.copy(this->rightBottomRect);	// 32x32
-			block.insertImage(Block::RightBottomMultiCorner, rightBottomBase);	// 保存右下角内拐块
-			{
-				QPainter p(&leftTopBase);
-				p.setCompositionMode(QPainter::CompositionMode_Source);
-				p.drawImage(leftBottomHHalfLocalOffset, leftBottomBase, QRect(leftBottomHHalfLocalOffset, QSize(32, 16)));
-				block.insertImage(Block::RightPassedSingleLine, leftTopBase);	// 保存右缺口块
-				p.end();
-			}
-			{
-				QPainter p(&leftTopBase);
-				p.setCompositionMode(QPainter::CompositionMode_Source);
-				p.drawImage(rightTopVHalfLocalOffset, rightTopBase, QRect(rightTopVHalfLocalOffset, QSize(16, 32)));
-				block.insertImage(Block::BottomPassedSingleLine, leftTopBase);	// 保存下缺口块
-				p.end();
-			}
-			{
-				QPainter p(&rightTopBase);
-				p.setCompositionMode(QPainter::CompositionMode_Source);
-				p.drawImage(bottomHHalfLocalOffset, rightBottomBase, QRect(bottomHHalfLocalOffset, QSize(32, 16)));
-				block.insertImage(Block::LeftPassedSingleLine, rightTopBase);	// 保存左缺口块
-				p.end();
-			}
-			{
-				QPainter p(&rightBottomBase);
-				p.setCompositionMode(QPainter::CompositionMode_Source);
-				p.drawImage(leftTopVHalfLocalOffset, leftBottomBase, QRect(leftTopVHalfLocalOffset, QSize(16, 32)));
-				block.insertImage(Block::TopPassedSingleLine, rightBottomBase);	// 保存上缺口块
-				p.end();
-			}
-
-
-			// 内拐的块, 四个方向, 半成品
-			QImage leftTopInnerBase = blockImage.copy(this->leftTopInnerCornerRect);	// 16x16
-			QImage leftBottomInnerBase = blockImage.copy(this->leftBottomInnerCornerRect); // 16x16
-			QImage rightTopInnerBase = blockImage.copy(this->rightTopInnerCornerRect); // 16x16
-			QImage rightBottomInnerBase = blockImage.copy(this->rightBottomInnerCornerRect); // 16x16
-
-			// 外拐块和内拐块合并
-			{
-				QPainter p(&leftTopBase);
-				p.setCompositionMode(QPainter::CompositionMode_SourceOver);
-				p.drawImage(rightBottomInnerCornerLocalOffset, leftTopInnerBase);
-				block.insertImage(Block::LeftTopSingleCorner, leftTopBase);	// 保存左上角单行块
-				p.end();
-			}
-			{
-				QPainter p(&rightTopBase);
-				p.setCompositionMode(QPainter::CompositionMode_SourceOver);
-				p.drawImage(leftBottomInnerCornerLocalOffset, rightTopInnerBase);
-				block.insertImage(Block::RightTopSingleCorner, rightTopBase);	// 保存右上角单行块
-				p.end();
-			}
-			{
-				QPainter p(&leftBottomBase);
-				p.setCompositionMode(QPainter::CompositionMode_SourceOver);
-				p.drawImage(rightTopInnerCornerLocalOffset, leftBottomInnerBase);
-				block.insertImage(Block::LeftBottomSingleCorner, leftBottomBase);	// 保存左下角单行块
-				p.end();
-			}
-			{
-				QPainter p(&rightBottomBase);
-				p.setCompositionMode(QPainter::CompositionMode_SourceOver);
-				p.drawImage(leftTopInnerCornerLocalOffset, rightBottomInnerBase);
-				block.insertImage(Block::RightBottomSingleCorner, rightBottomBase);	// 保存右下角单行块
-				p.end();
-			}
-
-			// 4个内拐的块和背景合成
-			QImage multiAreaLeftBg;
-			QImage multiAreaRightBg;
-			QImage multiAreaTopBg;
-			QImage multiAreaBottomBg;
-
-			QImage leftTopInnerBg;
-			QImage rightTopInnerBg;
-			QImage leftBottomInnerBg;
-			QImage rightBottomInnerBg;
-			{
-				QImage backgroundLoad = backgroundBase;
-				QPainter p(&backgroundLoad);
-				p.setCompositionMode(QPainter::CompositionMode_SourceOver);
-				p.drawImage(leftTopInnerCornerLocalOffset, leftTopInnerBase);
-				block.insertImage(Block::LeftTopMultiInnerCorner, backgroundLoad);	// 保存左上角外拐块
-				leftTopInnerBg = backgroundLoad;
-				p.drawImage(rightTopInnerCornerLocalOffset, rightTopInnerBase);
-				block.insertImage(Block::MultiAreaTop, backgroundLoad);				// 保存左上角和右上角的外拐块
-				multiAreaTopBg = backgroundLoad;
-				p.drawImage(rightBottomInnerCornerLocalOffset, rightBottomInnerBase);
-				block.insertImage(Block::MultiHubRightTop, backgroundLoad);			// 保存左上角和右上角和右下角的外拐块
-				p.drawImage(leftBottomInnerCornerLocalOffset, leftBottomInnerBase);
-				block.insertImage(Block::SingleHub, backgroundLoad);				// 保存四角外块
-				p.end();
-			}
-			{
-				QImage backgroundLoad = leftTopInnerBg;
-				QPainter p(&backgroundLoad);
-				p.setCompositionMode(QPainter::CompositionMode_SourceOver);
-				p.drawImage(rightBottomInnerCornerLocalOffset, rightBottomInnerBase);
-				block.insertImage(Block::MultiAreaBackSlash, backgroundLoad);		// 保存左上角和右下角外拐块
-				p.drawImage(leftBottomInnerCornerLocalOffset, leftBottomInnerBase);
-				block.insertImage(Block::MultiHubLeftBottom, backgroundLoad);		// 保存左上角,左下角和右下角的外拐块
-				p.end();
-			}
-			{
-				QImage backgroundLoad = leftTopInnerBg;
-				QPainter p(&backgroundLoad);
-				p.setCompositionMode(QPainter::CompositionMode_SourceOver);
-				p.drawImage(leftBottomInnerCornerLocalOffset, leftBottomInnerBase);
-				block.insertImage(Block::MultiAreaLeft, backgroundLoad);			// 保存左上角和左下角的外拐块
-				multiAreaLeftBg = backgroundLoad;
-				p.end();
-			}
-			{
-				QImage backgroundLoad = multiAreaTopBg;
-				QPainter p(&backgroundLoad);
-				p.setCompositionMode(QPainter::CompositionMode_SourceOver);
-				p.drawImage(leftBottomInnerCornerLocalOffset, leftBottomInnerBase);
-				block.insertImage(Block::MultiHubLeftTop, backgroundLoad);			// 保存左上角, 右上角和左下角的外拐块
-				p.end();
-			}
-
-			{
-				QImage backgroundLoad = backgroundBase;
-				QPainter p(&backgroundLoad);
-				p.setCompositionMode(QPainter::CompositionMode_SourceOver);
-				p.drawImage(rightTopInnerCornerLocalOffset, rightTopInnerBase);
-				block.insertImage(Block::RightTopMultiInnerCorner, backgroundLoad); // 保存右上角外拐块
-				rightTopInnerBg = backgroundLoad;
-				p.drawImage(rightBottomInnerCornerLocalOffset, rightBottomInnerBase);
-				block.insertImage(Block::MultiAreaRight, backgroundLoad);			// 保存右上角和右下角外拐块
-				multiAreaRightBg = backgroundLoad;
-				p.drawImage(leftBottomInnerCornerLocalOffset, leftBottomInnerBase);
-				block.insertImage(Block::MultiHubRightBottom, backgroundLoad);		// 保存右上角, 右下角和左下角的外拐块
-				p.end();
-			}
-			{
-				QImage backgroundLoad = rightTopInnerBg;
-				QPainter p(&backgroundLoad);
-				p.setCompositionMode(QPainter::CompositionMode_SourceOver);
-				p.drawImage(leftBottomInnerCornerLocalOffset, leftBottomInnerBase);
-				block.insertImage(Block::MultiAreaSlash, backgroundLoad);			// 保存右上角和左下角的外拐块
-//				p.drawImage(rightTopInnerCornerLocalOffset, rightTopInnerBase);
-//				block.insertImage(Block::MultiHubLeftTop, backgroundLoad);			// 保存左上角, 右上角和右下角的外拐块
-				p.end();
-			}
-
-			{
-				QImage backgroundLoad = backgroundBase;
-				QPainter p(&backgroundLoad);
-				p.setCompositionMode(QPainter::CompositionMode_SourceOver);
-				p.drawImage(rightBottomInnerCornerLocalOffset, rightBottomInnerBase);
-				block.insertImage(Block::RightBottomMultiInnerCorner, backgroundLoad);	// 保存右下角外拐块
-				rightBottomInnerBg = backgroundLoad;
-				p.drawImage(leftBottomInnerCornerLocalOffset, leftBottomInnerBase);
-				block.insertImage(Block::MultiAreaBottom, backgroundLoad);				// 保存左下角和右下角外拐块
-				multiAreaBottomBg = backgroundLoad;
-				p.end();
-			}
-
-			{
-				QImage backgroundLoad = backgroundBase;
-				QPainter p(&backgroundLoad);
-				p.setCompositionMode(QPainter::CompositionMode_SourceOver);
-				p.drawImage(leftBottomInnerCornerLocalOffset, leftBottomInnerBase);
-				block.insertImage(Block::LeftBottomMultiInnerCorner, backgroundLoad);	// 保存左下角外拐块
-				leftBottomInnerBg = backgroundLoad;
-				p.end();
-			}
-
-			// 竖直的块(16x32竖, 32x16横)
-			QImage leftBase = blockImage.copy(leftVHalfRect);
-			QImage rightBase = blockImage.copy(rightVHalfRect);
-			QImage topBase = blockImage.copy(topHHalfRect);
-			QImage bottomBase = blockImage.copy(bottomHHalfRect);
-
-			// 2x外拐块和边
-			{
-				QImage backgroundLoad = multiAreaLeftBg;
-				QPainter p(&backgroundLoad);
-				p.setCompositionMode(QPainter::CompositionMode_SourceOver);
-				p.drawImage(rightHHalfLocalOffset, rightBase);
-				block.insertImage(Block::RightSingleTee, backgroundLoad);				// 保存左上, 左下外拐块和右边
-				p.end();
-			}
-			{
-				QImage backgroundLoad = multiAreaRightBg;
-				QPainter p(&backgroundLoad);
-				p.setCompositionMode(QPainter::CompositionMode_SourceOver);
-				p.drawImage(leftHHalfLocalOffset, leftBase);
-				block.insertImage(Block::LeftSingleTee, backgroundLoad);				// 保存右上, 右下外拐块和左边
-				p.end();
-			}
-			{
-				QImage backgroundLoad = multiAreaTopBg;
-				QPainter p(&backgroundLoad);
-				p.setCompositionMode(QPainter::CompositionMode_SourceOver);
-				p.drawImage(topHHalfLocalOffset, topBase);
-				block.insertImage(Block::TopSingleTee, backgroundLoad);					// 保存左下, 右下外拐块和上边
-				p.end();
-			}
-			{
-				QImage backgroundLoad = multiAreaBottomBg;
-				QPainter p(&backgroundLoad);
-				p.setCompositionMode(QPainter::CompositionMode_SourceOver);
-				p.drawImage(bottomHHalfLocalOffset, bottomBase);
-				block.insertImage(Block::BottomSingleTee, backgroundLoad);				// 保存左上, 右上外拐块和下边
-				p.end();
-			}
-
-			// 1x外拐块和边, 两边
-			{
-				QImage backgroundLoad = leftTopInnerBg;
-				QPainter p(&backgroundLoad);
-				p.setCompositionMode(QPainter::CompositionMode_SourceOver);
-				p.drawImage(rightHHalfLocalOffset, rightBase);
-				block.insertImage(Block::RightMultiTeeTop, backgroundLoad);				// 保存左上外拐块和右边
-				p.drawImage(leftHHalfLocalOffset, leftBase);
-				block.insertImage(Block::VerticalPassedSingleLine, backgroundLoad);		// 保存左边和右边
-				p.end();
-			}
-			{
-				QImage backgroundLoad = leftTopInnerBg;
-				QPainter p(&backgroundLoad);
-				p.setCompositionMode(QPainter::CompositionMode_SourceOver);
-				p.drawImage(bottomHHalfLocalOffset, bottomBase);
-				block.insertImage(Block::BottomMultiTeeLeft, backgroundLoad);			// 保存左上外拐块和下边
-				p.drawImage(topHHalfLocalOffset, topBase);
-				block.insertImage(Block::HorizonalPassedSingleLine, backgroundLoad);	// 保存上边和下边
-				p.end();
-			}
-			{
-				QImage backgroundLoad = rightTopInnerBg;
-				QPainter p(&backgroundLoad);
-				p.setCompositionMode(QPainter::CompositionMode_SourceOver);
-				p.drawImage(leftHHalfLocalOffset, leftBase);
-				block.insertImage(Block::LeftMultiTeeTop, backgroundLoad);				// 保存左边和右上外拐块
-				p.end();
-			}
-			{
-				QImage backgroundLoad = rightTopInnerBg;
-				QPainter p(&backgroundLoad);
-				p.setCompositionMode(QPainter::CompositionMode_SourceOver);
-				p.drawImage(bottomHHalfLocalOffset, bottomBase);
-				block.insertImage(Block::BottomMultiTeeRight, backgroundLoad);			// 保存下边和右上角外拐块
-				p.end();
-			}
-			{
-				QImage backgroundLoad = leftBottomInnerBg;
-				QPainter p(&backgroundLoad);
-				p.setCompositionMode(QPainter::CompositionMode_SourceOver);
-				p.drawImage(topHHalfLocalOffset, topBase);
-				block.insertImage(Block::TopMultiTeeLeft, backgroundLoad);				// 保存上边和左下角外拐块
-				p.end();
-			}
-			{
-				QImage backgroundLoad = leftBottomInnerBg;
-				QPainter p(&backgroundLoad);
-				p.setCompositionMode(QPainter::CompositionMode_SourceOver);
-				p.drawImage(rightHHalfLocalOffset, rightBase);
-				block.insertImage(Block::RightMultiTeeBottom, backgroundLoad);			// 保存左下角外拐块和右边
-				p.end();
-			}
-			{
-				QImage backgroundLoad = rightBottomInnerBg;
-				QPainter p(&backgroundLoad);
-				p.setCompositionMode(QPainter::CompositionMode_SourceOver);
-				p.drawImage(leftHHalfLocalOffset, leftBase);
-				block.insertImage(Block::LeftMultiTeeBottom, backgroundLoad);			// 保存左边和右下角外拐块
-				p.end();
-			}
-			{
-				QImage backgroundLoad = rightBottomInnerBg;
-				QPainter p(&backgroundLoad);
-				p.setCompositionMode(QPainter::CompositionMode_SourceOver);
-				p.drawImage(topHHalfLocalOffset, topBase);
-				block.insertImage(Block::TopMultiTeeRight, backgroundLoad);				// 保存上边和右下角外拐块
-				p.end();
-			}
-
-			// 单边
-			{
-				QImage backgroundLoad = backgroundBase;
-				QPainter p(&backgroundLoad);
-				p.setCompositionMode(QPainter::CompositionMode_SourceOver);
-				p.drawImage(leftTopHHalfLocalOffset, leftBase);
-				block.insertImage(Block::LeftMulti, backgroundLoad);					// 保存左边的边
-				p.end();
-			}
-			{
-				QImage backgroundLoad = backgroundBase;
-				QPainter p(&backgroundLoad);
-				p.setCompositionMode(QPainter::CompositionMode_SourceOver);
-				p.drawImage(topHHalfLocalOffset, topBase);
-				block.insertImage(Block::TopMulti, backgroundLoad);						// 保存上边的边
-				p.end();
-			}
-			{
-				QImage backgroundLoad = backgroundBase;
-				QPainter p(&backgroundLoad);
-				p.setCompositionMode(QPainter::CompositionMode_SourceOver);
-				p.drawImage(rightBottomHHalfLocalOffset, rightBase);
-				block.insertImage(Block::RightMulti, backgroundLoad);					// 保存右边的边
-				p.end();
-			}
-			{
-				QImage backgroundLoad = backgroundBase;
-				QPainter p(&backgroundLoad);
-				p.setCompositionMode(QPainter::CompositionMode_SourceOver);
-				p.drawImage(bottomHHalfLocalOffset, bottomBase);
-				block.insertImage(Block::BottomMulti, backgroundLoad);					// 保存下边的边
-				p.end();
-			}
-			qDebug() << CodePath() << "this->blockImageList.length:" << this->blockImageList.length();
-			this->blockImageList.append(block);
-			qDebug() << CodePath() << "this->blockImageList.length new:" << this->blockImageList.length();
-		}
-	}
+	void renderBlock(const QString &autoTileFileName);
 
 public:
 	// 构造函数
