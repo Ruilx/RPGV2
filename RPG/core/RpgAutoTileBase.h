@@ -324,7 +324,7 @@ public:
 	// Debug
 	void _dumpImage(int index = 0){
 		if((this->blockImageList.length() > index)){
-			this->blockImageList.at(index)._dumpAllImages();
+			this->blockImageList.at(index)._dumpAllImages("temp");
 		}else{
 			qDebug() << CodePath() << "Index is out of range.";
 		}

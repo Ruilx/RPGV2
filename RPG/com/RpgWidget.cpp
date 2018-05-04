@@ -231,8 +231,9 @@ void RpgWidget::ready(){
 //	RpgMusic::instance()->playMusic("op1");
 
 	RpgAutoTileBase aTileImage("data/images/autotiles/test.png", "test");
-	aTileImage._dumpImage(0);
+	//aTileImage._dumpImage(0);
 
+	titleScene->getRpgDialog()->setDialogWidth(250);
 	titleScene->getRpgDialog()->addText("Autotile已经导出.");
 	titleScene->getRpgDialog()->exec();
 	titleScene->getRpgDialog()->waitingForDialogComplete();

@@ -137,19 +137,19 @@ public:
 	 */
 	void setTextColor(const QColor &color){ this->message->setDefaultTextColor(color); }
 
-//	/**
-//	 * @brief getViewportOffset
-//	 * @return QPoint
-//	 * 获得Viewport的偏移坐标
-//	 */
-//	QPointF getViewportOffset() const { return this->viewportOffset; }
-
-//	/**
-//	 * @brief setViewportOffset
-//	 * @param offset
-//	 * 设置Viewport的偏移坐标
-//	 */
-//	void setViewportOffset(const QPointF &offset){ this->viewportOffset = offset; }
+	/**
+	 * @brief setDialogWidth
+	 * @param width
+	 * 设置对话框宽度
+	 */
+	void setDialogWidth(int width){
+		if(width < 0 || width > ScreenWidth - marginH - marginH){
+			qDebug() << CodePath() << "Given width:" << width << "is not valid.";
+			return;
+		}
+		QSize dialogSize = this->skin.getDialogSize();
+		this->skin.setDialogSize(QSize(width, dialogSize.height()));
+	}
 
 	/**
 	 * @brief clearText
