@@ -1,5 +1,5 @@
 #include "RpgChoice.h"
-
+#include "RpgSound.h"
 
 
 RpgChoice::RpgChoice(QGraphicsScene *parentScene, QObject *parent): QObject(parent){
@@ -381,6 +381,7 @@ void RpgChoice::receiveKey(int key, Qt::KeyboardModifiers mod){
 					// 光标不在第一个(就可以正常往上了)
 					this->messageCurrentIndex--;
 					this->showChoiceBox(this->messageCurrentIndex);
+					RpgSound::instance()->play("select");
 				}
 			}else{
 				// 正在显示 1 项以上(不在第一个)
@@ -393,6 +394,7 @@ void RpgChoice::receiveKey(int key, Qt::KeyboardModifiers mod){
 					// 光标不在第一个选项上(就可以正常往上了)
 					this->messageCurrentIndex--;
 					this->showChoiceBox(this->messageCurrentIndex);
+					RpgSound::instance()->play("select");
 				}
 			}
 		}
@@ -413,6 +415,7 @@ void RpgChoice::receiveKey(int key, Qt::KeyboardModifiers mod){
 					// 光标不在最后一个(就可以正常往下了)
 					this->messageCurrentIndex++;
 					this->showChoiceBox(this->messageCurrentIndex);
+					RpgSound::instance()->play("select");
 				}
 			}else{
 				// 正在显示非后三项(不在最后几个)
@@ -425,6 +428,7 @@ void RpgChoice::receiveKey(int key, Qt::KeyboardModifiers mod){
 					// 光标不在最后一个选项上(就可以正常往下了)
 					this->messageCurrentIndex++;
 					this->showChoiceBox(this->messageCurrentIndex);
+					RpgSound::instance()->play("select");
 				}
 			}
 		}

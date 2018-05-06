@@ -23,68 +23,17 @@ public:
 		this->soundMap.clear();
 	}
 
-	void addSound(const QString &soundName, const QString &fileName){
-		if(!QFile::exists(fileName)){
-			qDebug() << CodePath() << "Sound file:'" << fileName << "' is not exist.";
-		}
-		QSoundEffect *sound = new QSoundEffect(this);
-		sound->setSource(QUrl(fileName));
-		this->soundMap.insert(soundName, sound);
-	}
+	void addSound(const QString &soundName, const QString &fileName);
+	void removeSound(const QString &soundName);
 
-	void removeSound(const QString &soundName){
-		QSoundEffect *sound = this->soundMap.take(soundName);
-		if(sound != nullptr){
-			if(sound->isPlaying()){
-				sound->stop();
-			}
-			sound->deleteLater();
-		}
-	}
-
-	void clearSound(){
-		for(QSoundEffect *sound: this->soundMap){
-			if(sound != nullptr){
-				if(sound->isPlaying()){
-					sound->stop();
-				}
-				sound->deleteLater();
-			}
-		}
-		this->soundMap.clear();
-	}
+	void clearSound();
 signals:
 	void started(const QString &soundName);
 	void stopped(const QString &soundName);
 public slots:
-	void play(const QString &soundName, int times = 1){
-		QSoundEffect *sound = this->soundMap.value(soundName, nullptr);
-		if(sound == nullptr){
-			qDebug() << CodePath() << "Sound name is invalid or not exist.";
-			return;
-		}else{
-			if(sound->isPlaying()){
-				sound->stop();
-			}
-			sound->setLoopCount(times);
-			sound->play();
-			emit this->started(soundName);
-			qDebug() << CodePath() << "Sound effect: '" << sound->source().url(QUrl::PreferLocalFile) << "'";
-		}
-	}
+	void play(const QString &soundName, qreal volume = 1.0f, int times = 1);
 
-	void stop(const QString &soundName){
-		QSoundEffect *sound = this->soundMap.value(soundName, nullptr);
-		if(sound == nullptr){
-			qDebug() << CodePath() << "Sound name is invalid or not exist.";
-			return;
-		}else{
-			if(sound->isPlaying()){
-				sound->stop();
-				emit this->stopped(soundName);
-			}
-		}
-	}
+	void stop(const QString &soundName);
 };
 
 #endif // RPGSOUND_H

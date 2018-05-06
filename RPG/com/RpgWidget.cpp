@@ -1,4 +1,5 @@
 #include "RpgWidget.h"
+#include "RpgSound.h"
 
 void RpgWidget::keyReleaseEvent(QKeyEvent *event){
 	// 用户按下的按键
@@ -166,6 +167,8 @@ void RpgWidget::ready(){
 	RpgMusic::instance()->addMusic("title", "data/sounds/月光（オルゴール）.mp3");
 	RpgMusic::instance()->addMusic("op1", "data/sounds/雨の日に.mp3");
 
+	RpgSound::instance()->addSound("select", "data/se/格式工厂select.wav");
+
 	QPixmap *bg = new QPixmap("data/images/background/title2.png");
 	titleScene->getRpgBanner()->setForegroundPixmap(*bg);
 	titleScene->getRpgBanner()->setStartOpacity(0.0f);
@@ -184,7 +187,7 @@ void RpgWidget::ready(){
 	Utils::msleep(1000);
 
 
-	RpgMusic::instance()->playMusic("title");
+	//RpgMusic::instance()->playMusic("title");
 
 	QPixmap *title = new QPixmap("data/images/background/タイトル画面_背景.jpg");
 	QPixmap mix_title = QPixmap("data/images/background/mix/タイトルロゴ.png");
