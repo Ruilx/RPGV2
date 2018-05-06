@@ -6,15 +6,14 @@ void RpgSound::addSound(const QString &soundName, const QString &fileName){
 	if(!QFile::exists(fileName)){
 		qDebug() << CodePath() << "Sound file:'" << fileName << "' is not exist.";
 	}
-	QSoundEffect *sound = new QSoundEffect(this);
-	sound->setSource(QUrl(fileName));
+	QSound *sound = new QSound(fileName, this);
 	this->soundMap.insert(soundName, sound);
 }
 
 void RpgSound::removeSound(const QString &soundName){
-	QSoundEffect *sound = this->soundMap.take(soundName);
+	QSound *sound = this->soundMap.take(soundName);
 	if(sound != nullptr){
-		if(sound->isPlaying()){
+		if(!sound->isFinished()){
 			sound->stop();
 		}
 		sound->deleteLater();
@@ -22,9 +21,9 @@ void RpgSound::removeSound(const QString &soundName){
 }
 
 void RpgSound::clearSound(){
-	for(QSoundEffect *sound: this->soundMap){
+	for(QSound *sound: this->soundMap){
 		if(sound != nullptr){
-			if(sound->isPlaying()){
+			if(!sound->isFinished()){
 				sound->stop();
 			}
 			sound->deleteLater();
@@ -33,34 +32,34 @@ void RpgSound::clearSound(){
 	this->soundMap.clear();
 }
 
-void RpgSound::play(const QString &soundName, qreal volume, int times){
-	QSoundEffect *sound = this->soundMap.value(soundName, nullptr);
+void RpgSound::play(const QString &soundName, /*qreal volume,*/ int times){
+	QSound *sound = this->soundMap.value(soundName, nullptr);
 	if(sound == nullptr){
 		qDebug() << CodePath() << "Sound name is invalid or not exist.";
 		return;
 	}else{
-		if(sound->status() == QSoundEffect::Error){
-			qDebug() << CodePath() << "Sound status error.";
-			return;
-		}
-		if(sound->isPlaying()){
+//		if(sound->status() == QSoundEffect::Error){
+//			qDebug() << CodePath() << "Sound status error.";
+//			return;
+//		}
+		if(!sound->isFinished()){
 			sound->stop();
 		}
-		sound->setLoopCount(times);
-		sound->setVolume(volume);
+		sound->setLoops(times);
+//		sound->setVolume(volume);
 		sound->play();
 		emit this->started(soundName);
-		qDebug() << CodePath() << "Sound effect: '" << sound->source().url(QUrl::PreferLocalFile) << "'";
+		qDebug() << CodePath() << "Sound effect: '" << sound->fileName() << "'";
 	}
 }
 
 void RpgSound::stop(const QString &soundName){
-	QSoundEffect *sound = this->soundMap.value(soundName, nullptr);
+	QSound *sound = this->soundMap.value(soundName, nullptr);
 	if(sound == nullptr){
 		qDebug() << CodePath() << "Sound name is invalid or not exist.";
 		return;
 	}else{
-		if(sound->isPlaying()){
+		if(!sound->isFinished()){
 			sound->stop();
 			emit this->stopped(soundName);
 		}

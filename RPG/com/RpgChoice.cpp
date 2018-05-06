@@ -390,6 +390,7 @@ void RpgChoice::receiveKey(int key, Qt::KeyboardModifiers mod){
 					// 向上滚动一行显示的内容, 光标位置不变
 					this->messageIndex--;
 					this->showText(this->messageIndex);
+					RpgSound::instance()->play("select");
 				}else{
 					// 光标不在第一个选项上(就可以正常往上了)
 					this->messageCurrentIndex--;
@@ -424,6 +425,7 @@ void RpgChoice::receiveKey(int key, Qt::KeyboardModifiers mod){
 					// 向下滚动一行显示的内容, 光标位置不变
 					this->messageIndex++;
 					this->showText(this->messageIndex);
+					RpgSound::instance()->play("select");
 				}else{
 					// 光标不在最后一个选项上(就可以正常往下了)
 					this->messageCurrentIndex++;

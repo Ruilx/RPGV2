@@ -2,7 +2,7 @@
 #define RPGSOUND_H
 
 #include <QtCore>
-#include <QSoundEffect>
+#include <QSound>
 #include <RPG/Global.h>
 
 class RpgSound : public QObject
@@ -10,7 +10,7 @@ class RpgSound : public QObject
 	Q_OBJECT
 	static RpgSound *_instance;
 
-	QHash<QString, QSoundEffect*> soundMap;
+	QHash<QString, QSound*> soundMap;
 public:
 	static RpgSound *instance(){
 		if(_instance == nullptr){
@@ -31,8 +31,7 @@ signals:
 	void started(const QString &soundName);
 	void stopped(const QString &soundName);
 public slots:
-	void play(const QString &soundName, qreal volume = 1.0f, int times = 1);
-
+	void play(const QString &soundName, /*qreal volume = 1.0f,*/ int times = 1);
 	void stop(const QString &soundName);
 };
 
