@@ -230,33 +230,10 @@ private:
 	const QRect bottomRect = QRect(32, 96, 32, 32);					// BottomMulti
 	const QRect rightBottomRect = QRect(64, 96, 32, 32);			// RightBottomMultiCorner
 
-	const QRect leftTopHHalfRect = QRect(0, 32, 32, 16);			// leftTop32 Top		// Maybe unused. replaced by leftTop
-	const QRect leftBottomHHalfRect = QRect(0, 112, 32, 16);		// leftBottom32 Bottom
-	const QRect rightTopHHalfRect = QRect(64, 32, 32, 16);			// rightTop32 Top		// Maybe unused. replaced by rightTop
-	const QRect rightBottomHHalfRect = QRect(64, 112, 32, 16);		// rightBottom32 Bottom
-	const QRect topHHalfRect = QRect(32, 32, 32, 16);				// top32 Top			// Maybe unused. replaced by top
+	const QRect topHHalfRect = QRect(32, 32, 32, 16);				// top32 Top
 	const QRect bottomHHalfRect = QRect(32, 112, 32, 16);			// bottom32 Bottom
-
-	const QRect leftTopVHalfRect = QRect(0, 32, 16, 32);			// leftTop32 Left		// Maybe unused. replaced by leftTop
-	const QRect leftBottomVHalfRect = QRect(0, 96, 16, 32);			// leftBottom32 Left
-	const QRect rightTopVHalfRect = QRect(64, 32, 16, 32);			// rightTop32 Right		// Maybe unused. replaced by rightTop
-	const QRect rightBottomVHalfRect = QRect(64, 96, 16, 32);		// rightBottom32 Right
-	const QRect leftVHalfRect = QRect(0, 64, 16, 32);				// left32 Left			// Maybe unused. replaced by left
+	const QRect leftVHalfRect = QRect(0, 64, 16, 32);				// left32 Left
 	const QRect rightVHalfRect = QRect(80, 64, 16, 32);				// right32 Right
-
-	const QPoint leftTopHHalfLocalOffset = QPoint(0, 0);
-	const QPoint leftBottomHHalfLocalOffset = QPoint(0, 16);
-	const QPoint rightTopHHalfLocalOffset = QPoint(0, 0);
-	const QPoint rightBottomHHalfLocalOffset = QPoint(16, 0);
-	const QPoint topHHalfLocalOffset = QPoint(0, 0);
-	const QPoint bottomHHalfLocalOffset = QPoint(0, 16);
-
-	const QPoint leftTopVHalfLocalOffset = QPoint(0, 0);
-	const QPoint leftBottomVHalfLocalOffset = QPoint(0, 0);
-	const QPoint rightTopVHalfLocalOffset = QPoint(16, 0);
-	const QPoint rightBottomVHalfLocalOffset = QPoint(16, 0);
-	const QPoint leftHHalfLocalOffset = QPoint(0, 0);
-	const QPoint rightHHalfLocalOffset = QPoint(16, 0);
 
 	const QPoint leftTopPos = QPoint(0, 0);
 	const QPoint leftBottomPos = QPoint(0, 16);
