@@ -7,7 +7,7 @@ void RpgSound::addSound(const QString &soundName, const QString &fileName){
 		qDebug() << CodePath() << "Sound file:'" << fileName << "' is not exist.";
 	}
 	QSoundEffect *sound = new QSoundEffect(this);
-	sound->setSource(QUrl(fileName));
+	sound->setSource(QUrl::fromLocalFile(fileName));
 	this->soundMap.insert(soundName, sound);
 }
 
@@ -43,9 +43,9 @@ void RpgSound::play(const QString &soundName, qreal volume, int times){
 			qDebug() << CodePath() << "Sound status error.";
 			return;
 		}
-		if(sound->isPlaying()){
-			sound->stop();
-		}
+//		if(sound->isPlaying()){
+//			sound->stop();
+//		}
 		sound->setLoopCount(times);
 		sound->setVolume(volume);
 		sound->play();

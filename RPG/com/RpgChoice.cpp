@@ -342,7 +342,7 @@ void RpgChoice::receiveKey(int key, Qt::KeyboardModifiers mod){
 	if(!this->isRunning){
 		return;
 	}
-	qDebug() << CodePath() << tr(": receive key: %1::%2(%3).").arg(mod).arg(key).arg(QString(QChar(key)).toHtmlEscaped());
+	qDebug() << CodePath() << tr("Receive key: %1::%2(%3).").arg(mod).arg(key).arg(QString(QChar(key)));
 	if(key == Qt::Key_Return || key == Qt::Key_Space){
 		if(this->showTextInProgressFlag == true){
 			// 正在显示字符, 则立即停止slowprint, 直接显示全部的字符
@@ -359,7 +359,7 @@ void RpgChoice::receiveKey(int key, Qt::KeyboardModifiers mod){
 				this->messageCurrentIndex = 0;
 				this->messageIndex = 0;
 			}else{
-				qDebug() << CodePath() << ": message chose is not vaild or out of range(?).";
+				qDebug() << CodePath() << "Message chose is not vaild or out of range(?).";
 				return;
 			}
 
@@ -375,7 +375,7 @@ void RpgChoice::receiveKey(int key, Qt::KeyboardModifiers mod){
 				// 正在显示 0 - 2 项
 				if(this->messageCurrentIndex == 0){
 					// 光标在第一个(光标和列表都不能往上了)
-					qDebug() << CodePath() << ": First choice first, cannot up.";
+					qDebug() << CodePath() << "First choice first, cannot up.";
 					return;
 				}else{
 					// 光标不在第一个(就可以正常往上了)
@@ -390,6 +390,7 @@ void RpgChoice::receiveKey(int key, Qt::KeyboardModifiers mod){
 					// 向上滚动一行显示的内容, 光标位置不变
 					this->messageIndex--;
 					this->showText(this->messageIndex);
+					RpgSound::instance()->play("select");
 				}else{
 					// 光标不在第一个选项上(就可以正常往上了)
 					this->messageCurrentIndex--;
@@ -409,7 +410,7 @@ void RpgChoice::receiveKey(int key, Qt::KeyboardModifiers mod){
 				// 正在显示后三项
 				if(this->messageCurrentIndex == qMin(ChoiceBuff, this->messageList.length()) -1){
 					// 光标在最后一个了(光标和列表都不能往下了)
-					qDebug() << CodePath() << ": Last choice last, cannot down.";
+					qDebug() << CodePath() << "Last choice last, cannot down.";
 					return;
 				}else{
 					// 光标不在最后一个(就可以正常往下了)
@@ -424,6 +425,7 @@ void RpgChoice::receiveKey(int key, Qt::KeyboardModifiers mod){
 					// 向下滚动一行显示的内容, 光标位置不变
 					this->messageIndex++;
 					this->showText(this->messageIndex);
+					RpgSound::instance()->play("select");
 				}else{
 					// 光标不在最后一个选项上(就可以正常往下了)
 					this->messageCurrentIndex++;
