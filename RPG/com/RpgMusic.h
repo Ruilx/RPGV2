@@ -27,21 +27,17 @@ class RpgMusic : public QObject
 	int loop = -1;
 	int currentLoop = 0;
 
-	void volumeTransition(bool upward, int duration = 250){
-		if(upward){
-			this->volumeAnimation->setStartValue(0);
-			this->volumeAnimation->setEndValue(this->volume);
-		}else{
-			this->volumeAnimation->setStartValue(this->volume);
-			this->volumeAnimation->setEndValue(0);
-		}
-		this->volumeAnimation->setDuration(duration);
-		this->volumeAnimation->start();
-		QEventLoop loop;
-		this->connect(this->volumeAnimation, &QPropertyAnimation::finished, &loop, &QEventLoop::quit);
-		loop.exec();
-	}
+	/**
+	 * @brief volumeTransition 歌曲开始或停止的音量过渡
+	 * @param upward 是否向音量增大方向过渡(T: 音量增大, F: 音量减小)
+	 * @param duration 过渡持续时间
+	 */
+	void volumeTransition(bool upward, int duration = 250);
 public:
+	/**
+	 * @brief instance 获取单例对象
+	 * @return Self
+	 */
 	static RpgMusic *instance(){
 		if(_instance == nullptr){
 			_instance = new RpgMusic(nullptr);
@@ -49,36 +45,11 @@ public:
 		return _instance;
 	}
 
-	explicit RpgMusic(QObject *parent = nullptr) : QObject(parent){
-		this->music->setVolume(100);
-
-		connect(this->music, &QMediaPlayer::stateChanged, this, [this](QMediaPlayer::State state){
-			if(state == QMediaPlayer::PlayingState){
-				if(this->currentLoop >= 0)
-				qInfo() << CodePath() << "Start playing: '" << this->music->media().canonicalUrl().url(QUrl::PreferLocalFile) << "'";
-				emit this->started();
-				return;
-			}else if(state == QMediaPlayer::StoppedState){
-				if(this->loop > 0 && this->currentLoop >= this->loop){
-					qInfo() << CodePath() << "Stopped: '" << this->music->media().canonicalUrl().url(QUrl::PreferLocalFile) << "'";
-					emit this->stopped();
-					this->currentLoop = 0;
-					return;
-				}
-			}
-		});
-
-		connect(this->music, &QMediaPlayer::mediaStatusChanged, [this](QMediaPlayer::MediaStatus status){
-			if(status == QMediaPlayer::EndOfMedia){
-				// 如果loop是无限循环, currentLoop是当前已经循环了几遍了, 如果loop有值, currentLoop要与其比较判断是否要继续播放下去
-				if(this->loop < 0 || (this->loop > 0 && this->currentLoop < this->loop)){
-					this->music->setPosition(0);
-					this->music->play();
-					currentLoop++;
-				}
-			}
-		});
-	}
+	/**
+	 * @brief RpgMusic 构造函数
+	 * @param parent 父QObject
+	 */
+	explicit RpgMusic(QObject *parent = nullptr);
 
 	~RpgMusic(){
 		if(this->isRunning()){
@@ -86,64 +57,63 @@ public:
 		}
 	}
 
-	void addMusic(const QString &musicName, const QString &fileName){
-		if(!QFile::exists(fileName)){
-			qDebug() << CodePath() << "Music file:'" << fileName << "' is not exist.";
-		}
-		this->musicMap.insert(musicName, QUrl(fileName));
-	}
+	/**
+	 * @brief addMusic 增加一首歌曲
+	 * @param musicName 指定一个歌曲名
+	 * @param fileName 指定文件名
+	 */
+	void addMusic(const QString &musicName, const QString &fileName);
 
-	void removeMusic(const QString &musicName){
-		this->musicMap.remove(musicName);
-	}
+	/**
+	 * @brief removeMusic 删除一首歌曲
+	 * @param musicName 指定歌曲名
+	 */
+	void removeMusic(const QString &musicName);
 
-	void clearMusic(){
-		this->musicMap.clear();
-	}
+	/**
+	 * @brief clearMusic 删除歌单
+	 */
+	void clearMusic();
 
-	bool isRunning() const{
-		return this->music->state() == QMediaPlayer::PlayingState;
-	}
+	/**
+	 * @brief isRunning 是否在工作
+	 * @return :bool 工作中
+	 */
+	bool isRunning() const;
 
-	QString getMusic(const QString &musicName){
-		if(!this->musicMap.contains(musicName)){
-			qDebug() << CodePath() << "Music name:'" << musicName << "' is not registered.";
-			return QString();
-		}
-		return this->musicMap.value(musicName).url(QUrl::PreferLocalFile);
-	}
+	/**
+	 * @brief getMusic 获得歌曲名对应的文件
+	 * @param musicName 指定歌曲名
+	 * @return :QString 歌曲地址(QUrl::PreferLocalFile)
+	 */
+	QString getMusic(const QString &musicName);
 
-	void setVolume(int volume){
-		this->volume = volume;
-		this->music->setVolume(volume);
-	}
+	/**
+	 * @brief setVolume 设定音量
+	 * @param volume 音量(0-100)
+	 */
+	void setVolume(int volume);
 
-	void setLoop(int loop = -1){
-		this->loop = loop;
-	}
+	/**
+	 * @brief setLoop 设定循环次数
+	 * @param loop 次数(1-x, -1(持续循环))
+	 */
+	void setLoop(int loop = -1);
 
 signals:
 	void started();
 	void stopped();
 public slots:
-	void playMusic(const QString &musicName){
-		if(!this->musicMap.contains(musicName)){
-			qDebug() << CodePath() << "Music name:'" << musicName << "' is not registered.";
-			return;
-		}
-		if(this->music->state() != QMediaPlayer::PlayingState){
-			this->stopMusic();
-		}
-		this->music->setMedia(this->musicMap.value(musicName));
-		this->music->play();
-		this->volumeTransition(true);
-	}
+	/**
+	 * @brief playMusic 运行歌曲
+	 * @param musicName 指定一个歌曲名
+	 */
+	void playMusic(const QString &musicName);
 
-	void stopMusic(){
-		this->volumeTransition(false);
-		this->music->stop();
-		this->currentLoop = 0;
-	}
+	/**
+	 * @brief stopMusic 停止当前歌曲
+	 */
+	void stopMusic();
 };
 
 #endif // RPGMUSIC_H

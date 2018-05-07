@@ -192,12 +192,12 @@ void RpgWidget::ready(){
 	QPixmap *title = new QPixmap("data/images/background/タイトル画面_背景.jpg");
 	QPixmap mix_title = QPixmap("data/images/background/mix/タイトルロゴ.png");
 	QPixmap mix_character = QPixmap("data/images/background/mix/タイトル_キャラ01.png");
-	QPainter p(title);{
-		p.setCompositionMode(QPainter::CompositionMode_SourceOver);
-		p.drawPixmap((7), (title->height() - mix_character.height()), mix_character);
-		p.drawPixmap((title->width() - mix_title.width()) / 2, -5, mix_title);
-		p.end();
-	}
+//	QPainter p(title);{
+//		p.setCompositionMode(QPainter::CompositionMode_SourceOver);
+//		p.drawPixmap((7), (title->height() - mix_character.height()), mix_character);
+//		p.drawPixmap((title->width() - mix_title.width()) / 2, -5, mix_title);
+//		p.end();
+//	}
 	titleScene->getRpgBanner()->setForegroundPixmap(*title);
 	titleScene->getRpgBanner()->setStartOpacity(0.0f);
 	titleScene->getRpgBanner()->setEndOpacity(1.0f);

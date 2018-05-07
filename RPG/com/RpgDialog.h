@@ -76,9 +76,16 @@ public:
 		SpeedFast = 17,
 		SpeedInfinitly = 0
 	};
+
+	enum AvatarAround{
+		Avatar_BehindDialog = 0,
+		Avatar_FrontDialog = 1,
+	};
 private:
 	// Num: 单字输出, 0表示不使用单字输出, 数字越小表示输出速度越快
 	int slowprint = 0;
+	// Enum: 头像的显示方式
+	AvatarAround avatarAround = Avatar_BehindDialog;
 	// Flag: 正在输出的一个状态
 	bool showTextInProgressFlag = false;
 	// Flag: 被用户中断, 下一次将会显示全部信息
@@ -187,7 +194,16 @@ public:
 		//	this->messageRect = QRect(messagePaddingH, messagePaddingV, this->getDialogRect().width() - messagePaddingH - this->characterBox->pixmap().width(), this->getDialogHeight() - messagePaddingV - messagePaddingV);
 		//}
 
-		this->messageRect = QRect(messageMarginH, messageMarginV, this->skin.getDialogSize().width() - messageMarginH - messageMarginH, this->skin.getDialogSize().height() - messageMarginV - messageMarginV);
+		//this->messageRect = QRect(messageMarginH, messageMarginV, this->skin.getDialogSize().width() - messageMarginH - messageMarginH, this->skin.getDialogSize().height() - messageMarginV - messageMarginV);
+	}
+
+	/**
+	 * @brief setCharacterAround
+	 * @param avatarAround
+	 * 设置对话框人物头像的先后显示(选择显示前方的话需要小图片)
+	 */
+	void setCharacterAround(AvatarAround avatarAround = Avatar_BehindDialog){
+		this->avatarAround = avatarAround;
 	}
 
 	/**

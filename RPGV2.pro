@@ -30,7 +30,8 @@ SOURCES += main.cpp\
     RPG/com/RpgState.cpp \
     RPG/core/RpgDialogBase.cpp \
     RPG/com/RpgMusic.cpp \
-    RPG/com/RpgSound.cpp
+    RPG/com/RpgSound.cpp \
+    RPG/com/RpgItem.cpp
 
 HEADERS  += Mainw.h \
     RPG/About.h \
@@ -50,7 +51,8 @@ HEADERS  += Mainw.h \
     RPG/com/RpgState.h \
     RPG/core/RpgDialogBase.h \
     RPG/com/RpgMusic.h \
-    RPG/com/RpgSound.h
+    RPG/com/RpgSound.h \
+    RPG/com/RpgItem.h
 
 INCLUDEPATH += $$PWD
 DEPENDPATH += $$PWD

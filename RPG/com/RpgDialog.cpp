@@ -106,12 +106,21 @@ void RpgDialog::exec(){
 	//this->continueSymbol->setZValue(0.2f);
 	this->continueSymbol->setVisible(false);
 
-	if(!this->characterBoxPixmap.isNull()){
+	if(this->characterBoxPixmap.isNull() && this->skin.getDialogSize().width() >= (ScreenWidth - (marginH << 1))){
+		if(this->skin.getDialogSize().width() < (ScreenWidth - (marginH << 1))){
+			qDebug() << CodePath() << "The dialog position is not fit to show the character avatar, it must more than screenWidth - most twice of marginH.";
+		}
+	}else{
 		this->characterBox->setPixmap(this->characterBoxPixmap);
-		this->characterBox->setPos(ScreenWidth - this->characterBox->pixmap().width(), -(ScreenHeight * 0.8 - this->skin.getDialogSize().height() - this->marginV) + (ScreenHeight * 0.8 - this->characterBox->pixmap().height()));
-		this->characterBox->setFlag(QGraphicsItem::ItemStacksBehindParent, true);
-		//this->characterBox->setZValue( - 1.0f);
-		//this->characterBox->stackBefore(this->box);
+		if(this->avatarAround == Avatar_BehindDialog){
+			this->characterBox->setPos(ScreenWidth - this->characterBox->pixmap().width(), -(ScreenHeight * 0.8 - this->skin.getDialogSize().height() - this->marginV) + (ScreenHeight * 0.8 - this->characterBox->pixmap().height()));
+			this->characterBox->setFlag(QGraphicsItem::ItemStacksBehindParent, true);
+			//this->characterBox->setZValue( - 1.0f);
+			//this->characterBox->stackBefore(this->box);
+		}else if(this->avatarAround == Avatar_FrontDialog){
+			this->characterBox->setPos(ScreenWidth - this->characterBox->pixmap().width(), -(ScreenHeight * 0.8 - this->skin.getDialogSize().height() - this->marginV) + (ScreenHeight * 0.8 - this->characterBox->pixmap().height()));
+			this->characterBox->setFlag(QGraphicsItem::ItemStacksBehindParent, false);
+		}
 	}
 
 	this->enterOrExitAnimationSetting(true);
@@ -247,7 +256,7 @@ void RpgDialog::receiveKey(int key, Qt::KeyboardModifiers mod){
 	if(!this->isRunning){
 		return;
 	}
-	qDebug() << tr("RpgDialog::receiveKey(): receive key: %1::%2(%3).").arg(mod).arg(key).arg(QString(QChar(key)).toHtmlEscaped());
+	qDebug() << CodePath() << tr("receive key: %1::%2(%3).").arg(mod).arg(key).arg(QString(QChar(key)).toHtmlEscaped());
 	if(key == Qt::Key_Return || key == Qt::Key_Space){
 		if(this->showTextInProgressFlag == true){
 			// 正在显示字符, 则立即停止slowprint, 直接显示全部的字符
