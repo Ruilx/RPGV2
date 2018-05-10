@@ -164,45 +164,58 @@ void RpgWidget::ready(){
 //		}
 //	}
 
-	RpgMusic::instance()->addMusic("title", "data/sounds/月光（オルゴール）.mp3");
-	RpgMusic::instance()->addMusic("op1", "data/sounds/雨の日に.mp3");
+//	RpgMusic::instance()->addMusic("title", "data/sounds/月光（オルゴール）.mp3");
+//	RpgMusic::instance()->addMusic("op1", "data/sounds/雨の日に.mp3");
 
-	RpgSound::instance()->addSound("select", "data/se/select.wav");
+//	RpgSound::instance()->addSound("select", "data/se/select.wav");
 
-	QPixmap *bg = new QPixmap("data/images/background/title2.png");
-	titleScene->getRpgBanner()->setForegroundPixmap(*bg);
-	titleScene->getRpgBanner()->setStartOpacity(0.0f);
-	titleScene->getRpgBanner()->setEndOpacity(1.0f);
-	titleScene->getRpgBanner()->setSpeed(RpgBanner::SpeedNormal);
-	titleScene->getRpgBanner()->exec();
-	titleScene->getRpgBanner()->waitingForBannerComplete();
+//	QPixmap *bg = new QPixmap("data/images/background/title2.png");
+//	titleScene->getRpgBanner()->setForegroundPixmap(*bg);
+//	titleScene->getRpgBanner()->setStartOpacity(0.0f);
+//	titleScene->getRpgBanner()->setEndOpacity(1.0f);
+//	titleScene->getRpgBanner()->setSpeed(RpgBanner::SpeedNormal);
+//	titleScene->getRpgBanner()->exec();
+//	titleScene->getRpgBanner()->waitingForBannerComplete();
 
-	Utils::msleep(3000);
+//	Utils::msleep(3000);
 
-	titleScene->getRpgBanner()->setStartOpacity(1.0f);
-	titleScene->getRpgBanner()->setEndOpacity(0.0f);
-	titleScene->getRpgBanner()->execExit();
-	titleScene->getRpgBanner()->waitingForBannerComplete();
+//	titleScene->getRpgBanner()->setStartOpacity(1.0f);
+//	titleScene->getRpgBanner()->setEndOpacity(0.0f);
+//	titleScene->getRpgBanner()->execExit();
+//	titleScene->getRpgBanner()->waitingForBannerComplete();
 
-	Utils::msleep(1000);
+	//Utils::msleep(1000);
 
 
-	RpgMusic::instance()->playMusic("title");
+//	RpgMusic::instance()->playMusic("title");
 
-	QPixmap *title = new QPixmap("data/images/background/タイトル画面_背景.jpg");
-	QPixmap mix_title = QPixmap("data/images/background/mix/タイトルロゴ.png");
-	QPixmap mix_character = QPixmap("data/images/background/mix/タイトル_キャラ01.png");
+//	QPixmap *title = new QPixmap("data/images/background/タイトル画面_背景.jpg");
+//	QPixmap mix_title = QPixmap("data/images/background/mix/タイトルロゴ.png");
+//	QPixmap mix_character = QPixmap("data/images/background/mix/タイトル_キャラ01.png");
+
+//	RpgItem *item_title = new RpgItem(nullptr);
+//	item_title->setPixmap(mix_title);
+//	item_title->setPos(QPointF((title->width() - mix_title.width()) / 2, -5));
+//	item_title->setZValue(BackgroundZValue + 0.2f);
+
+//	RpgItem *item_character = new RpgItem(nullptr);
+//	item_character->setPixmap(mix_character);
+//	item_character->setPos(QPointF(7, (title->height() - mix_character.height())));
+//	item_character->setZValue(BackgroundZValue + 0.1f);
 //	QPainter p(title);{
 //		p.setCompositionMode(QPainter::CompositionMode_SourceOver);
 //		p.drawPixmap((7), (title->height() - mix_character.height()), mix_character);
 //		p.drawPixmap((title->width() - mix_title.width()) / 2, -5, mix_title);
 //		p.end();
 //	}
-	titleScene->getRpgBanner()->setForegroundPixmap(*title);
-	titleScene->getRpgBanner()->setStartOpacity(0.0f);
-	titleScene->getRpgBanner()->setEndOpacity(1.0f);
-	titleScene->getRpgBanner()->exec();
-	titleScene->getRpgBanner()->waitingForBannerComplete();
+//	titleScene->addRpgItem(item_title);
+//	titleScene->addRpgItem(item_character);
+
+//	titleScene->getRpgBanner()->setForegroundPixmap(*title);
+//	titleScene->getRpgBanner()->setStartOpacity(0.0f);
+//	titleScene->getRpgBanner()->setEndOpacity(1.0f);
+//	titleScene->getRpgBanner()->exec();
+//	titleScene->getRpgBanner()->waitingForBannerComplete();
 
 	titleScene->getRpgChoise()->addChoiceText("始める");
 	titleScene->getRpgChoise()->addChoiceText("続ける");
@@ -233,19 +246,19 @@ void RpgWidget::ready(){
 
 //	RpgMusic::instance()->playMusic("op1");
 
-	RpgAutoTileBase aTileImage("data/images/autotiles/test.png", "test");
-	//aTileImage._dumpImage(0);
+//	RpgAutoTileBase aTileImage("data/images/autotiles/test.png", "test");
+//	//aTileImage._dumpImage(0);
 
-	titleScene->getRpgDialog()->setDialogWidth(250);
-	titleScene->getRpgDialog()->addText("Autotile已经导出.");
-	titleScene->getRpgDialog()->exec();
-	titleScene->getRpgDialog()->waitingForDialogComplete();
+//	titleScene->getRpgDialog()->setDialogWidth(250);
+//	titleScene->getRpgDialog()->addText("Autotile已经导出.");
+//	titleScene->getRpgDialog()->exec();
+//	titleScene->getRpgDialog()->waitingForDialogComplete();
 
-	if(title){
-		delete title;
-	}
-	if(bg){
-		delete bg;
-	}
+//	if(title){
+//		delete title;
+//	}
+//	if(bg){
+//		delete bg;
+//	}
 #endif
 }

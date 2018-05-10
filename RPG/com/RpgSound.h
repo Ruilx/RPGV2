@@ -81,7 +81,7 @@ public slots:
 	 * @param volume 音量(0.0-1.0)
 	 * @param times 音效循环次数
 	 */
-	void play(const QString &soundName, qreal volume = 1.0f, int times = 1);
+	void play(const QString &soundName, qreal volume = 0.7f, int times = 1);
 
 	/**
 	 * @brief stop 停止运行音效

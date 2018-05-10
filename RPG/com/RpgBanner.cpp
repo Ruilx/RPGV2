@@ -78,6 +78,15 @@ void RpgBanner::exec(){
 	this->foreground->setPos(this->parentScene->sceneRect().topLeft());
 	this->foregroundAnimation->setDuration(this->speed);
 
+	switch(this->layer){
+		case BottomLayer:
+			this->background->setZValue(BackgroundZValue);
+			break;
+		case TopLayer:
+			this->background->setZValue(TopZValue);
+			break;
+	}
+
 	this->showBanner();
 }
 

@@ -8,11 +8,14 @@ bool RpgScene::addRpgItem(RpgItem *item){
 	switch(item->getItemPosition()){
 		case RpgItem::Pos_Absolute:
 			break;
+			item->setRealPos(item->pos());
 		case RpgItem::Pos_Relative:
-			item->setPos(this->sceneRect().topLeft() + item->getPos());
+			item->setRealPos(this->sceneRect().topLeft() + item->getPos());
 			break;
 	}
-	this->addItem(item->getItem());
+	qDebug() << "RealPos:" << item->getRealPos();
+	qDebug() << "ZValue:" << item->zValue();
+	this->addItem(item);
 	return true;
 }
 
@@ -21,6 +24,6 @@ bool RpgScene::removeRpgItem(RpgItem *item){
 		qDebug() << CodePath() << "Giving RpgItem is not valid.";
 		return false;
 	}
-	this->removeItem(item->getItem());
+	this->removeItem(item);
 	return true;
 }

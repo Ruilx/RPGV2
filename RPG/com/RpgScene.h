@@ -16,7 +16,6 @@
  * --> RpgDialog类不再是单例模式, 而是以Scene返回方式获取.
  * --> RpgChoice类不再是单例模式, 而是以Scene返回方式获取.
  */
-class RpgItem;
 class RpgScene : public QGraphicsScene
 {
 	Q_OBJECT

@@ -5,7 +5,6 @@
 #include <QtWidgets>
 #include <RPG/About.h>
 #include <RPG/Global.h>
-#include <RPG/com/RpgScene.h>
 
 /**
  * @brief The RpgItem class
@@ -13,43 +12,54 @@
  * 可以让脚本流程内容自建一个内容组件, 并传递至对应的Scene进行显示
  * 可新建, 并定义Pixmap内容
  */
-class RpgItem : public QObject
+class RpgItem : public QGraphicsPixmapItem
 {
-	Q_OBJECT
 public:
 	enum ItemPosition{
 		Pos_Absolute = 0,
 		Pos_Relative = 1,
 	};
 private:
-	QGraphicsPixmapItem *item = new QGraphicsPixmapItem(nullptr);
+//	QGraphicsPixmapItem *item = new QGraphicsPixmapItem(nullptr);
 	ItemPosition itemPosition = Pos_Relative;
-	QPointF pos = QPointF(0, 0);
+	QPointF _pos = QPointF(0, 0);
 public:
-	explicit RpgItem(QGraphicsItem *parentItem = nullptr, QObject *parent = nullptr) : QObject(parent){
-		this->item->setParentItem(parentItem);
-		this->item->setVisible(false);
+	explicit RpgItem(QGraphicsItem *parentItem = nullptr): QGraphicsPixmapItem(parentItem){
+		this->setVisible(false);
 	}
+
+//	~RpgItem(){
+//		QList<QGraphicsItem*> childItems = this->childItems();
+//		if(!childItems.isEmpty()){
+//			qDebug() << CodePath() << "This item has children items, be careful with children items had built.";
+//		}
+//		if(this->item->scene() != nullptr){
+//			this->item->scene()->removeItem(this->item);
+//		}
+//		if(item != nullptr){
+//			delete this->item;
+//		}
+//	}
 
 	~RpgItem(){
-		QList<QGraphicsItem*> childItems = this->item->childItems();
-		if(!childItems.isEmpty()){
-			qDebug() << CodePath() << "This item has children items, be careful with children items had built.";
-		}
-		if(this->item->scene() != nullptr){
-			this->item->scene()->removeItem(this->item);
-		}
-		if(item != nullptr){
-			delete this->item;
-		}
+//		QGraphicsPixmapItem::~QGraphicsPixmapItem();
+		/* ~QGraphicsItem()
+		 * Destroys the QGraphicsItem and all its children.
+		 * If this item is currently associated with a scene,
+		 * the item will be removed from the scene before it is deleted.
+		 */
 	}
 
+//	void setPixmap(const QPixmap &pixmap){
+//		if(pixmap.isNull()){
+//			qDebug() << CodePath() << "Given pixmap is not a valid pixmap.";
+//			return;
+//		}
+//		this->setPixmap(pixmap);
+//	}
+
 	void setPixmap(const QPixmap &pixmap){
-		if(pixmap.isNull()){
-			qDebug() << CodePath() << "Given pixmap is not a valid pixmap.";
-			return;
-		}
-		this->item->setPixmap(pixmap);
+		QGraphicsPixmapItem::setPixmap(pixmap);
 	}
 
 	void setPixmap(const QString &pixmapFileName){
@@ -62,15 +72,27 @@ public:
 			qDebug() << CodePath() << "Pixmap file cannot be loaded as pixmap.";
 			return;
 		}
-		this->item->setPixmap(p);
+		QGraphicsPixmapItem::setPixmap(p);
 	}
 
 	void setPos(const QPointF &pos){
-		this->pos = pos;
+		this->_pos = pos;
 	}
 
 	QPointF getPos() const{
-		return this->pos;
+		return this->_pos;
+	}
+
+	QPointF pos() const{
+		return this->getPos();
+	}
+
+	void setRealPos(const QPointF &pos){
+		QGraphicsPixmapItem::setPos(pos);
+	}
+
+	QPointF getRealPos() const{
+		return QGraphicsPixmapItem::pos();
 	}
 
 	void setItemPosition(ItemPosition itemPosition){
@@ -81,12 +103,8 @@ public:
 		return this->itemPosition;
 	}
 
-	QPixmap getPixmap() const{
-		return this->item->pixmap();
-	}
-
 	bool isNull() const{
-		return this->item->pixmap().isNull();
+		return this->pixmap().isNull();
 	}
 
 //	void setScene(RpgScene *parentScene){
@@ -114,14 +132,6 @@ public:
 //		emit this->addedToScene(parentScene);
 //	}
 
-	void setZValue(qreal zvalue){
-		this->item->setZValue(zvalue);
-	}
-
-	bool isVisible() const{
-		return this->item->isVisible();
-	}
-
 //	void leaveScene(){
 //		RpgScene *parentScene = qobject_cast<RpgScene*>(this->item->scene());
 //		if(parentScene == nullptr){
@@ -131,25 +141,6 @@ public:
 //		parentScene->removeItem(this->item);
 //		emit this->leaveFromScene(parentScene);
 //	}
-
-	QGraphicsItem *getItem() const{
-		return this->item;
-	}
-signals:
-	void shown();
-	void hidden();
-//	void addedToScene(RpgScene *);
-//	void leaveFromScene(RpgScene *);
-public slots:
-	void show(){
-		this->item->show();
-		emit this->shown();
-	}
-
-	void hide(){
-		this->item->hide();
-		emit this->hidden();
-	}
 };
 
 #endif // RPGITEM_H
