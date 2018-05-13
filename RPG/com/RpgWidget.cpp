@@ -168,6 +168,7 @@ void RpgWidget::ready(){
 	RpgMusic::instance()->addMusic("op1", "data/sounds/雨の日に.mp3");
 
 	RpgSound::instance()->addSound("select", "data/se/select.wav");
+	RpgSound::instance()->addSound("banned", "data/se/banned.wav");
 
 	QPixmap *bg = new QPixmap("data/images/background/title2.png");
 	titleScene->getRpgBanner()->setForegroundPixmap(*bg);

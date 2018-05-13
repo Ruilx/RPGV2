@@ -357,6 +357,7 @@ void RpgChoice::receiveKey(int key, Qt::KeyboardModifiers mod){
 				this->messageCurrentIndex = 0;
 				this->messageIndex = 0;
 			}else{
+				RpgSound::instance()->play("banned");
 				qDebug() << CodePath() << "Message chose is not vaild or out of range(?).";
 				return;
 			}
