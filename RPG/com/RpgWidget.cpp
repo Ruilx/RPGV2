@@ -189,19 +189,19 @@ void RpgWidget::ready(){
 
 	RpgMusic::instance()->playMusic("title");
 
-//	QPixmap *title = new QPixmap("data/images/background/タイトル画面_背景.jpg");
-//	QPixmap mix_title = QPixmap("data/images/background/mix/タイトルロゴ.png");
-//	QPixmap mix_character = QPixmap("data/images/background/mix/タイトル_キャラ01.png");
+	QPixmap *title = new QPixmap("data/images/background/タイトル画面_背景.jpg");
+	QPixmap mix_title = QPixmap("data/images/background/mix/タイトルロゴ.png");
+	QPixmap mix_character = QPixmap("data/images/background/mix/タイトル_キャラ01.png");
 
-//	RpgItem *item_title = new RpgItem(nullptr);
-//	item_title->setPixmap(mix_title);
-//	item_title->setPos(QPointF((title->width() - mix_title.width()) / 2, -5));
-//	item_title->setZValue(BackgroundZValue + 0.2f);
+	RpgItem *item_title = new RpgItem(titleScene->getRpgBanner());
+	item_title->setPixmap(mix_title);
+	item_title->setRealPos(titleScene->getRpgBanner()->pos() + QPointF((title->width() - mix_title.width()) / 2, -5));
+	item_title->setZValue(0.3);
 
-//	RpgItem *item_character = new RpgItem(nullptr);
-//	item_character->setPixmap(mix_character);
-//	item_character->setPos(QPointF(7, (title->height() - mix_character.height())));
-//	item_character->setZValue(BackgroundZValue + 0.1f);
+	RpgItem *item_character = new RpgItem(titleScene->getRpgBanner());
+	item_character->setPixmap(mix_character);
+	item_character->setRealPos(titleScene->getRpgBanner()->pos() + QPointF(7, (title->height() - mix_character.height())));
+	item_character->setZValue(0.2);
 //	QPainter p(title);{
 //		p.setCompositionMode(QPainter::CompositionMode_SourceOver);
 //		p.drawPixmap((7), (title->height() - mix_character.height()), mix_character);
@@ -211,11 +211,14 @@ void RpgWidget::ready(){
 //	titleScene->addRpgItem(item_title);
 //	titleScene->addRpgItem(item_character);
 
-//	titleScene->getRpgBanner()->setForegroundPixmap(*title);
-//	titleScene->getRpgBanner()->setStartOpacity(0.0f);
-//	titleScene->getRpgBanner()->setEndOpacity(1.0f);
-//	titleScene->getRpgBanner()->exec();
-//	titleScene->getRpgBanner()->waitingForBannerComplete();
+	titleScene->getRpgBanner()->setForegroundPixmap(*title);
+	titleScene->getRpgBanner()->setStartOpacity(0.0f);
+	titleScene->getRpgBanner()->setEndOpacity(1.0f);
+	qDebug() << titleScene->getRpgBanner();
+	qDebug() << titleScene->getRpgBanner()->childItems();
+	qDebug() << item_title << item_character;
+	titleScene->getRpgBanner()->exec();
+	titleScene->getRpgBanner()->waitingForBannerComplete();
 
 	titleScene->getRpgChoise()->addChoiceText("始める");
 	titleScene->getRpgChoise()->addChoiceText("続ける");

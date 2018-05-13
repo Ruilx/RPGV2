@@ -25,7 +25,7 @@ private:
 	QPointF _pos = QPointF(0, 0);
 public:
 	explicit RpgItem(QGraphicsItem *parentItem = nullptr): QGraphicsPixmapItem(parentItem){
-		this->setVisible(false);
+		//this->hide();
 	}
 
 //	~RpgItem(){
