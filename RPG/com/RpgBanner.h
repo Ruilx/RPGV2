@@ -5,6 +5,7 @@
 #include <QtWidgets>
 #include <RPG/About.h>
 #include <RPG/Global.h>
+#include <RPG/core/RpgObject.h>
 #include <RPG/utils/Utils.h>
 
 /**
@@ -13,9 +14,14 @@
  * 是在GraphicsScene背景图层中显示指定背景内容
  * 是一个单独线程控制显示
  * 设定好背景图片之后, 就可以看到背景图片按照指定时间淡入或淡出
+ * -> dlgasitem 新建
+ * 2018/05/10 RpgBanner 继承QGraphicsItem, 让自己以Item的方式出现在界面中
+ * QGraphicsObject = QGraphicsItem + QObject
+ * 另, 将自己变为QGraphicsObject之后, this的pos设置成了view的左上角, 也就是说box的pos只需要设置成relative position即可
+ * 2018/05/13 RpgBanner 继承RpgObject, 公共部分的Item由RpgObject承担
  */
 
-class RpgBanner : public QObject
+class RpgBanner : public RpgObject
 {
 	Q_OBJECT
 public:
@@ -41,9 +47,9 @@ public:
 private:
 	bool isRunning = false;
 	//指定显示在哪个Scene上
-	QGraphicsScene *parentScene = nullptr;
+	//QGraphicsScene *parentScene = nullptr;
 	//构成
-	QGraphicsPixmapItem *background = new QGraphicsPixmapItem(nullptr);
+	QGraphicsPixmapItem *background = new QGraphicsPixmapItem(this);
 	QGraphicsPixmapItem *foreground = new QGraphicsPixmapItem(this->background);
 	
 	QGraphicsOpacityEffect *foregroundEffect = new QGraphicsOpacityEffect(this);
@@ -55,6 +61,7 @@ private:
 	Layer layer = BottomLayer;
 
 	bool canBeInterrupted = false;
+
 public:
 	/**
 	 * @brief RpgBanner
@@ -89,6 +96,25 @@ public:
 	void setBackgroundColor(const QColor &color);
 	
 	/**
+	 * @brief setBackgroundPixmap
+	 * @param pixmap
+	 * 设置背景图片(扩展)
+	 */
+	void setBackgroundPixmap(const QPixmap &pixmap);
+
+	/**
+	 * @brief setBackgroundWithForeground
+	 * 将此时的前端图片显示在背景上, 前端图片会变为透明, setStartOpacity置为0, setEndOpacity置为1
+	 */
+	void setBackgroundWithForeground(){
+		QPixmap _t = this->foreground->pixmap();
+		this->background->setPixmap(_t);
+		_t.fill(Qt::transparent);
+		this->foreground->setPixmap(_t);
+		this->setStartOpacity(0.0f);
+		this->setEndOpacity(1.0f);
+	}
+	/**
 	 * @brief setSpeed
 	 * @param milliseconds
 	 * 设置淡入或淡出速度(毫秒)
@@ -100,7 +126,7 @@ public:
 	 * @param parentScene
 	 * 设置父Scene
 	 */
-	inline void setParentScene(QGraphicsScene *parentScene){ this->parentScene = parentScene; }
+	inline void setParentScene(QGraphicsScene *parentScene){ this->setParentScene(parentScene); }
 
 	/**
 	 * @brief setStartOpacity
@@ -167,7 +193,7 @@ public:
 	void execExit();
 
 	int waitingForBannerComplete(){
-		if(!this->isRunning){
+		if(!this->getProcessing()){
 			qDebug() << CodePath() << ": Not running yet, cannot wait.";
 			return -1;
 		}
@@ -178,6 +204,7 @@ public:
 		}
 		return 0;
 	}
+
 protected:
 	/**
 	 * @brief showBanner

@@ -7,6 +7,7 @@
 #include <QEasingCurve>
 #include <RPG/About.h>
 #include <RPG/Global.h>
+#include <RPG/core/RpgObject.h>
 #include <RPG/utils/Utils.h>
 #include <RPG/core/RpgDialogBase.h>
 
@@ -21,18 +22,23 @@
  * dlgasobj 分支: 这个类不再是单例模式, 但用户层不能将其生成对象, 只能使用Scene->getRpgDialog()得到Handle
  * -> dlgasobj 已合并至master.
  * 2018/04/28 RpgDialog 不再继承RpgDialogBase, RpgDialogBase作为其中的实现对象进行调用
+ * -> dlgasitem 新建.
+ * 2018/05/10 RpgDialog 继承QGraphicsItem, 让自己以Item的方式出现在界面中
+ * QGraphicsObject = QGraphicsItem + QObject
+ * 另, 将自己变为QGraphicsObject之后, this的pos设置成了view的左上角, 也就是说box的pos只需要设置成relative position即可
+ * 2018/05/13 RpgDialog 继承RpgObject, 公共部分的Item由RpgObject承担
  */
-class RpgDialog : public QObject
+class RpgDialog : public RpgObject
 {
 	Q_OBJECT
 	// DialogBase
 	RpgDialogBase skin;
 	// 标志: 是否在运行
-	bool isRunning = false;
+//	bool isRunning = false;
 	// 指定显示在哪个Scene上
 	QGraphicsScene *parentScene = nullptr;
 	// 构成
-	QGraphicsPixmapItem *box = new QGraphicsPixmapItem(nullptr);				// 那蓝色的盒子
+	QGraphicsPixmapItem *box = new QGraphicsPixmapItem(this);					// 那蓝色的盒子
 	QGraphicsTextItem *message = new QGraphicsTextItem(this->box);				// 中间的字
 	QGraphicsPixmapItem *continueSymbol = new QGraphicsPixmapItem(this->box);	// 下面的小三角
 	QGraphicsPixmapItem *characterBox = new QGraphicsPixmapItem(this->box);		// 角色盒子
@@ -65,6 +71,16 @@ class RpgDialog : public QObject
 	// 对话框相对窗口位置(构造函数中初始化)
 	QPoint dialogPos;
 
+protected:
+	QRectF boundingRect() const{
+		return QRectF();
+	}
+
+	void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget){
+		Q_UNUSED(painter)
+		Q_UNUSED(option)
+		Q_UNUSED(widget)
+	}
 public:
 	/**
 	 * @brief The Speed enum
@@ -170,7 +186,7 @@ public:
 	 * 设置对话框显示到的Scene
 	 */
 	void setGraphicsScene(QGraphicsScene *scene){
-		this->parentScene = scene;
+		this->setParentScene(scene);
 	}
 
 	/**

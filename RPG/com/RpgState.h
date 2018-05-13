@@ -11,7 +11,19 @@
 class RpgState : public QObject
 {
 	Q_OBJECT
+	static RpgState *_instance;
 public:
+	/**
+	 * @brief instance 获取单例对象
+	 * @return
+	 */
+	static RpgState *instance(){
+		if(_instance == nullptr){
+			_instance = new RpgState(nullptr);
+		}
+		return _instance;
+	}
+
 	/**
 	 * @brief The Mode enum
 	 * 定义游戏会有哪些模式, 各个模式中按键接受方式, 显示方式等都不相同, 用这个Enum来规范现在
@@ -36,17 +48,31 @@ private:
 	 */
 	QStack<Mode> modeStack;
 
-	void keyReleaseEvent(QKeyEvent *event){
-
-	}
 public:
 	explicit RpgState(QObject *parent = nullptr) : QObject(parent){
+		if(this->modeStack.isEmpty()){
+			this->modeStack.push(AutoMode);
+		}
+	}
 
+	inline Mode getTop() const{
+		return this->modeStack.top();
+	}
+
+	void pushMode(const Mode &mode){
+		this->modeStack.push(mode);
+	}
+
+	Mode popMode(){
+		return this->modeStack.pop();
 	}
 
 signals:
 
 public slots:
+	void receiveKey(int key, Qt::KeyboardModifiers mod){
+
+	}
 };
 
 #endif // RPGSTATE_H

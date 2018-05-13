@@ -164,30 +164,30 @@ void RpgWidget::ready(){
 //		}
 //	}
 
-//	RpgMusic::instance()->addMusic("title", "data/sounds/月光（オルゴール）.mp3");
-//	RpgMusic::instance()->addMusic("op1", "data/sounds/雨の日に.mp3");
+	RpgMusic::instance()->addMusic("title", "data/sounds/月光（オルゴール）.mp3");
+	RpgMusic::instance()->addMusic("op1", "data/sounds/雨の日に.mp3");
 
-//	RpgSound::instance()->addSound("select", "data/se/select.wav");
+	RpgSound::instance()->addSound("select", "data/se/select.wav");
 
-//	QPixmap *bg = new QPixmap("data/images/background/title2.png");
-//	titleScene->getRpgBanner()->setForegroundPixmap(*bg);
-//	titleScene->getRpgBanner()->setStartOpacity(0.0f);
-//	titleScene->getRpgBanner()->setEndOpacity(1.0f);
-//	titleScene->getRpgBanner()->setSpeed(RpgBanner::SpeedNormal);
-//	titleScene->getRpgBanner()->exec();
-//	titleScene->getRpgBanner()->waitingForBannerComplete();
+	QPixmap *bg = new QPixmap("data/images/background/title2.png");
+	titleScene->getRpgBanner()->setForegroundPixmap(*bg);
+	titleScene->getRpgBanner()->setStartOpacity(0.0f);
+	titleScene->getRpgBanner()->setEndOpacity(1.0f);
+	titleScene->getRpgBanner()->setSpeed(RpgBanner::SpeedNormal);
+	titleScene->getRpgBanner()->exec();
+	titleScene->getRpgBanner()->waitingForBannerComplete();
 
-//	Utils::msleep(3000);
+	Utils::msleep(3000);
 
-//	titleScene->getRpgBanner()->setStartOpacity(1.0f);
-//	titleScene->getRpgBanner()->setEndOpacity(0.0f);
-//	titleScene->getRpgBanner()->execExit();
-//	titleScene->getRpgBanner()->waitingForBannerComplete();
+	titleScene->getRpgBanner()->setStartOpacity(1.0f);
+	titleScene->getRpgBanner()->setEndOpacity(0.0f);
+	titleScene->getRpgBanner()->execExit();
+	titleScene->getRpgBanner()->waitingForBannerComplete();
 
-	//Utils::msleep(1000);
+	Utils::msleep(1000);
 
 
-//	RpgMusic::instance()->playMusic("title");
+	RpgMusic::instance()->playMusic("title");
 
 //	QPixmap *title = new QPixmap("data/images/background/タイトル画面_背景.jpg");
 //	QPixmap mix_title = QPixmap("data/images/background/mix/タイトルロゴ.png");
@@ -219,9 +219,10 @@ void RpgWidget::ready(){
 
 	titleScene->getRpgChoise()->addChoiceText("始める");
 	titleScene->getRpgChoise()->addChoiceText("続ける");
-	titleScene->getRpgChoise()->addChoiceText("開発資料室");
+	titleScene->getRpgChoise()->addChoiceText("?????");
 	titleScene->getRpgChoise()->addChoiceText("終わる");
 	titleScene->getRpgChoise()->setChoiceEnabled(1, false);
+	titleScene->getRpgChoise()->setChoiceEnabled(2, false);
 	titleScene->getRpgChoise()->exec();
 	qDebug() << "Selected:" << titleScene->getRpgChoise()->waitingForChooseComplete();
 
@@ -231,10 +232,13 @@ void RpgWidget::ready(){
 		this->doReadyToClose();
 	}
 
-//	QPixmap *aaa = new QPixmap("data/images/drawing/03.png");
-//	titleScene->getRpgDialog()->setCharacterPixmap(*aaa);
-//	titleScene->getRpgDialog()->addText("**测试一段可显示的文字**<r>测试一段红色的文字</r>**<g>测试一段绿色的文字</g>**<b>测试一段蓝色的文字</b>**<y>测试一段黄色的文字<y>**");
-//	titleScene->getRpgDialog()->exec();
+	RpgMusic::instance()->stopMusic();
+
+	QPixmap *aaa = new QPixmap("data/images/drawing/03.png");
+	titleScene->getRpgDialog()->setCharacterPixmap(*aaa);
+	titleScene->getRpgDialog()->addText("**测试一段可显示的文字**<r>测试一段红色的文字</r>**<g>测试一段绿色的文字</g>**<b>测试一段蓝色的文字</b>**<y>测试一段黄色的文字<y>**");
+	titleScene->getRpgDialog()->exec();
+	titleScene->getRpgDialog()->waitingForDialogComplete();
 
 //	QEventLoop eventloop(this);
 //	this->connect(titleScene->getRpgDialog(), &RpgDialog::quitDialogMode, &eventloop, &QEventLoop::quit);

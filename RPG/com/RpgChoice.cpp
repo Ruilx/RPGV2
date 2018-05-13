@@ -2,9 +2,7 @@
 #include "RpgSound.h"
 
 
-RpgChoice::RpgChoice(QGraphicsScene *parentScene, QObject *parent): QObject(parent){
-	this->setGraphicsScene(parentScene);
-
+RpgChoice::RpgChoice(QGraphicsScene *parentScene, QObject *parent): RpgObject(parentScene, parent, nullptr){
 	// 选项文字框和阴影设置
 	for(int i = 0; i < ChoiceBuff; i++){
 		if(this->messages[i] == nullptr){
@@ -45,7 +43,8 @@ RpgChoice::RpgChoice(QGraphicsScene *parentScene, QObject *parent): QObject(pare
 	}
 
 	// ZValue设置
-	this->box->setZValue(DialogZValue);
+	this->setZValue(DialogZValue);
+	this->box->setZValue(0.0f);
 	for(QGraphicsTextItem *i: this->messages){
 		i->setZValue(0.1f);
 	}
@@ -91,14 +90,10 @@ RpgChoice::RpgChoice(QGraphicsScene *parentScene, QObject *parent): QObject(pare
 	// 选择框的进场透明渐变
 	this->boxOpacityEffect->setOpacity(1.0f);
 	this->box->setGraphicsEffect(this->boxOpacityEffect);
-
-	// 预载入位置, 不过不显示
-	this->box->hide();
-	this->parentScene->addItem(this->box);
 }
 
 void RpgChoice::exec(){
-	if(this->parentScene == nullptr){
+	if(this->getParentScene() == nullptr){
 		qDebug() << CodePath() << ": parentScene is not set.(Null)";
 		return;
 	}
@@ -124,7 +119,7 @@ void RpgChoice::exec(){
 			qDebug() << CodePath() << "downSymbolPixmap[4] not set.";
 		}
 	}
-	if(this->isRunning == true){
+	if(this->getProcessing() == true){
 		qDebug() << CodePath() << ": Choice is still running, please don't call it repeadly!";
 		return;
 	}
@@ -138,7 +133,7 @@ void RpgChoice::exec(){
 
 	// 设置对话框背景, 支持每次对话框形状不同
 	this->box->setPixmap(this->skin.getDialogImage());
-	this->box->setPos(this->dialogPos + this->parentScene->sceneRect().topLeft());
+	this->box->setPos(this->dialogPos);
 
 	this->choiceSymbol->setPixmap(this->skin.getSelectBarImage());
 
@@ -160,7 +155,7 @@ void RpgChoice::exec(){
 }
 
 int RpgChoice::waitingForChooseComplete(int second){
-	if(!this->isRunning){
+	if(!this->getProcessing()){
 		qDebug() << CodePath() << ": Not running yet, cannot wait.";
 		return -1;
 	}
@@ -174,10 +169,11 @@ int RpgChoice::waitingForChooseComplete(int second){
 }
 
 void RpgChoice::showChoice(){
-	this->isRunning = true;
+	this->setProcessing(true);
 	emit this->enterDialogMode();
 	this->showChoiceBox(this->messageCurrentIndex);
-	this->box->show();
+	//this->box->show();
+	this->show();
 	if(this->choiceBarAnimation->state() == QAbstractAnimation::Stopped){
 		this->choiceBarAnimation->start();
 	}
@@ -188,7 +184,7 @@ void RpgChoice::showChoice(){
 }
 
 void RpgChoice::hideChoice(){
-	this->isRunning = false;
+	this->setProcessing(false);
 	if(this->upSymbolTimeLine->state() != QTimeLine::NotRunning){
 		this->upSymbolTimeLine->stop();
 	}
@@ -200,7 +196,7 @@ void RpgChoice::hideChoice(){
 	}
 	this->enterOrExitAnimationStart();
 	Utils::msleep(300);
-	this->box->hide();
+	this->hide();
 	this->clearChoiceText();
 	this->setSlowprint(this->slowprintBackup);
 	this->slowprintBackup = 0;
@@ -331,15 +327,17 @@ void RpgChoice::enterOrExitAnimationSetting(bool enter){
 }
 
 void RpgChoice::enterOrExitAnimationStart(){
-	if(this->box->isVisible() == false){
-		qWarning() << "Box current visible is false, cannot open animation.";
+	//if(this->box->isVisible() == false){
+	if(this->isVisible() == false){
+		//qWarning() << "Box current visible is false, cannot open animation.";
+		qWarning() << "This item's visible is false, cannot open animation.";
 		return;
 	}
 	this->entryAniGroup->start(QAbstractAnimation::KeepWhenStopped);
 }
 
 void RpgChoice::receiveKey(int key, Qt::KeyboardModifiers mod){
-	if(!this->isRunning){
+	if(!this->getProcessing()){
 		return;
 	}
 	qDebug() << CodePath() << tr("Receive key: %1::%2(%3).").arg(mod).arg(key).arg(QString(QChar(key)));
