@@ -82,8 +82,10 @@ public:
 				type = "number";
 			}else if(res.isObject()){
 				type = "object";
+#if QT_VERSION > 0x050800
 			}else if(res.isQMetaObject()){
 				type = "meta";
+#endif
 			}else if(res.isQObject()){
 				type = "qobject";
 			}else if(res.isRegExp()){
