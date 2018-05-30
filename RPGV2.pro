@@ -13,7 +13,7 @@ TEMPLATE = app
 
 
 SOURCES += main.cpp\
-        Mainw.cpp \
+	Mainw.cpp \
     RPG/com/RpgWidget.cpp \
     RPG/utils/Utils.cpp \
     RPG/com/RpgDialog.cpp \
@@ -68,6 +68,14 @@ HEADERS  += Mainw.h \
 
 INCLUDEPATH += $$PWD
 DEPENDPATH += $$PWD
+
+unix{
+	DESTDIR = $$PWD/bin
+	OBJECTS_DIR = $$PWD/tmp
+	MOC_DIR = $$PWD/tmp
+	RCC_DIR = $$PWD/tmp
+	UI_DIR = $$PWD/tmp
+}
 
 DISTFILES += \
     data/fonts/A-OTF-FolkPro-Bold.otf \
