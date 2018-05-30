@@ -47,6 +47,8 @@ int main(int argc, char *argv[])
 	Global::applicationFont.setPixelSize(22);
 	About::showWelcomeDialog();
 
+	a.setKeyboardInputInterval(1000);
+
 	Mainw w;
 	w.show();
 

@@ -3,6 +3,7 @@
 
 #include <QtCore>
 #include <QKeyEvent>
+#include <RPG/core/RpgObject.h>
 
 /**
  * @brief The RpgState class
@@ -48,11 +49,14 @@ private:
 	 */
 	QStack<Mode> modeStack;
 
+	QHash<Mode, QVector<RpgObject*>> modeObjects;
+
 public:
 	explicit RpgState(QObject *parent = nullptr) : QObject(parent){
 		if(this->modeStack.isEmpty()){
 			this->modeStack.push(AutoMode);
 		}
+
 	}
 
 	inline Mode getTop() const{
@@ -65,6 +69,42 @@ public:
 
 	Mode popMode(){
 		return this->modeStack.pop();
+	}
+
+	void registerRpgObject(RpgObject *obj, Mode mode){
+		if(obj == nullptr){
+			qDebug() << CodePath() << "RpgObject is null.";
+			return;
+		}
+		if(this->modeObjects.contains(mode)){
+			QVector<RpgObject*> objs = this->modeObjects.value(mode);
+			objs.append(obj);
+			this->modeObjects.insert(mode, objs);
+		}else{
+			QVector<RpgObject*> objs;
+			objs.append(obj);
+			this->modeObjects.insert(mode, objs);
+		}
+	}
+
+	void unregisterRpgObject(RpgObject *obj, Mode mode){
+		if(obj == nullptr){
+			qDebug() << CodePath() << "RpgObject is null.";
+			return;
+		}
+		if(this->modeObjects.contains(mode)){
+			QVector<RpgObject*> objs = this->modeObjects.value(mode);
+			int index = -1;
+			if((index = objs.indexOf(obj)) == -1){
+				qDebug() << CodePath() << "The mode" << mode << "does not registered this RpgObject" << obj;
+				return;
+			}
+			objs.removeAt(index);
+			this->modeObjects.insert(mode, objs);
+		}else{
+			qDebug() << CodePath() << "The mode" << mode << "does not have any objects called" << obj;
+			return;
+		}
 	}
 
 signals:

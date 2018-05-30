@@ -18,8 +18,109 @@
 class RpgScript : public QObject
 {
 	Q_OBJECT
+
+	QJSEngine *engine = new QJSEngine(this);
+	QHash<QString, QJSValue> modules;
+	QString scriptFileName;
 public:
-	explicit RpgScript(QObject *parent = nullptr);
+	explicit RpgScript(QObject *parent = nullptr) : QObject(parent){
+		this->engine->installExtensions(QJSEngine::AllExtensions);
+		this->modules.clear();
+	}
+
+	void setScriptName(const QString &fileName){
+		if(fileName.isEmpty()){
+			qDebug() << CodePath() << "Script file name is empty.";
+			return;
+		}
+		if(!QFile::exists(fileName)){
+			qDebug() << CodePath() << "Script file not exist.";
+			return;
+		}
+		this->scriptFileName = fileName;
+	}
+
+	QString exec(){
+		if(this->scriptFileName.isEmpty()){
+			qDebug() << CodePath() << "Script file is empty.";
+			return QString("exit");
+		}
+		QStringList keys = this->modules.keys();
+		for(const QString &key: keys){
+			this->engine->globalObject().setProperty(key, this->modules.value(key));
+		}
+		QFile f(this->scriptFileName);
+		if(!f.open(QIODevice::ReadOnly)){
+			qDebug() << CodePath() << "Cannot open the script file:" << f.fileName();
+			return QString("exit");
+		}
+		QString script = f.readAll();
+		if(f.isOpen()){
+			f.close();
+		}
+
+		QJSValue res = this->engine->evaluate(script, this->scriptFileName);
+		if(res.isError()){
+			qDebug() << CodePath() << "Uncaught exception at line" << res.property("lineNumber").toInt()
+					 << "Error:" << res.toString();
+			return QString("exit");
+		}
+		if(!res.isString()){
+			qDebug() << CodePath() << "Main script returns not a string to tell main thread which scene will be loaded, Aborted.";
+			QString type = "unknown";
+			if(res.isArray()){
+				type = "array";
+			}else if(res.isBool()){
+				type = "bool";
+			}else if(res.isCallable()){
+				type = "function";
+			}else if(res.isDate()){
+				type = "date";
+			}else if(res.isNull()){
+				type = "null";
+			}else if(res.isNumber()){
+				type = "number";
+			}else if(res.isObject()){
+				type = "object";
+			}else if(res.isQMetaObject()){
+				type = "meta";
+			}else if(res.isQObject()){
+				type = "qobject";
+			}else if(res.isRegExp()){
+				type = "regexp";
+			}else if(res.isString()){
+				type = "string";
+			}else if(res.isUndefined()){
+				type = "undefined";
+			}else if(res.isVariant()){
+				type = "varient";
+			}
+			qDebug() << CodePath() << "Main result type:" << type << "value:" << res.toString();
+			return QString("exit");
+		}
+		return res.toString();
+	}
+
+	void addJsValue(const QString &name, QObject *obj){
+		if(name.isEmpty()){
+			qDebug() << CodePath() << "Name is empty.";
+			return;
+		}
+		if(obj == nullptr){
+			qDebug() << CodePath() << "Object is nullptr";
+			return;
+		}
+		this->modules.insert(name, this->engine->newQObject(obj));
+	}
+
+	QJSValue getModule(const QString &name){
+		return this->modules.value(name);
+	}
+
+	void removeModule(const QString &name){
+		this->modules.remove(name);
+	}
+
 
 signals:
 

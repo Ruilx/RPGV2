@@ -164,7 +164,8 @@ void RpgWidget::ready(){
 //		}
 //	}
 
-	RpgMusic::instance()->addMusic("title", "data/sounds/月光（オルゴール）.mp3");
+	//RpgMusic::instance()->addMusic("title", "data/sounds/月光（オルゴール）.mp3");
+	RpgMusic::instance()->addMusic("title", "C:/CloudMusic/nero - カンタレラ~grace edition~.mp3");
 	RpgMusic::instance()->addMusic("op1", "data/sounds/雨の日に.mp3");
 
 	RpgSound::instance()->addSound("select", "data/se/select.wav");
@@ -225,6 +226,7 @@ void RpgWidget::ready(){
 	titleScene->getRpgChoise()->addChoiceText("続ける");
 	titleScene->getRpgChoise()->addChoiceText("?????");
 	titleScene->getRpgChoise()->addChoiceText("終わる");
+	titleScene->getRpgChoise()->setDialogWidth(250);
 	titleScene->getRpgChoise()->setChoiceEnabled(1, false);
 	titleScene->getRpgChoise()->setChoiceEnabled(2, false);
 	titleScene->getRpgChoise()->exec();

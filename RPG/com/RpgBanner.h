@@ -126,7 +126,7 @@ public:
 	 * @param parentScene
 	 * 设置父Scene
 	 */
-	inline void setParentScene(QGraphicsScene *parentScene){ this->setParentScene(parentScene); }
+	//inline void setParentScene(QGraphicsScene *parentScene){ this->setParentScene(parentScene); }
 
 	/**
 	 * @brief setStartOpacity

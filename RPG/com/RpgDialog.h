@@ -70,17 +70,6 @@ class RpgDialog : public RpgObject
 
 	// 对话框相对窗口位置(构造函数中初始化)
 	QPoint dialogPos;
-
-protected:
-	QRectF boundingRect() const{
-		return QRectF();
-	}
-
-	void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget){
-		Q_UNUSED(painter)
-		Q_UNUSED(option)
-		Q_UNUSED(widget)
-	}
 public:
 	/**
 	 * @brief The Speed enum
@@ -180,14 +169,14 @@ public:
 	 */
 	void clearText(){ this->messageList.clear(); this->messageReadyList.clear(); }
 
-	/**
-	 * @brief setGraphicsScene
-	 * @param scene
-	 * 设置对话框显示到的Scene
-	 */
-	void setGraphicsScene(QGraphicsScene *scene){
-		this->setParentScene(scene);
-	}
+//	/**
+//	 * @brief setGraphicsScene
+//	 * @param scene
+//	 * 设置对话框显示到的Scene
+//	 */
+//	void setGraphicsScene(QGraphicsScene *scene){
+//		this->setParentScene(scene);
+//	}
 
 	/**
 	 * @brief setCharacterPixmap

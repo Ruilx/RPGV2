@@ -93,7 +93,7 @@ public:
 	/**
 	 * @brief setParentScene
 	 * @param parentScene
-	 * 获得此Object的父Scene
+	 * 设置此Object的父Scene
 	 */
 	inline void setParentScene(QGraphicsScene *parentScene){
 		this->parentScene = parentScene;

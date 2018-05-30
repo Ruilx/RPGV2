@@ -52,7 +52,7 @@ void RpgMusic::addMusic(const QString &musicName, const QString &fileName){
 	if(!QFile::exists(fileName)){
 		qDebug() << CodePath() << "Music file:'" << fileName << "' is not exist.";
 	}
-	this->musicMap.insert(musicName, QUrl(fileName));
+	this->musicMap.insert(musicName, QUrl::fromLocalFile(fileName));
 }
 
 void RpgMusic::removeMusic(const QString &musicName){
@@ -92,7 +92,7 @@ void RpgMusic::playMusic(const QString &musicName){
 	if(this->music->state() != QMediaPlayer::PlayingState){
 		this->stopMusic();
 	}
-	this->music->setMedia(this->musicMap.value(musicName));
+	this->music->setMedia(QMediaContent(this->musicMap.value(musicName)));
 	this->music->play();
 	this->volumeTransition(true);
 }

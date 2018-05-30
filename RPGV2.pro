@@ -32,7 +32,12 @@ SOURCES += main.cpp\
     RPG/com/RpgMusic.cpp \
     RPG/com/RpgSound.cpp \
     RPG/com/RpgItem.cpp \
-    RPG/core/RpgObject.cpp
+    RPG/core/RpgObject.cpp \
+    RPG/script/RpgBannerHelper.cpp \
+    RPG/script/RpgChoiceHelper.cpp \
+    RPG/script/RpgDialogHelper.cpp \
+    RPG/script/RpgMusicHelper.cpp \
+    RPG/script/RpgSoundHelper.cpp
 
 HEADERS  += Mainw.h \
     RPG/About.h \
@@ -54,7 +59,12 @@ HEADERS  += Mainw.h \
     RPG/com/RpgMusic.h \
     RPG/com/RpgSound.h \
     RPG/com/RpgItem.h \
-    RPG/core/RpgObject.h
+    RPG/core/RpgObject.h \
+    RPG/script/RpgBannerHelper.h \
+    RPG/script/RpgChoiceHelper.h \
+    RPG/script/RpgDialogHelper.h \
+    RPG/script/RpgMusicHelper.h \
+    RPG/script/RpgSoundHelper.h
 
 INCLUDEPATH += $$PWD
 DEPENDPATH += $$PWD

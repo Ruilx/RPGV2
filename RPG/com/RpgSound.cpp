@@ -53,6 +53,10 @@ void RpgSound::play(const QString &soundName, qreal volume, int times){
 //				QMetaObject::invokeMethod(this, "play", Qt::QueuedConnection, Q_ARG(QString, soundName), Q_ARG(qreal, volume), Q_ARG(int, times));
 //				return;
 //			}
+			if(this->threadPool->activeThreadCount() >= this->threadPool->maxThreadCount()){
+				qDebug() << CodePath() << QString("Threadpool is full. %1/%2").arg(this->threadPool->activeThreadCount()).arg(this->threadPool->maxThreadCount());
+				return;
+			}
 			QSoundEffect *sound = new QSoundEffect(nullptr);
 			sound->setLoopCount(times);
 			sound->setVolume(volume);

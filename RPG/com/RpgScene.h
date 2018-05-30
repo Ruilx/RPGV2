@@ -6,7 +6,16 @@
 #include <RPG/com/RpgDialog.h>
 #include <RPG/com/RpgBanner.h>
 #include <RPG/com/RpgChoice.h>
+#include <RPG/com/RpgMusic.h>
+#include <RPG/com/RpgSound.h>
 #include <RPG/com/RpgItem.h>
+#include <RPG/com/RpgScript.h>
+
+#include <RPG/script/RpgBannerHelper.h>
+#include <RPG/script/RpgChoiceHelper.h>
+#include <RPG/script/RpgDialogHelper.h>
+#include <RPG/script/RpgMusicHelper.h>
+#include <RPG/script/RpgSoundHelper.h>
 /**
  * @brief The RpgScene class
  * RPGScene类是RPG游戏中的场景类, 其本质是一个QGraphicsScene, 在scene上增加需要的内容
@@ -22,12 +31,32 @@ class RpgScene : public QGraphicsScene
 	RpgDialog *dialog = nullptr;
 	RpgBanner *banner = nullptr;
 	RpgChoice *choice = nullptr;
+
+	RpgScript *script = nullptr;
+	RpgBannerHelper *bannerHelper = nullptr;
+	RpgChoiceHelper *choiceHelper = nullptr;
+	RpgDialogHelper *dialogHelper = nullptr;
+	RpgMusicHelper  *musicHelper  = nullptr;
+	RpgSoundHelper  *soundHelper  = nullptr;
 public:
 	RpgScene(QObject *parent = nullptr) : QGraphicsScene(parent){
 		this->setScenePos(0.0f, 0.0f);
-		this->dialog = new RpgDialog(this, this);
+
 		this->banner = new RpgBanner(this, this);
 		this->choice = new RpgChoice(this, this);
+		this->dialog = new RpgDialog(this, this);
+
+		this->script = new RpgScript(this);
+		this->bannerHelper = new RpgBannerHelper(this->banner, this);
+		this->choiceHelper = new RpgChoiceHelper(this->choice, this);
+		this->dialogHelper = new RpgDialogHelper(this->dialog, this);
+		this->musicHelper  = new RpgMusicHelper(RpgMusic::instance(), this);
+		this->soundHelper  = new RpgSoundHelper(RpgSound::instance(), this);
+		this->script->addJsValue("RpgBanner", this->bannerHelper);
+		this->script->addJsValue("RpgChoice", this->choiceHelper);
+		this->script->addJsValue("RpgDialog", this->dialogHelper);
+		this->script->addJsValue("RpgMusic",  this->musicHelper);
+		this->script->addJsValue("RpgSound",  this->soundHelper);
 	}
 
 	void setSceneRect(const QRectF &rect){ QGraphicsScene::setSceneRect(rect);}
@@ -45,6 +74,15 @@ public:
 
 	bool addRpgItem(RpgItem *item);
 	bool removeRpgItem(RpgItem *item);
+
+	void setScript(const QString &filename){
+		this->script->setScriptName(filename);
+	}
+
+	void execScript(){
+		QString res = this->script->exec();
+		qDebug() << CodePath() << res;
+	}
 };
 
 #endif // RPGSCENE_H

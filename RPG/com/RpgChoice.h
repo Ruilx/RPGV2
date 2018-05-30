@@ -76,16 +76,6 @@ class RpgChoice : public RpgObject
 
 	// 对话框相对窗口的位置(构造函数中初始化)
 	QPoint dialogPos;
-protected:
-	QRectF boundingRect() const{
-		return QRectF();
-	}
-
-	void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget){
-		Q_UNUSED(painter)
-		Q_UNUSED(option)
-		Q_UNUSED(widget)
-	}
 
 public:
 	/**
@@ -178,18 +168,31 @@ public:
 		}
 	}
 	/**
+	 * @brief setDialogWidth
+	 * @param width
+	 * 设置选择框宽度
+	 */
+	void setDialogWidth(int width){
+		if(width < 0 || width > ScreenWidth - marginH - marginH){
+			qDebug() << CodePath() << "Given width:" << width << "is not vaild.";
+			return;
+		}
+		QSize dialogSize = this->skin.getDialogSize();
+		this->skin.setDialogSize(QSize(width, dialogSize.height()));
+	}
+	/**
 	 * @brief clearChoiceText
 	 * 清除文字选项
 	 */
 	void clearChoiceText(){ this->messageList.clear(); this->messageReadyList.clear(); }
-	/**
-	 * @brief setGraphicsScene
-	 * @param scene
-	 * 设置对话框显示到的Scene
-	 */
-	void setGraphicsScene(QGraphicsScene *scene){
-		this->setParentScene(scene);
-	}
+//	/**
+//	 * @brief setGraphicsScene
+//	 * @param scene
+//	 * 设置对话框显示到的Scene
+//	 */
+//	void setGraphicsScene(QGraphicsScene *scene){
+//		this->setParentScene(scene);
+//	}
 	/**
 	 * @brief exec
 	 * 开始执行并进入Dialog模式
