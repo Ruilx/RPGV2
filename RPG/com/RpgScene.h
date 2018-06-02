@@ -16,6 +16,7 @@
 #include <RPG/script/RpgDialogHelper.h>
 #include <RPG/script/RpgMusicHelper.h>
 #include <RPG/script/RpgSoundHelper.h>
+#include <RPG/script/RpgUtilsHelper.h>
 /**
  * @brief The RpgScene class
  * RPGScene类是RPG游戏中的场景类, 其本质是一个QGraphicsScene, 在scene上增加需要的内容
@@ -38,6 +39,9 @@ class RpgScene : public QGraphicsScene
 	RpgDialogHelper *dialogHelper = nullptr;
 	RpgMusicHelper  *musicHelper  = nullptr;
 	RpgSoundHelper  *soundHelper  = nullptr;
+	RpgUtilsHelper  *utilsHelper  = nullptr;
+
+	QString mapFile;
 public:
 	RpgScene(QObject *parent = nullptr) : QGraphicsScene(parent){
 		this->setScenePos(0.0f, 0.0f);
@@ -52,11 +56,16 @@ public:
 		this->dialogHelper = new RpgDialogHelper(this->dialog, this);
 		this->musicHelper  = new RpgMusicHelper(RpgMusic::instance(), this);
 		this->soundHelper  = new RpgSoundHelper(RpgSound::instance(), this);
+
+		this->utilsHelper  = new RpgUtilsHelper(this);
+
 		this->script->addJsValue("RpgBanner", this->bannerHelper);
 		this->script->addJsValue("RpgChoice", this->choiceHelper);
 		this->script->addJsValue("RpgDialog", this->dialogHelper);
 		this->script->addJsValue("RpgMusic",  this->musicHelper);
 		this->script->addJsValue("RpgSound",  this->soundHelper);
+
+		this->script->addJsValue("RpgUtils", this->utilsHelper);
 	}
 
 	void setSceneRect(const QRectF &rect){ QGraphicsScene::setSceneRect(rect);}
@@ -75,9 +84,8 @@ public:
 	bool addRpgItem(RpgItem *item);
 	bool removeRpgItem(RpgItem *item);
 
-	void setScript(const QString &filename){
-		this->script->setScriptName(filename);
-	}
+	void setScript(const QString &filename){ this->script->setScriptName(filename); }
+	void setMap(const QString &filename){ this->mapFile = filename; }
 
 	void execScript(){
 		QString res = this->script->exec();

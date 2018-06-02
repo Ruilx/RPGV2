@@ -36,6 +36,7 @@ public:
 	 * ItemMode: 背包模式, 在此模式中, 时间暂停, 用户可以查看背包状态, 使用道具等操作.
 	 */
 	enum Mode{
+		UnknownMode = -1,
 		AutoMode = 0,
 		NormalMode,
 		SystemMenuMode,
@@ -49,14 +50,13 @@ private:
 	 */
 	QStack<Mode> modeStack;
 
-	QHash<Mode, QVector<RpgObject*>> modeObjects;
+	QHash<Mode, QVector<RpgObject*> > modeObjects;
 
 public:
 	explicit RpgState(QObject *parent = nullptr) : QObject(parent){
 		if(this->modeStack.isEmpty()){
 			this->modeStack.push(AutoMode);
 		}
-
 	}
 
 	inline Mode getTop() const{
@@ -68,6 +68,10 @@ public:
 	}
 
 	Mode popMode(){
+		if(this->modeStack.isEmpty()){
+			qDebug() << CodePath() << "Mode stack is empty, cannot pop.";
+			return UnknownMode;
+		}
 		return this->modeStack.pop();
 	}
 
@@ -111,7 +115,21 @@ signals:
 
 public slots:
 	void receiveKey(int key, Qt::KeyboardModifiers mod){
-
+		if(this->modeStack.isEmpty()){
+			qDebug() << CodePath() << "Mode stack is empty, cannot getting Mode.";
+			return;
+		}
+		Mode topMode = this->modeStack.top();
+		QVector<RpgObject*> objects = this->modeObjects.value(topMode);
+		for(RpgObject *obj: objects){
+			if(obj == nullptr){
+				qDebug() << "RpgObject is nullptr, cannot touch it.";
+				continue;
+			}
+			// 请在被调用的Object确定当前是否在运行(isRunning=True)并如果没有运行请直接返回
+			// 这里可以依次向每个Object调用其receiveKey函数
+			obj->receiveKey(key, mod);
+		}
 	}
 };
 

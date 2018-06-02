@@ -42,7 +42,7 @@ public:
 
 	QString exec(){
 		if(this->scriptFileName.isEmpty()){
-			qDebug() << CodePath() << "Script file is empty.";
+			qDebug() << CodePath() << "Script file name is empty.";
 			return QString("exit");
 		}
 		QStringList keys = this->modules.keys();

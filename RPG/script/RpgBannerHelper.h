@@ -42,20 +42,36 @@ public:
 		return this->rpgBanner->waitingForBannerComplete();
 	}
 
-	Q_INVOKABLE void setForegroundPixmap(const QPixmap &pixmap){
+//	Q_INVOKABLE void setForegroundPixmap(const QPixmap &pixmap){
+//		if(this->rpgBanner == nullptr){
+//			qDebug() << CodePath() << "RpgBanner nullptr";
+//			return;
+//		}
+//		this->rpgBanner->setForegroundPixmap(pixmap);
+//	}
+
+	Q_INVOKABLE void setForegroundPixmap(const QString &pixmap){
 		if(this->rpgBanner == nullptr){
 			qDebug() << CodePath() << "RpgBanner nullptr";
 			return;
 		}
-		this->rpgBanner->setForegroundPixmap(pixmap);
+		this->rpgBanner->setForegroundPixmap(QPixmap(pixmap));
 	}
 
-	Q_INVOKABLE void setBackgroundColor(const QColor &color){
+//	Q_INVOKABLE void setBackgroundColor(const QColor &color){
+//		if(this->rpgBanner == nullptr){
+//			qDebug() << CodePath() << "RpgBanner nullptr";
+//			return;
+//		}
+//		this->rpgBanner->setBackgroundColor(color);
+//	}
+
+	Q_INVOKABLE void setBackgroundColor(const QString &color){
 		if(this->rpgBanner == nullptr){
 			qDebug() << CodePath() << "RpgBanner nullptr";
 			return;
 		}
-		this->rpgBanner->setBackgroundColor(color);
+		this->rpgBanner->setBackgroundColor(QColor(color));
 	}
 
 	Q_INVOKABLE void setBackgroundPixmap(const QPixmap &pixmap){

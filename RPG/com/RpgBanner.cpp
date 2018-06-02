@@ -81,19 +81,19 @@ void RpgBanner::setBackgroundPixmap(const QPixmap &pixmap){
 
 void RpgBanner::exec(){
 	if(this->getParentScene() == nullptr){
-		qDebug() << CodePath() << ": parentScene is not set. (Null)";
+		qDebug() << CodePath() << "parentScene is not set. (Null)";
 		return;
 	}
 	if(this->background->pixmap().isNull()){
-		qDebug() << CodePath() << ": backgroundPixmap is null.";
+		qDebug() << CodePath() << "backgroundPixmap is null.";
 		return;
 	}
 	if(this->foreground->pixmap().isNull()){
-		qDebug() << CodePath() << ": foregroundPixmap is null.";
+		qDebug() << CodePath() << "foregroundPixmap is null.";
 		return;
 	}
 	if(this->getProcessing() == true){
-		qDebug() << CodePath() << ": RpgBanner is Running, please don't call it repeatly!";
+		qDebug() << CodePath() << "RpgBanner is Running, please don't call it repeatly!";
 		return;
 	}
 	this->background->setPos(QPointF(0.0f, 0.0f));
