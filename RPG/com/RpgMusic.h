@@ -13,6 +13,19 @@
  * 进行另一个声音的播放时, 前一个声音将会停止, 默认声音会一直循环播放
  *
  * 首先需要载入声音文件, 并给其取一个名字, 播放的时候只需要提供名字即可.
+ *
+ * 2018/06/05 02:03
+ * (Windows)
+ * 注: RpgMusic控件是由QMultiMedia组件进行实现, 组件将数据移交至系统的DirectShow进行处理
+ * 则这时如果系统的DirectShow没有既定的Decoder, 则会报告doRender失败, 没有解决的错误代码
+ * 0x80040266(MS解释:VFW_E_NO_TRANSPORT)
+ * # Pins cannot connect because they don't support the same transport.
+ * # For example, the upstream filter might require the IAsyncReader interface,
+ * # while the downstream filter requires IMemInputPin.
+ * # https://msdn.microsoft.com/en-us/library/windows/desktop/dd375623(v=vs.85).aspx
+ * 所以需要安装一个可供DirectShow播放的DirectShow解码器
+ * 最后选择了LAV Filters, 下载后使用regsvr32对AX文件进行注册, 然后DirectShow就可以进行解码了
+ * (可支持的项目: 320K的MP3, OGG容器, MIDI等)
  */
 class RpgMusic : public QObject
 {
