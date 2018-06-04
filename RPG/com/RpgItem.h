@@ -5,6 +5,8 @@
 #include <QtWidgets>
 #include <RPG/About.h>
 #include <RPG/Global.h>
+#include <QPropertyAnimation>
+#include <QAnimationGroup>
 
 /**
  * @brief The RpgItem class
@@ -23,9 +25,11 @@ private:
 //	QGraphicsPixmapItem *item = new QGraphicsPixmapItem(nullptr);
 	ItemPosition itemPosition = Pos_Relative;
 	QPointF _pos = QPointF(0, 0);
+
+//	QAnimationGroup group = QAnimationGroup(this);
 public:
 	explicit RpgItem(QGraphicsItem *parentItem = nullptr): QGraphicsPixmapItem(parentItem){
-		this->setVisible(false);
+		//this->hide();
 	}
 
 //	~RpgItem(){

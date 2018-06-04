@@ -2,8 +2,7 @@
 
 //RpgDialog *RpgDialog::_instance = nullptr;
 
-RpgDialog::RpgDialog(QGraphicsScene *parentScene, QObject *parent): QObject(parent){
-	this->setGraphicsScene(parentScene);
+RpgDialog::RpgDialog(QGraphicsScene *parentScene, QObject *parent): RpgObject(parentScene, parent, nullptr){
 	this->setTextColor(QColor(Qt::white));
 	this->message->setFont(Global::dialogFont);
 
@@ -22,7 +21,8 @@ RpgDialog::RpgDialog(QGraphicsScene *parentScene, QObject *parent): QObject(pare
 	//		this->message->setTextCursor(textCursor);
 
 	// ZValue设置
-	this->box->setZValue(DialogZValue);
+	this->setZValue(DialogZValue);
+	this->box->setZValue(0.0f);
 	this->message->setZValue(0.1f);
 	this->continueSymbol->setZValue(0.2f);
 	if(!this->characterBoxPixmap.isNull()){
@@ -68,14 +68,10 @@ RpgDialog::RpgDialog(QGraphicsScene *parentScene, QObject *parent): QObject(pare
 	// 头像位置动画设置
 	characterAnimation->setItem(this->characterBox);
 	characterAnimation->setTimeLine(this->characterTimeLine);
-
-	// 预载入位置, 不过不显示
-	this->box->hide();
-	this->parentScene->addItem(this->box);
 }
 
 void RpgDialog::exec(){
-	if(this->parentScene == nullptr){
+	if(this->getParentScene() == nullptr){
 		qDebug() << "RpgDialog::exec(): parentScene is not set.(Null)";
 		return;
 	}
@@ -85,7 +81,7 @@ void RpgDialog::exec(){
 			return;
 		}
 	}
-	if(this->isRunning == true){
+	if(this->getProcessing() == true){
 		qDebug() << "RpgDialog::exec(): Dialog is still running, please don't call it repeatly!";
 		return;
 	}
@@ -99,7 +95,7 @@ void RpgDialog::exec(){
 
 	// 设置对话框背景, 支持每次对话框形状不同
 	this->box->setPixmap(this->skin.getDialogImage());
-	this->box->setPos(QPointF(this->dialogPos) + this->parentScene->sceneRect().topLeft());
+	this->box->setPos(this->dialogPos);
 
 	this->continueSymbol->setPixmap(this->skin.getContinueSymbolImage(0));
 	this->continueSymbol->setPos((this->skin.getDialogSize().width() - this->skin.getContinueSymbolSize().width()) / 2, (this->skin.getDialogSize().height() - this->skin.getContinueSymbolSize().width()));
@@ -128,7 +124,7 @@ void RpgDialog::exec(){
 }
 
 int RpgDialog::waitingForDialogComplete(){
-	if(!this->isRunning){
+	if(!this->getProcessing()){
 		qDebug() << CodePath() << ": Not running yet, cannot wait.";
 		return -1;
 	}
@@ -139,21 +135,23 @@ int RpgDialog::waitingForDialogComplete(){
 }
 
 void RpgDialog::showDialog(){
-	this->isRunning = true;
+	this->setProcessing(true);
 	emit this->enterDialogMode();
-	this->box->show();
+	//this->box->show();
+	this->show();
 	this->enterOrExitAnimationStart();
 	this->showText(this->messageIndex);
 }
 
 void RpgDialog::hideDialog(){
-	this->isRunning = false;
+	this->setProcessing(false);
 	if(this->continueSymbolTimeLine->state() != QTimeLine::NotRunning){
 		this->continueSymbolTimeLine->stop();
 	}
 	this->enterOrExitAnimationStart();
 	Utils::msleep(300);
-	this->box->hide();
+	//this->box->hide();
+	this->hide();
 	//this->parentScene->removeItem(this->box);
 	this->clearText();
 	this->characterBoxPixmap = QPixmap();
@@ -239,7 +237,8 @@ void RpgDialog::enterOrExitAnimationSetting(bool enter){
 }
 
 void RpgDialog::enterOrExitAnimationStart(){
-	if(this->box->isVisible() == false){
+	//if(this->box->isVisible() == false){
+	if(this->isVisible() == false){
 		qWarning() << "Box current visible is false, cannot open animation.";
 		return;
 	}
@@ -253,7 +252,7 @@ void RpgDialog::enterOrExitAnimationStart(){
 }
 
 void RpgDialog::receiveKey(int key, Qt::KeyboardModifiers mod){
-	if(!this->isRunning){
+	if(!this->getProcessing()){
 		return;
 	}
 	qDebug() << CodePath() << tr("receive key: %1::%2(%3).").arg(mod).arg(key).arg(QString(QChar(key)).toHtmlEscaped());

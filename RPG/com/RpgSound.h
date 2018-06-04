@@ -22,7 +22,9 @@ class RpgSound : public QObject
 	Q_OBJECT
 	static RpgSound *_instance;
 
-	QHash<QString, QSoundEffect*> soundMap;
+	QHash<QString, QUrl> soundMap;
+
+	QThreadPool *threadPool = nullptr;
 public:
 	/**
 	 * @brief instance 获取单例对象
@@ -41,17 +43,13 @@ public:
 	 */
 	explicit RpgSound(QObject *parent = nullptr) : QObject(parent){
 		this->soundMap.clear();
+		if(this->threadPool == nullptr){
+			this->threadPool = new QThreadPool(this);
+			this->threadPool->setMaxThreadCount(10);
+		}
 	}
 
 	~RpgSound(){
-		for(QSoundEffect *e: this->soundMap){
-			if(e != nullptr){
-				if(e->isPlaying()){
-					e->stop();
-				}
-				e->deleteLater();
-			}
-		}
 	}
 
 	/**

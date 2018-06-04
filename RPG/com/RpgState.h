@@ -3,6 +3,7 @@
 
 #include <QtCore>
 #include <QKeyEvent>
+#include <RPG/core/RpgObject.h>
 
 /**
  * @brief The RpgState class
@@ -11,7 +12,19 @@
 class RpgState : public QObject
 {
 	Q_OBJECT
+	static RpgState *_instance;
 public:
+	/**
+	 * @brief instance 获取单例对象
+	 * @return
+	 */
+	static RpgState *instance(){
+		if(_instance == nullptr){
+			_instance = new RpgState(nullptr);
+		}
+		return _instance;
+	}
+
 	/**
 	 * @brief The Mode enum
 	 * 定义游戏会有哪些模式, 各个模式中按键接受方式, 显示方式等都不相同, 用这个Enum来规范现在
@@ -23,6 +36,7 @@ public:
 	 * ItemMode: 背包模式, 在此模式中, 时间暂停, 用户可以查看背包状态, 使用道具等操作.
 	 */
 	enum Mode{
+		UnknownMode = -1,
 		AutoMode = 0,
 		NormalMode,
 		SystemMenuMode,
@@ -36,17 +50,87 @@ private:
 	 */
 	QStack<Mode> modeStack;
 
-	void keyReleaseEvent(QKeyEvent *event){
+	QHash<Mode, QVector<RpgObject*> > modeObjects;
 
-	}
 public:
 	explicit RpgState(QObject *parent = nullptr) : QObject(parent){
+		if(this->modeStack.isEmpty()){
+			this->modeStack.push(AutoMode);
+		}
+	}
 
+	inline Mode getTop() const{
+		return this->modeStack.top();
+	}
+
+	void pushMode(const Mode &mode){
+		this->modeStack.push(mode);
+	}
+
+	Mode popMode(){
+		if(this->modeStack.isEmpty()){
+			qDebug() << CodePath() << "Mode stack is empty, cannot pop.";
+			return UnknownMode;
+		}
+		return this->modeStack.pop();
+	}
+
+	void registerRpgObject(RpgObject *obj, Mode mode){
+		if(obj == nullptr){
+			qDebug() << CodePath() << "RpgObject is null.";
+			return;
+		}
+		if(this->modeObjects.contains(mode)){
+			QVector<RpgObject*> objs = this->modeObjects.value(mode);
+			objs.append(obj);
+			this->modeObjects.insert(mode, objs);
+		}else{
+			QVector<RpgObject*> objs;
+			objs.append(obj);
+			this->modeObjects.insert(mode, objs);
+		}
+	}
+
+	void unregisterRpgObject(RpgObject *obj, Mode mode){
+		if(obj == nullptr){
+			qDebug() << CodePath() << "RpgObject is null.";
+			return;
+		}
+		if(this->modeObjects.contains(mode)){
+			QVector<RpgObject*> objs = this->modeObjects.value(mode);
+			int index = -1;
+			if((index = objs.indexOf(obj)) == -1){
+				qDebug() << CodePath() << "The mode" << mode << "does not registered this RpgObject" << obj;
+				return;
+			}
+			objs.removeAt(index);
+			this->modeObjects.insert(mode, objs);
+		}else{
+			qDebug() << CodePath() << "The mode" << mode << "does not have any objects called" << obj;
+			return;
+		}
 	}
 
 signals:
 
 public slots:
+	void receiveKey(int key, Qt::KeyboardModifiers mod){
+		if(this->modeStack.isEmpty()){
+			qDebug() << CodePath() << "Mode stack is empty, cannot getting Mode.";
+			return;
+		}
+		Mode topMode = this->modeStack.top();
+		QVector<RpgObject*> objects = this->modeObjects.value(topMode);
+		for(RpgObject *obj: objects){
+			if(obj == nullptr){
+				qDebug() << "RpgObject is nullptr, cannot touch it.";
+				continue;
+			}
+			// 请在被调用的Object确定当前是否在运行(isRunning=True)并如果没有运行请直接返回
+			// 这里可以依次向每个Object调用其receiveKey函数
+			obj->receiveKey(key, mod);
+		}
+	}
 };
 
 #endif // RPGSTATE_H

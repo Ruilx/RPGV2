@@ -7,6 +7,7 @@
 #include <QEasingCurve>
 #include <RPG/About.h>
 #include <RPG/Global.h>
+#include <RPG/core/RpgObject.h>
 #include <RPG/utils/Utils.h>
 #include <RPG/core/RpgDialogBase.h>
 
@@ -15,26 +16,32 @@
  * @brief The RpgChoice class
  * RPGChoice类
  * 是在GraphicsScene上形成一个类似对话框的文字选择器
- * 是一个单独的线程控制文字输出
+ * 是一个单独的线程控制文字输出(这句话有问题, 应该算是不阻塞流程输出, 最后还是需要接收waitforxxx函数去等待结束)
  * 当设定好显示的设置文字之后, 之后就交给RpgChoice线程进行显示, 同时调用者会收到进入DialogMode信号
  * 然后改变输入定向, 并等待RPGChoice结束, 发送退出DialogMode的信号
  * dlgasobj 分支: 类并非单例模式, 但用户层不能将其生成对象, 只能使用Scene->getRpgDialog()得到handle
  * -> dlgasobj 已合并至master.
  * 2018/04/28 RpgDialog 不再继承RpgDialogBase, RpgDialogBase作为其中的实现对象进行调用
+ * -> dlgasitem 新建.
+ * 2018/05/10 RpgDialog 继承QGraphicsItem, 让自己以Item方式出现在界面中而不是主动方式
+ * 之后可能会将Item以被动形式加入Scene(也就是等Scene->addItem(self))的方式加入(当然这个有待商榷)
+ * QGraphicsObject = QGraphicsItem + QObject (据说会有信号发射计算消耗(感觉很少))就没有使用QGraphicsItem + QObject的形式
+ * 另, 将自己变为QGraphicsObject之后, this的pos设置成了view的左上角, 也就是说box的pos只需要设置成relative position即可
+ * 2018/05/13 RpgBanner 继承RpgObject, 公共部分的Item由RpgObject承担
  */
 
-class RpgChoice : public QObject
+class RpgChoice : public RpgObject
 {
 	Q_OBJECT
 	// DialogBase
 	RpgDialogBase skin;
 	// 标志: 是否在运行
-	bool isRunning = false;
+//	bool isRunning = false;
 	// 指定显示在哪个Scene上
-	QGraphicsScene *parentScene = nullptr;
+	//QGraphicsScene *parentScene = nullptr;
 
 	// 构成
-	QGraphicsPixmapItem *box = new QGraphicsPixmapItem(nullptr);			// 那蓝色的小盒子
+	QGraphicsPixmapItem *box = new QGraphicsPixmapItem(this);				// 那蓝色的小盒子
 	QGraphicsTextItem *messages[ChoiceBuff] = {nullptr};					// 可见的那三行字
 	QGraphicsPixmapItem *upSymbol = new QGraphicsPixmapItem(this->box);		// 上面的小三角
 	QGraphicsPixmapItem *downSymbol = new QGraphicsPixmapItem(this->box);	// 下面的小三角
@@ -69,6 +76,7 @@ class RpgChoice : public QObject
 
 	// 对话框相对窗口的位置(构造函数中初始化)
 	QPoint dialogPos;
+
 public:
 	/**
 	 * @brief RpgChoice
@@ -107,7 +115,7 @@ public:
 	 * @param parentScene 设置显示到的Scene
 	 * @param parent QObject要用的
 	 */
-	explicit RpgChoice(QGraphicsScene *parentScene = nullptr, QObject *parent = 0);
+	explicit RpgChoice(QGraphicsScene *parentScene, QObject *parent = 0);
 public:
 	/**
 	 * @brief addChoiceText
@@ -160,18 +168,31 @@ public:
 		}
 	}
 	/**
+	 * @brief setDialogWidth
+	 * @param width
+	 * 设置选择框宽度
+	 */
+	void setDialogWidth(int width){
+		if(width < 0 || width > ScreenWidth - marginH - marginH){
+			qDebug() << CodePath() << "Given width:" << width << "is not vaild.";
+			return;
+		}
+		QSize dialogSize = this->skin.getDialogSize();
+		this->skin.setDialogSize(QSize(width, dialogSize.height()));
+	}
+	/**
 	 * @brief clearChoiceText
 	 * 清除文字选项
 	 */
 	void clearChoiceText(){ this->messageList.clear(); this->messageReadyList.clear(); }
-	/**
-	 * @brief setGraphicsScene
-	 * @param scene
-	 * 设置对话框显示到的Scene
-	 */
-	void setGraphicsScene(QGraphicsScene *scene){
-		this->parentScene = scene;
-	}
+//	/**
+//	 * @brief setGraphicsScene
+//	 * @param scene
+//	 * 设置对话框显示到的Scene
+//	 */
+//	void setGraphicsScene(QGraphicsScene *scene){
+//		this->setParentScene(scene);
+//	}
 	/**
 	 * @brief exec
 	 * 开始执行并进入Dialog模式

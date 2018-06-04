@@ -127,7 +127,10 @@ public:
 	inline const QSize getDialogSize() const { return this->dialogSize; }
 	inline const QSize getSelectBarSize() const { return this->selectBarSize; }
 	inline const QSize getContinueSymbolSize() const { return QSize(16, 16); }
-	void setDialogSize(const QSize &size){ this->dialogSize = size; }
+	void setDialogSize(const QSize &size){
+		this->dialogSize = size;
+		this->selectBarSize = QSize(size.width() - PaddingH - PaddingH, this->selectBarSize.height());
+	}
 	void setSelectBarSize(const QSize &size){ this->selectBarSize = size; }
 
 	const QPixmap getDialogImage(){ return this->renderDialog(); }

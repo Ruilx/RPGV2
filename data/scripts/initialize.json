@@ -1,0 +1,17 @@
+{
+	"map": {
+		"title": {
+			"map": "data/maps/title.map",
+			"script": "data/scripts/title.js"
+		}
+	},
+	"init":"title",
+	"music": {
+		"title": "data/sounds/月光（オルゴール）.mp3",
+		"op1": "data/sounds/雨の日に.mp3"
+	},
+	"sound": {
+		"select": "data/se/select.wav",
+		"banned": "data/se/banned.wav"
+	}
+}
