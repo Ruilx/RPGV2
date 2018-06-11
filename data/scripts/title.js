@@ -1,5 +1,5 @@
 // title.js
-function init(){
+var init = function(){
 	RpgBanner.setBackgroundColor("#000000");
 	RpgBanner.setForegroundPixmap("data/images/background/title2.png");
 	RpgBanner.setStartOpacity(0);

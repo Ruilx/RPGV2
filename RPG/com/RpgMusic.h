@@ -113,6 +113,12 @@ public:
 	 */
 	void setLoop(int loop = -1);
 
+	void setNotifyInterval(int ms){
+		this->music->setNotifyInterval(ms);
+	}
+
+
+
 signals:
 	void started();
 	void stopped();

@@ -46,6 +46,11 @@ RpgMusic::RpgMusic(QObject *parent) : QObject(parent){
 			}
 		}
 	});
+
+	this->music->setNotifyInterval(500);
+	connect(this->music, &QMediaPlayer::positionChanged, [this](int milliseconds){
+		qDebug() << "Current Interval Position:" << milliseconds;
+	});
 }
 
 void RpgMusic::addMusic(const QString &musicName, const QString &fileName){

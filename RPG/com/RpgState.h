@@ -3,6 +3,7 @@
 
 #include <QtCore>
 #include <QKeyEvent>
+#include <RPG/utils/Utils.h>
 #include <RPG/core/RpgObject.h>
 
 /**
@@ -114,9 +115,14 @@ public:
 signals:
 
 public slots:
-	void receiveKey(int key, Qt::KeyboardModifiers mod){
+	void receiveKey(int key, Qt::KeyboardModifiers mod, const QGraphicsScene *scene){
+		qDebug() << CodePath() << "Receive key:" << Utils::_keyModifierToString(mod) << "+" << Utils::_keyToString((Qt::Key)key);
 		if(this->modeStack.isEmpty()){
 			qDebug() << CodePath() << "Mode stack is empty, cannot getting Mode.";
+			return;
+		}
+		if(scene == nullptr){
+			qDebug() << CodePath() << "Must specified a vaild scene to handle the key.";
 			return;
 		}
 		Mode topMode = this->modeStack.top();
@@ -126,9 +132,11 @@ public slots:
 				qDebug() << "RpgObject is nullptr, cannot touch it.";
 				continue;
 			}
-			// 请在被调用的Object确定当前是否在运行(isRunning=True)并如果没有运行请直接返回
-			// 这里可以依次向每个Object调用其receiveKey函数
-			obj->receiveKey(key, mod);
+			if(obj->getParentScene() == scene){
+				// 请在被调用的Object确定当前是否在运行(isRunning=True)并如果没有运行请直接返回
+				// 这里可以依次向每个Object调用其receiveKey函数
+				obj->receiveKey(key, mod);
+			}
 		}
 	}
 };

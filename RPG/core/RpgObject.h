@@ -42,15 +42,6 @@ protected:
 		Q_UNUSED(widget)
 	}
 
-	/**
-	 * @brief getParentScene
-	 * @return
-	 * 得到所设置的Scene
-	 */
-	QGraphicsScene *getParentScene() const{
-		return this->parentScene;
-	}
-
 public:
 	/**
 	 * @brief RpgObject
@@ -97,6 +88,15 @@ public:
 	 */
 	inline void setParentScene(QGraphicsScene *parentScene){
 		this->parentScene = parentScene;
+	}
+
+	/**
+	 * @brief getParentScene
+	 * @return
+	 * 得到所设置的Scene
+	 */
+	QGraphicsScene *getParentScene() const{
+		return this->parentScene;
 	}
 
 	/**

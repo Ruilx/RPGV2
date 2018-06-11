@@ -6,63 +6,181 @@ void RpgWidget::keyReleaseEvent(QKeyEvent *event){
 	int key = event->key();
 	// 用户是否使用了Shift, Ctrl, Alt, Win(Meta)键对按键进行修饰(一块按下了)
 	Qt::KeyboardModifiers mod = event->modifiers();
-	if(key == Qt::Key_Escape){
-		// 如果用户按下了ESC键, 任何情况下都可以进入系统菜单
-		if(this->modeStack.top() == SystemMenuMode){
-			// 如果已经在系统菜单模式, 则退出系统菜单模式
-			//TODO: 系统菜单还没有写, 这里输出一条debug代替
+
+	RpgState *state = RpgState::instance();
+	if(key == Qt::Key_Escape && state->getTop() != RpgState::AutoMode){
+		// 用户按下Esc键, 任何情况下都可以进入系统菜单(额... 如果是AutoMode的话就不能点了)
+		if(state->getTop() == RpgState::SystemMenuMode){
+			// 如果已经在系统模式, 则退出系统模式
 			qDebug() << "RpgWidget: KeyReleaseEvent: User Release ESCAPE key in SystemMenuMode.";
 			event->accept();
 			return;
 		}else{
-			//TODO: 系统菜单还没写, 这里输出一条debug代替
-			qDebug() << "RpgWidget: KeyReleaseEvent: User Released ESCAPE key.";
+			state->pushMode(RpgState::SystemMenuMode);
+			qDebug() << CodePath() << "Enter SystemMenuMode.";
 			event->accept();
 			return;
 		}
 	}
-	switch(this->modeStack.top()){
-		case AutoMode:{
-			// 自动模式下不接受任何按键.
-			break;
-		}
-		case NormalMode:{
-			// 普通模式, 接受W, A, S, D, Space, Return, ArrowU, ArrowD, ArrowL, ArrowR, Z(道具栏)
-			//TODO: 没有写相关的运动函数, 这里输出一条Debug代替
-			qDebug() << tr("RpgWidget: KeyReleaseEvent: User Release %1(%2) Key in NormalMode.").arg(key).arg(event->text().toHtmlEscaped());
-			event->accept();
-			break;
-		}
-		case SystemMenuMode:{
-			// 系统菜单模式, 接受W, A, S, D, ArrowU, ArrowD, ArrowL, ArrowR, Space, Return, Esc(前面已经处理过了)
-			//TODO: 没有写系统菜单栏目, 这里输出一条Debug代替
-			qDebug() << tr("RpgWidget: KeyReleaseEvent: User Release %1(%2) Key in SystemMenuMode.").arg(key).arg(event->text().toHtmlEscaped());
-			event->accept();
-			break;
-		}
-		case DialogMode:{
-			// 对话模式, 接受Return, Space
-			emit this->dialogModeKeyClick(key, mod);
-			event->accept();
-			break;
-		}
-		case ItemMode:{
-			// 道具栏(背包)模式, 接受W, A, S, D, ArrowU, ArrowD, ArrowL, ArrowR, Space, Return
-			//TODO: 没有写系统背包栏目, 这里输出一条Debug代替
-			qDebug() << tr("RpgWidget: KeyReleaseEvent: User Release %1(%2) Key in ItemMode.").arg(key).arg(event->text().toHtmlEscaped());
-			event->accept();
-			break;
-		}
-		default:{
-			qDebug() << tr("RpgWidget: KeyReleaseEvent: Cannot recongized which mode it is? User Release %1(%2) Key.").arg(key).arg(event->text().toHtmlEscaped());
-			event->ignore();
-			break;
-		}
-	}
+	//交给state的key函数, 让它去进行调用分配
+	state->receiveKey(key, mod, this->stage->scene());
+	event->accept();
+
+//	switch(state->getTop()){
+//		case RpgState::AutoMode:
+//			// 自动模式下不接受任何按键.
+//			break;
+//		case RpgState::NormalMode:
+//			// 普通模式, 接受W, A, S, D, Space, Return, ArrowU, ArrowD, ArrowL, ArrowR, Z(道具栏)
+//			//TODO: 没有写相关的运动函数, 这里输出一条Debug代替
+//			qDebug() << tr("RpgWidget: KeyReleaseEvent: User Release %1(%2) Key in NormalMode.").arg(key).arg(event->text().toHtmlEscaped());
+//			event->accept();
+//			break;
+//		case RpgState::SystemMenuMode:
+//			// 系统菜单模式, 接受W, A, S, D, ArrowU, ArrowD, ArrowL, ArrowR, Space, Return, Esc(前面已经处理过了)
+//			//TODO: 没有写系统菜单栏目, 这里输出一条Debug代替
+//			qDebug() << tr("RpgWidget: KeyReleaseEvent: User Release %1(%2) Key in SystemMenuMode.").arg(key).arg(event->text().toHtmlEscaped());
+//			event->accept();
+//			break;
+//		case RpgState::DialogMode:
+//			// 对话模式, 接受Return(Enter), Space
+//			emit this->dialogModeKeyClick(key, mod);
+//			event->accept();
+//			break;
+//		case RpgState::ItemMode:
+//			// 道具栏(背包)模式, 接受W, A, S, D, ArrowU, ArrowD, ArrowL, ArrowR, Space, Return
+//			//TODO: 没有写系统背包栏目, 这里输出一条Debug代替
+//			qDebug() << tr("RpgWidget: KeyReleaseEvent: User Release %1(%2) Key in ItemMode.").arg(key).arg(event->text().toHtmlEscaped());
+//			event->accept();
+//			break;
+//		default:
+//			qDebug() << tr("RpgWidget: KeyReleaseEvent: Cannot recongized which mode it is? User Release %1(%2) Key.").arg(key).arg(event->text().toHtmlEscaped());
+//			event->ignore();
+//			break;
+//	}
 }
 
 void RpgWidget::closeEvent(QCloseEvent *event){
 	Q_UNUSED(event)
+}
+
+bool RpgWidget::biosSet(const QByteArray &initializationConfigureJson){
+	if(initializationConfigureJson.isEmpty()){
+		qDebug() << CodePath() << "Initialization configure text is empty.";
+		return false;
+	}
+	QJsonParseError error;
+	QJsonDocument initDoc = QJsonDocument::fromJson(initializationConfigureJson, &error);
+	if(error.error != QJsonParseError::NoError){
+		qDebug() << CodePath() << "Read initialize configure json parse error." << error.errorString();
+		return false;
+	}
+	if(!initDoc.isObject()){
+		QString type;
+		if(initDoc.isNull()){
+			type = "Null";
+		}else if(initDoc.isArray()){
+			type = "Array";
+		}else if(initDoc.isEmpty()){
+			type = "Empty";
+		}else{
+			type = "Unknown";
+		}
+		qDebug() << CodePath() << "Root object must be an object." << type << "found.";
+		return false;
+	}
+	QJsonObject root = initDoc.object();
+	QStringList keys = root.keys();
+	for(const QString &key: keys){
+		QJsonValue value = root.value(key);
+		if(key == "init"){
+			// Execute Script Scene
+			if(!value.isString()){
+				qDebug() << CodePath() << "Init value is not a string." << Utils::detectedJsonValue(value) << "found.";
+				continue;
+			}
+			this->bootScriptSceneName = value.toString();
+		}else if(key == "map"){
+			// Map List
+			if(!value.isObject()){
+				qDebug() << CodePath() << "Map object is not an object." << Utils::detectedJsonValue(value) << "found.";
+				continue;
+			}
+			QJsonObject mapObj = value.toObject();
+			QStringList keys = mapObj.keys();
+			for(const QString &key: keys){
+				QJsonValue value = mapObj.value(key);
+				if(!value.isObject()){
+					qDebug() << CodePath() << "Map Scene is not an object." << Utils::detectedJsonValue(value) << "found.";
+					continue;
+				}
+				QString mapName;
+				QString scriptName;
+				QJsonObject sceneNameObj = value.toObject();
+				QStringList keys = sceneNameObj.keys();
+				for(const QString &key: keys){
+					QJsonValue value = sceneNameObj.value(key);
+					if(key == "map"){
+						mapName = value.toString();
+					}else if(key == "script"){
+						scriptName = value.toString();
+					}else{
+						continue;
+					}
+				}
+				if(mapName.isEmpty() || scriptName.isEmpty()){
+					qDebug() << CodePath() << "Map file name or script name is/are empty, the scene:" << key << "invaild.";
+					continue;
+				}else{
+					RpgScene *scene = new RpgScene(this);
+					scene->setScript(scriptName);
+					scene->setMap(mapName);
+
+					this->mapList.insert(key, scene);
+				}
+			}
+		}else if(key == "music"){
+			// Music List init
+			if(!value.isObject()){
+				qDebug() << CodePath() << "Music object is not an object." << Utils::detectedJsonValue(value) << "found.";
+				continue;
+			}
+			QJsonObject musicObj = value.toObject();
+			QStringList keys = musicObj.keys();
+			for(const QString &key: keys){
+				QJsonValue value = musicObj.value(key);
+				QString musicFile = value.toString();
+				if(musicFile.isEmpty()){
+					qDebug() << CodePath() << "Music file name is empty";
+					continue;
+				}else{
+					RpgMusic::instance()->addMusic(key, musicFile);
+				}
+			}
+		}else if(key == "se"){
+			// Sound effect init
+			if(!value.isObject()){
+				qDebug() << CodePath() << "Sound effect is not an object." << Utils::detectedJsonValue(value) << "found.";
+				continue;
+			}
+			QJsonObject soundObj = value.toObject();
+			QStringList keys = soundObj.keys();
+			for(const QString &key: keys){
+				QJsonValue value = soundObj.value(key);
+				QString soundFile = value.toString();
+				if(soundFile.isEmpty()){
+					qDebug() << CodePath() << "Sound file name is empty";
+					continue;
+				}else{
+					RpgSound::instance()->addSound(key, soundFile);
+				}
+			}
+		}else{
+			// Extra
+			continue;
+		}
+	}
+	return true;
 }
 
 RpgWidget::RpgWidget(QWidget *parent): QWidget(parent){
@@ -88,53 +206,53 @@ RpgWidget::RpgWidget(QWidget *parent): QWidget(parent){
 	mainLay->addWidget(this->stage);
 	mainLay->setMargin(0);
 
-//	connect(titleScene->getRpgDialog(), &RpgDialog::enterDialogMode, this, [this](){
-//		this->modeStack.push(DialogMode);
-//		this->enterDialogMode();
-//	});
+	//	connect(titleScene->getRpgDialog(), &RpgDialog::enterDialogMode, this, [this](){
+	//		this->modeStack.push(DialogMode);
+	//		this->enterDialogMode();
+	//	});
 
-//	connect(titleScene->getRpgDialog(), &RpgDialog::quitDialogMode, this, [this](){
-//		if(this->modeStack.top() == DialogMode){
-//			this->modeStack.pop();
-//		}else{
-//			qDebug() << "RpgWidget::[RpgDialog::quitDialogMode LambdaMoc]: Current Mode Stack top is not dialogMode!";
-//			return;
-//		}
-//		this->quitDialogMode();
-//	});
+	//	connect(titleScene->getRpgDialog(), &RpgDialog::quitDialogMode, this, [this](){
+	//		if(this->modeStack.top() == DialogMode){
+	//			this->modeStack.pop();
+	//		}else{
+	//			qDebug() << "RpgWidget::[RpgDialog::quitDialogMode LambdaMoc]: Current Mode Stack top is not dialogMode!";
+	//			return;
+	//		}
+	//		this->quitDialogMode();
+	//	});
 
-//	connect(titleScene->getRpgChoise(), &RpgChoice::enterDialogMode, this, [this](){
-//		this->modeStack.push(DialogMode);
-//		this->enterDialogMode();
-//	});
+	//	connect(titleScene->getRpgChoise(), &RpgChoice::enterDialogMode, this, [this](){
+	//		this->modeStack.push(DialogMode);
+	//		this->enterDialogMode();
+	//	});
 
-//	connect(titleScene->getRpgChoise(), &RpgChoice::quitDialogMode, this, [this](){
-//		if(this->modeStack.top() == DialogMode){
-//			this->modeStack.pop();
-//		}else{
-//			qDebug() << "RpgChoice::[RpgDialog::quitDialogMode LambdaMoc]: Current Mode Stack top is not dialogMode!";
-//			return;
-//		}
-//		this->quitDialogMode();
-//	});
+	//	connect(titleScene->getRpgChoise(), &RpgChoice::quitDialogMode, this, [this](){
+	//		if(this->modeStack.top() == DialogMode){
+	//			this->modeStack.pop();
+	//		}else{
+	//			qDebug() << "RpgChoice::[RpgDialog::quitDialogMode LambdaMoc]: Current Mode Stack top is not dialogMode!";
+	//			return;
+	//		}
+	//		this->quitDialogMode();
+	//	});
 
-//	connect(titleScene->getRpgBanner(), &RpgBanner::enterAutoMode, this, [this](){
-//		this->modeStack.push(AutoMode);
-//		this->enterAutoMode();
-//	});
+	//	connect(titleScene->getRpgBanner(), &RpgBanner::enterAutoMode, this, [this](){
+	//		this->modeStack.push(AutoMode);
+	//		this->enterAutoMode();
+	//	});
 
-//	connect(titleScene->getRpgBanner(), &RpgBanner::quitAutoMode, this, [this](){
-//		if(this->modeStack.top() == AutoMode){
-//			this->modeStack.pop();
-//		}else{
-//			qDebug() << "RpgWidget::[RpgDialog::quitAutoMode LambdaMoc]: Current Mode Stack top is not autoMode!";
-//			return;
-//		}
-//		this->quitAutoMode();
-//	});
+	//	connect(titleScene->getRpgBanner(), &RpgBanner::quitAutoMode, this, [this](){
+	//		if(this->modeStack.top() == AutoMode){
+	//			this->modeStack.pop();
+	//		}else{
+	//			qDebug() << "RpgWidget::[RpgDialog::quitAutoMode LambdaMoc]: Current Mode Stack top is not autoMode!";
+	//			return;
+	//		}
+	//		this->quitAutoMode();
+	//	});
 
-//	connect(this, &RpgWidget::dialogModeKeyClick, titleScene->getRpgDialog(), &RpgDialog::receiveKey);
-//	connect(this, &RpgWidget::dialogModeKeyClick, titleScene->getRpgChoise(), &RpgChoice::receiveKey);
+	//	connect(this, &RpgWidget::dialogModeKeyClick, titleScene->getRpgDialog(), &RpgDialog::receiveKey);
+	//	connect(this, &RpgWidget::dialogModeKeyClick, titleScene->getRpgChoise(), &RpgChoice::receiveKey);
 
 	this->modeStack.push(NormalMode);
 
@@ -145,11 +263,11 @@ RpgWidget::RpgWidget(QWidget *parent): QWidget(parent){
 
 void RpgWidget::ready(){
 	qDebug() << CodePath() << "[System] Ready...";
-//	RpgScene *titleScene = this->mapList.value("titlescene", nullptr);
-//	if(titleScene == nullptr){
-//		qDebug() << "RpgWidget::ready(): titleScene(\"titlescene\") not exist.";
-//		return;
-//	}
+	//	RpgScene *titleScene = this->mapList.value("titlescene", nullptr);
+	//	if(titleScene == nullptr){
+	//		qDebug() << "RpgWidget::ready(): titleScene(\"titlescene\") not exist.";
+	//		return;
+	//	}
 
 	QString scriptInitPath = "data/scripts/initialize.json";
 	QByteArray initializeJson = Utils::readFile(scriptInitPath);
@@ -173,12 +291,16 @@ void RpgWidget::ready(){
 	}
 	RpgScene *initializaScene = this->mapList.value(this->bootScriptSceneName);
 	this->stage->setScene(initializaScene);
-	initializaScene->execScript();
+	QString nextScene = initializaScene->execScript();
+
+	while(nextScene != "exit"){
+
+	}
 
 
 #ifdef QT_DEBUG
-//	int blockCol = titleScene->width() / MapBlockWidth;
-//	int blockRow = titleScene->height() / MapBlockHeight;
+	//	int blockCol = titleScene->width() / MapBlockWidth;
+	//	int blockRow = titleScene->height() / MapBlockHeight;
 //	RpgTileSetBase rpgTileSetBase("data/images/tilesets/016-ForestTown02.png");
 //	for(int i = 0; i < blockRow; i++){
 //		for(int j = 0; j < blockCol; j++){

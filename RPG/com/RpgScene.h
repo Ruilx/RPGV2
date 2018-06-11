@@ -10,6 +10,7 @@
 #include <RPG/com/RpgSound.h>
 #include <RPG/com/RpgItem.h>
 #include <RPG/com/RpgScript.h>
+#include <RPG/com/RpgState.h>
 
 #include <RPG/script/RpgBannerHelper.h>
 #include <RPG/script/RpgChoiceHelper.h>
@@ -87,9 +88,10 @@ public:
 	void setScript(const QString &filename){ this->script->setScriptName(filename); }
 	void setMap(const QString &filename){ this->mapFile = filename; }
 
-	void execScript(){
+	QString execScript(){
 		QString res = this->script->exec();
 		qDebug() << CodePath() << res;
+		return res;
 	}
 };
 

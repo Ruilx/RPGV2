@@ -1,6 +1,3 @@
 #include "RpgVar.h"
 
-RpgVar::RpgVar(QObject *parent) : QObject(parent)
-{
-
-}
+RpgVar *RpgVar::_instance = nullptr;
