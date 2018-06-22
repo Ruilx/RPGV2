@@ -15,7 +15,7 @@ void RpgLyric::setRpgMusic(RpgMusic *music){
 			this->lyricI++;
 		}
 		if(int(this->lyricI.key()) <= ms + 300){
-			qDebug() << "Key:" << this->lyricI.key() << "Ms:" << ms << "Ms+300:" << ms + 300;
+//			qDebug() << "Key:" << this->lyricI.key() << "Ms:" << ms << "Ms+300:" << ms + 300;
 			this->lyricAnimationHide();
 			Utils::msleep(int(this->lyricI.key()) - ms);
 			this->lyric->setHtml(this->lyricI.value());

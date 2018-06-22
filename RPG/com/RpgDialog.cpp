@@ -255,7 +255,6 @@ void RpgDialog::receiveKey(int key, Qt::KeyboardModifiers mod){
 	if(!this->getProcessing()){
 		return;
 	}
-	qDebug() << CodePath() << tr("receive key: %1::%2(%3).").arg(mod).arg(key).arg(QString(QChar(key)).toHtmlEscaped());
 	if(key == Qt::Key_Return || key == Qt::Key_Space){
 		if(this->showTextInProgressFlag == true){
 			// 正在显示字符, 则立即停止slowprint, 直接显示全部的字符

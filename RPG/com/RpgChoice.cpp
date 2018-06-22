@@ -66,7 +66,7 @@ RpgChoice::RpgChoice(QGraphicsScene *parentScene, QObject *parent): RpgObject(pa
 
 	// 选择框透明度设置
 	this->choiceSymbol->setGraphicsEffect(this->choiceBarOpacityEffect);
-	this->choiceBarAnimation->setEasingCurve(QEasingCurve::Linear);
+	this->choiceBarAnimation->setEasingCurve(QEasingCurve::OutQuad);
 	this->choiceBarAnimation->setStartValue(1.0f);
 	this->choiceBarAnimation->setEndValue(1.0f);
 	this->choiceBarAnimation->setKeyValueAt(0.5, 0.0f);
@@ -87,9 +87,10 @@ RpgChoice::RpgChoice(QGraphicsScene *parentScene, QObject *parent): RpgObject(pa
 	// 预置输出速度: 快
 	this->slowprint = SpeedFast;
 
-	// 选择框的进场透明渐变
-	this->boxOpacityEffect->setOpacity(1.0f);
-	this->box->setGraphicsEffect(this->boxOpacityEffect);
+	// 对话框的进场透明渐变
+	this->setOpacity(1.0f);
+//	this->boxOpacityEffect->setOpacity(1.0f);
+//	this->box->setGraphicsEffect(this->boxOpacityEffect);
 }
 
 void RpgChoice::exec(){
@@ -222,7 +223,7 @@ void RpgChoice::showText(int index, bool noSpeedRender){
 		msgs.append(this->messageList.at(index + i));
 	}
 
-	for(int i = 0; i < ChoiceBuff; i++){
+	for(int i = 0; i < qMin(ChoiceBuff, messageEnabledList.length()); i++){
 		if(this->messageEnabledList.at(index + i) == true){
 			this->messages[i]->setDefaultTextColor(QColor(Qt::white));
 		}else{
@@ -309,7 +310,8 @@ void RpgChoice::enterOrExitAnimationSetting(bool enter){
 		this->entryAniGroup->stop();
 	}
 	this->entryAniGroup->clear();
-	QPropertyAnimation *boxAnimation = new QPropertyAnimation(this->boxOpacityEffect, "opacity"); // 窗口的动画过渡效果
+	//QPropertyAnimation *boxAnimation = new QPropertyAnimation(this->boxOpacityEffect, "opacity"); // 窗口的动画过渡效果
+	QPropertyAnimation *boxAnimation = new QPropertyAnimation(this, "opacity"); // 窗口的动画过渡效果
 	if(enter){
 		// Enter
 		boxAnimation->setDuration(300);
@@ -340,7 +342,6 @@ void RpgChoice::receiveKey(int key, Qt::KeyboardModifiers mod){
 	if(!this->getProcessing()){
 		return;
 	}
-	qDebug() << CodePath() << tr("Receive key: %1::%2(%3).").arg(mod).arg(key).arg(QString(QChar(key)));
 	if(key == Qt::Key_Return || key == Qt::Key_Space){
 		if(this->showTextInProgressFlag == true){
 			// 正在显示字符, 则立即停止slowprint, 直接显示全部的字符

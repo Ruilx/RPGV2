@@ -12,7 +12,7 @@
         "lrc": "data/sounds/lrc.mp3",
         "nero - カンタレラ~grace edition~": "data/sounds/nero - カンタレラ~grace edition~.mp3"
     },
-    "sound": {
+    "se": {
         "select": "data/se/select.wav",
         "banned": "data/se/banned.wav"
     }

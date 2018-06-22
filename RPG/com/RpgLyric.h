@@ -86,8 +86,9 @@ public:
 	explicit RpgLyric(QGraphicsScene *parentScene = nullptr, QObject *parent = nullptr): RpgObject(parentScene, parent, nullptr){
 		this->setTextColor(QColor(Qt::white));
 
-		QFont font = Global::dialogFont;{
-			font.setPixelSize(22);
+		QFont font = Global::applicationFont;{
+			font.setFamily("新宋体");
+			font.setPixelSize(14);
 		}
 
 		this->lyric->setFont(font);

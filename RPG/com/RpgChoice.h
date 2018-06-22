@@ -50,7 +50,7 @@ class RpgChoice : public RpgObject
 	QGraphicsDropShadowEffect *messageShadowEffect[ChoiceBuff]; // 字下面的阴影
 
 	QParallelAnimationGroup *entryAniGroup = new QParallelAnimationGroup(this); // 加载动画组
-	QGraphicsOpacityEffect *boxOpacityEffect = new QGraphicsOpacityEffect(this); // 文本框透明度(作为动画表示)
+//	QGraphicsOpacityEffect *boxOpacityEffect = new QGraphicsOpacityEffect(this); // 文本框透明度(作为动画表示)(this本身就有Opacity, Ani直接对this操作)
 
 	QGraphicsOpacityEffect *choiceBarOpacityEffect = new QGraphicsOpacityEffect(this);	// 选择框透明度(闪烁效果)
 	QPropertyAnimation *choiceBarAnimation = new QPropertyAnimation(this->choiceBarOpacityEffect, "opacity", this); // 选择框变透明的动画

@@ -5,7 +5,7 @@ RpgSound *RpgSound::_instance = nullptr;
 
 void RpgSound::addSound(const QString &soundName, const QString &fileName){
 	if(!QFile::exists(fileName)){
-		qDebug() << CodePath() << "Sound file:'" << fileName << "' is not exist.";
+		qWarning() << CodePath() << "Sound file:'" << fileName << "' is not exist.";
 	}
 	QUrl source = QUrl::fromLocalFile(fileName);
 	this->soundMap.insert(soundName, source);
@@ -39,13 +39,12 @@ void RpgSound::play(const QString &soundName, qreal volume, int times){
 //		qDebug() << CodePath() << "Sound effect: '" << sound->source().url(QUrl::PreferLocalFile) << "'";
 //	}
 	QUrl url = this->soundMap.value(soundName, QUrl());
-	qDebug() << url << this->soundMap;
 	if(!url.isValid()){
-		qDebug() << CodePath() << "Sound name is invalid or not exist.";
+		qWarning() << CodePath() << "Sound name is invalid or not exist.";
 		return;
 	}else{
 		if(this->threadPool == nullptr){
-			qDebug() << CodePath() << "Sound thread pool cannot find.";
+			qWarning() << CodePath() << "Sound thread pool cannot find.";
 			return;
 		}
 		QtConcurrent::run(this->threadPool, [this, volume, times, &soundName, url](){
@@ -54,7 +53,7 @@ void RpgSound::play(const QString &soundName, qreal volume, int times){
 //				return;
 //			}
 			if(this->threadPool->activeThreadCount() >= this->threadPool->maxThreadCount()){
-				qDebug() << CodePath() << QString("Threadpool is full. %1/%2").arg(this->threadPool->activeThreadCount()).arg(this->threadPool->maxThreadCount());
+				qWarning() << CodePath() << QString("Threadpool is full. %1/%2").arg(this->threadPool->activeThreadCount()).arg(this->threadPool->maxThreadCount());
 				return;
 			}
 			QSoundEffect *sound = new QSoundEffect(nullptr);

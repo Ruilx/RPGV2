@@ -203,7 +203,6 @@ void RpgBanner::receiveKey(int key, Qt::KeyboardModifiers mod){
 	if(!this->getProcessing()){
 		return;
 	}
-	qDebug() << tr("RpgBanner::receiveKey(): receive key: %1::%2(%3).").arg(mod).arg(key).arg(QString(QChar(key)).toHtmlEscaped());
 	// 如果设定了允许用户按键打断的标识, 就可以被打断
 	if(this->canBeInterrupted){
 		//如果按键中断, 直接过渡结束
