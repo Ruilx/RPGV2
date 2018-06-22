@@ -24,9 +24,11 @@ protected:
 	 * @brief boundingRect
 	 * @return
 	 * 抽象类没有实际的大小, 只用固定其在屏幕上的相对位置
+	 * // (或者干脆就是view的大小?)
 	 */
 	QRectF boundingRect() const{
 		return QRectF();
+		//return QRectF(0, 0, ScreenWidthF, ScreenHeightF);
 	}
 
 	/**

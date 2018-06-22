@@ -36,7 +36,7 @@ class RpgDialog : public RpgObject
 	// 标志: 是否在运行
 //	bool isRunning = false;
 	// 指定显示在哪个Scene上
-	QGraphicsScene *parentScene = nullptr;
+	//QGraphicsScene *parentScene = nullptr; // 已移动到基类
 	// 构成
 	QGraphicsPixmapItem *box = new QGraphicsPixmapItem(this);					// 那蓝色的盒子
 	QGraphicsTextItem *message = new QGraphicsTextItem(this->box);				// 中间的字

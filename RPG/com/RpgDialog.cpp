@@ -239,7 +239,7 @@ void RpgDialog::enterOrExitAnimationSetting(bool enter){
 void RpgDialog::enterOrExitAnimationStart(){
 	//if(this->box->isVisible() == false){
 	if(this->isVisible() == false){
-		qWarning() << "Box current visible is false, cannot open animation.";
+		qWarning() << CodePath() << "Box current visible is false, cannot open animation.";
 		return;
 	}
 	this->entryAniGroup->start(QAbstractAnimation::KeepWhenStopped);

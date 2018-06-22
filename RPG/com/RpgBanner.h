@@ -45,7 +45,6 @@ public:
 		TopLayer = 1,
 	};
 private:
-	bool isRunning = false;
 	//指定显示在哪个Scene上
 	//QGraphicsScene *parentScene = nullptr;
 	//构成

@@ -11,6 +11,7 @@
 #include <RPG/com/RpgItem.h>
 #include <RPG/com/RpgScript.h>
 #include <RPG/com/RpgState.h>
+#include <RPG/com/RpgLyric.h>
 
 #include <RPG/script/RpgBannerHelper.h>
 #include <RPG/script/RpgChoiceHelper.h>
@@ -33,6 +34,7 @@ class RpgScene : public QGraphicsScene
 	RpgDialog *dialog = nullptr;
 	RpgBanner *banner = nullptr;
 	RpgChoice *choice = nullptr;
+	RpgLyric  *lyric  = nullptr;
 
 	RpgScript *script = nullptr;
 	RpgBannerHelper *bannerHelper = nullptr;
@@ -50,6 +52,11 @@ public:
 		this->banner = new RpgBanner(this, this);
 		this->choice = new RpgChoice(this, this);
 		this->dialog = new RpgDialog(this, this);
+		this->lyric  = new RpgLyric(this, this);
+
+		RpgState::instance()->registerRpgObject(this->banner, RpgState::AutoMode);
+		RpgState::instance()->registerRpgObject(this->dialog, RpgState::DialogMode);
+		RpgState::instance()->registerRpgObject(this->choice, RpgState::DialogMode);
 
 		this->script = new RpgScript(this);
 		this->bannerHelper = new RpgBannerHelper(this->banner, this);
@@ -67,6 +74,32 @@ public:
 		this->script->addJsValue("RpgSound",  this->soundHelper);
 
 		this->script->addJsValue("RpgUtils", this->utilsHelper);
+
+		this->lyric->setRpgMusic(RpgMusic::instance());
+
+		this->connect(this->banner, &RpgBanner::enterAutoMode, [](){
+			RpgState::instance()->pushMode(RpgState::AutoMode);
+		});
+
+		this->connect(this->banner, &RpgBanner::quitAutoMode, [](){
+			RpgState::instance()->popMode();
+		});
+
+		this->connect(this->dialog, &RpgDialog::enterDialogMode, [](){
+			RpgState::instance()->pushMode(RpgState::DialogMode);
+		});
+
+		this->connect(this->dialog, &RpgDialog::quitDialogMode, [](){
+			RpgState::instance()->popMode();
+		});
+
+		this->connect(this->choice, &RpgChoice::enterDialogMode, [](){
+			RpgState::instance()->pushMode(RpgState::DialogMode);
+		});
+
+		this->connect(this->choice, &RpgChoice::quitDialogMode, [](){
+			RpgState::instance()->popMode();
+		});
 	}
 
 	void setSceneRect(const QRectF &rect){ QGraphicsScene::setSceneRect(rect);}
@@ -78,9 +111,10 @@ public:
 	QPointF getScenePos() const{ return this->sceneRect().topLeft(); } // 应该写成ViewPos好一点, 但是看上面都写成ScenePos了...闲了改过来
 	QSizeF getSceneSize() const{ return this->sceneRect().size(); }
 
-	RpgDialog *getRpgDialog() const{ Q_ASSERT_X(this->dialog, "RpgDialog Nulled", "Dialog not found!"); return this->dialog; }
-	RpgBanner *getRpgBanner() const{ Q_ASSERT_X(this->banner, "RpgBanner Nulled", "Banner not found!"); return this->banner; }
-	RpgChoice *getRpgChoise() const{ Q_ASSERT_X(this->choice, "RpgChoice Nulled", "Choice not found!"); return this->choice; }
+	RpgDialog *getRpgDialog() const{ Q_ASSERT_X(this->dialog, "RpgDialog Nulled", "RpgDialog not found!"); return this->dialog; }
+	RpgBanner *getRpgBanner() const{ Q_ASSERT_X(this->banner, "RpgBanner Nulled", "RpgBanner not found!"); return this->banner; }
+	RpgChoice *getRpgChoise() const{ Q_ASSERT_X(this->choice, "RpgChoice Nulled", "RpgChoice not found!"); return this->choice; }
+	RpgLyric  *getRpgLyric () const{ Q_ASSERT_X(this->lyric , "RpgLyric  Nulled", "RpgLyric  not found!"); return this->lyric ; }
 
 	bool addRpgItem(RpgItem *item);
 	bool removeRpgItem(RpgItem *item);

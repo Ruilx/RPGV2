@@ -66,12 +66,28 @@ public:
 		this->music->setVolume(volume);
 	}
 
+	Q_INVOKABLE int getVolume() const{
+		if(this->music == nullptr){
+			qDebug() << CodePath() << "RpgMusic is nullptr.";
+			return -1;
+		}
+		return this->music->getVolume();
+	}
+
 	Q_INVOKABLE void setLoop(int loop){
 		if(this->music == nullptr){
 			qDebug() << CodePath() << "RpgMusic is nullptr.";
 			return;
 		}
 		this->music->setLoop(loop);
+	}
+
+	Q_INVOKABLE int getLoop() const{
+		if(this->music == nullptr){
+			qDebug() << CodePath() << "RpgMusic is nullptr.";
+			return 0;
+		}
+		return this->music->getLoop();
 	}
 
 	Q_INVOKABLE void playMusic(const QString &musicName){

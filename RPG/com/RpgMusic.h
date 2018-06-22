@@ -108,11 +108,26 @@ public:
 	void setVolume(int volume);
 
 	/**
+	 * @brief getVolume 获得音量(0-100)
+	 */
+	int getVolume() const { return this->volume; }
+
+	/**
 	 * @brief setLoop 设定循环次数
 	 * @param loop 次数(1-x, -1(持续循环))
 	 */
-	void setLoop(int loop = -1);
+	inline void setLoop(int loop = -1){ this->loop = loop == 0 ? 1 : loop; }
 
+	/**
+	 * @brief getLoop 获得当前循环次数
+	 */
+	inline int getLoop() const { return this->loop; }
+
+	/**
+	 * @brief setNotifyInterval
+	 * @param ms
+	 * 设定播放心跳信号(默认1000ms)(给歌词的话一般50ms)
+	 */
 	void setNotifyInterval(int ms){
 		this->music->setNotifyInterval(ms);
 	}
@@ -122,6 +137,7 @@ public:
 signals:
 	void started();
 	void stopped();
+	void seeked(int position);
 public slots:
 	/**
 	 * @brief playMusic 运行歌曲

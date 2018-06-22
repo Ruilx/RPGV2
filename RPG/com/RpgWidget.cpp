@@ -293,6 +293,12 @@ void RpgWidget::ready(){
 	this->stage->setScene(initializaScene);
 	QString nextScene = initializaScene->execScript();
 
+//	RpgLyric *lyric = new RpgLyric(initializaScene, initializaScene);
+	RpgLyric *lyric = initializaScene->getRpgLyric();
+	lyric->loadLyric("data/lyrics/カンタレラ~grace edition~.lrc");
+	lyric->_dumpCurrentLyric();
+	lyric->exec();
+
 	while(nextScene != "exit"){
 
 	}

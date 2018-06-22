@@ -44,18 +44,24 @@ RpgMusic::RpgMusic(QObject *parent) : QObject(parent){
 				this->music->play();
 				currentLoop++;
 			}
+		}else if(status == QMediaPlayer::InvalidMedia){
+			// 不可用的media, 报错
+			qDebug() << CodePath() << "Media not vaild, cannot play the course.";
+			return;
 		}
 	});
 
-	this->music->setNotifyInterval(500);
+	this->music->setNotifyInterval(50);
 	connect(this->music, &QMediaPlayer::positionChanged, [this](int milliseconds){
-		qDebug() << "Current Interval Position:" << milliseconds;
+		//qDebug() << CodePath() << "Current Interval Position:" << milliseconds;
+		emit this->seeked(milliseconds);
 	});
 }
 
 void RpgMusic::addMusic(const QString &musicName, const QString &fileName){
 	if(!QFile::exists(fileName)){
 		qDebug() << CodePath() << "Music file:'" << fileName << "' is not exist.";
+		return;
 	}
 	this->musicMap.insert(musicName, QUrl::fromLocalFile(fileName));
 }
@@ -85,10 +91,6 @@ void RpgMusic::setVolume(int volume){
 	this->music->setVolume(volume);
 }
 
-void RpgMusic::setLoop(int loop){
-	this->loop = loop;
-}
-
 void RpgMusic::playMusic(const QString &musicName){
 	if(!this->musicMap.contains(musicName)){
 		qDebug() << CodePath() << "Music name:'" << musicName << "' is not registered.";
@@ -100,6 +102,7 @@ void RpgMusic::playMusic(const QString &musicName){
 	this->music->setMedia(QMediaContent(this->musicMap.value(musicName)));
 	this->music->play();
 	this->volumeTransition(true);
+	this->currentLoop++;
 }
 
 void RpgMusic::stopMusic(){
