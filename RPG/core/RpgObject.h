@@ -105,7 +105,17 @@ public:
 	 * @brief exec
 	 * 执行[虚函数]
 	 */
-	virtual void exec() = 0;
+	virtual void exec(){
+		if(this->parentScene == nullptr){
+			qDebug() << CodePath() << "Parent scene is not set. (Null)";
+			return;
+		}
+		if(this->_isRunning == true){
+			qDebug() << CodePath() << "RPG Module is Running, please don't call it repeatly!";
+			return;
+		}
+		this->setPos(this->parentScene->sceneRect().topLeft());
+	}
 
 	/**
 	 * @brief receiveKey

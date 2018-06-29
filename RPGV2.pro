@@ -41,7 +41,8 @@ SOURCES += main.cpp\
     RPG/script/RpgSceneHelper.cpp \
     RPG/script/RpgUtilsHelper.cpp \
     RPG/script/RpgVarHelper.cpp \
-    RPG/com/RpgLyric.cpp
+    RPG/com/RpgLyric.cpp \
+    RPG/script/RpgLyricHelper.cpp
 
 HEADERS  += Mainw.h \
     RPG/About.h \
@@ -72,7 +73,8 @@ HEADERS  += Mainw.h \
     RPG/script/RpgSceneHelper.h \
     RPG/script/RpgUtilsHelper.h \
     RPG/script/RpgVarHelper.h \
-    RPG/com/RpgLyric.h
+    RPG/com/RpgLyric.h \
+    RPG/script/RpgLyricHelper.h
 
 INCLUDEPATH += $$PWD
 DEPENDPATH += $$PWD

@@ -19,6 +19,7 @@
 #include <RPG/script/RpgMusicHelper.h>
 #include <RPG/script/RpgSoundHelper.h>
 #include <RPG/script/RpgUtilsHelper.h>
+#include <RPG/script/RpgLyricHelper.h>
 /**
  * @brief The RpgScene class
  * RPGScene类是RPG游戏中的场景类, 其本质是一个QGraphicsScene, 在scene上增加需要的内容
@@ -43,6 +44,7 @@ class RpgScene : public QGraphicsScene
 	RpgMusicHelper  *musicHelper  = nullptr;
 	RpgSoundHelper  *soundHelper  = nullptr;
 	RpgUtilsHelper  *utilsHelper  = nullptr;
+	RpgLyricHelper  *lyricHelper  = nullptr;
 
 	QString mapFile;
 public:
@@ -64,6 +66,7 @@ public:
 		this->dialogHelper = new RpgDialogHelper(this->dialog, this);
 		this->musicHelper  = new RpgMusicHelper(RpgMusic::instance(), this);
 		this->soundHelper  = new RpgSoundHelper(RpgSound::instance(), this);
+		this->lyricHelper  = new RpgLyricHelper(this->lyric, this);
 
 		this->utilsHelper  = new RpgUtilsHelper(this);
 
@@ -72,6 +75,7 @@ public:
 		this->script->addJsValue("RpgDialog", this->dialogHelper);
 		this->script->addJsValue("RpgMusic",  this->musicHelper);
 		this->script->addJsValue("RpgSound",  this->soundHelper);
+		this->script->addJsValue("RpgLyric",  this->lyricHelper);
 
 		this->script->addJsValue("RpgUtils", this->utilsHelper);
 

@@ -87,7 +87,7 @@ public:
 		this->setTextColor(QColor(Qt::white));
 
 		QFont font = Global::applicationFont;{
-			font.setFamily("新宋体");
+			font.setFamily("aquafont");
 			font.setPixelSize(14);
 		}
 
@@ -114,6 +114,7 @@ public:
 	void loadLyric(const QString &filename);
 
 	void exec(){
+		RpgObject::exec();
 		if(this->getParentScene() == nullptr){
 			qDebug() << CodePath() << "Parent scene is not set. (Null)";
 			return;
