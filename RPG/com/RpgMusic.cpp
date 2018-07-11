@@ -18,7 +18,7 @@ void RpgMusic::volumeTransition(bool upward, int duration){
 }
 
 RpgMusic::RpgMusic(QObject *parent) : QObject(parent){
-	this->music->setVolume(100);
+	this->music->setVolume(80);
 
 	connect(this->music, &QMediaPlayer::stateChanged, this, [this](QMediaPlayer::State state){
 		if(state == QMediaPlayer::PlayingState){

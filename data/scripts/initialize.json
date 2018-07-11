@@ -10,7 +10,8 @@
         "title": "data/sounds/月光（オルゴール）.mp3",
         "op1": "data/sounds/雨の日に.mp3",
         "lrc": "data/sounds/lrc.mp3",
-        "nero - カンタレラ~grace edition~": "data/sounds/nero - カンタレラ~grace edition~.mp3"
+        "nero - カンタレラ~grace edition~": "data/sounds/nero - カンタレラ~grace edition~.mp3",
+        "Young+Rising+Sons-Turnin’": "data/sounds/Young+Rising+Sons-Turnin’.mp3"
     },
     "se": {
         "select": "data/se/select.wav",

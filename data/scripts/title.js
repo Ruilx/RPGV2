@@ -19,11 +19,11 @@ var init = function(){
 //    RpgChoice.setChoiceEnabled(1, false);
 //    RpgChoice.exec();
 //    var c = RpgChoice.waitingForChooseComplete();
-    RpgLyric.loadLyric("data/lyrics/カンタレラ~grace edition~.lrc");
+    RpgLyric.loadLyric("data/lyrics/Turnin'.lrc");
 
 
     RpgMusic.setLoop(1);
-    RpgMusic.playMusic("nero - カンタレラ~grace edition~");
+    RpgMusic.playMusic("Young+Rising+Sons-Turnin’");
     RpgLyric.exec();
 
 //    for(var i = 0; i < 50; i++){

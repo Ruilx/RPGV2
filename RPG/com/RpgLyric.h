@@ -41,40 +41,9 @@ private:
 
 	QPoint pos = QPoint(50, ScreenHeight - 65);
 
-	void lyricAnimationShow(){
-		if(this->isVisible() == false){
-			qDebug() << CodePath() << "This object is not visible, cannot show the box.";
-			return;
-		}
-		if(this->lyricOpacityAnimation->state() != QPropertyAnimation::Stopped){
-			//qDebug() << CodePath() << "Lyric animation is working, cannot running when animation is running.";
-			this->lyricOpacityAnimation->stop();
-			qDebug() << CodePath() << "SHOW========STOPPED========";
-			//this->lyricOpacityAnimation->setCurrentTime(this->lyricOpacityAnimation->totalDuration());
-			//return;
-		}
-		this->lyricOpacityAnimation->setDirection(QPropertyAnimation::Forward);
-		this->lyricOpacityAnimation->setCurrentTime(0);
-		this->lyricOpacityAnimation->start();
-	}
+	void lyricAnimationShow();
 
-	void lyricAnimationHide(){
-		if(this->isVisible() == false){
-			qDebug() << CodePath() << "This object is not visible, cannot hide the box.";
-			return;
-		}
-		if(this->lyricOpacityAnimation->state() != QPropertyAnimation::Stopped){
-			//qDebug() << CodePath() << "Lyric animation is working, cannot running when animation is running.";
-			this->lyricOpacityAnimation->stop();
-			qDebug() << CodePath() << "HIDE========STOPPED========";
-			//this->lyricOpacityAnimation->setCurrentTime(0);
-			//return;
-		}
-		this->lyricOpacityAnimation->setDirection(QPropertyAnimation::Backward);
-		this->lyricOpacityAnimation->setCurrentTime(this->lyricOpacityAnimation->totalDuration());
-		this->lyricOpacityAnimation->start();
-		Utils::msleep(150);
-	}
+	void lyricAnimationHide();
 
 public:
 	/**
@@ -84,11 +53,19 @@ public:
 	 * RPG Lyric控件, 设置父场景之后, 调用显示/退出显示的动画
 	 */
 	explicit RpgLyric(QGraphicsScene *parentScene = nullptr, QObject *parent = nullptr): RpgObject(parentScene, parent, nullptr){
-		this->setTextColor(QColor(Qt::white));
+		this->lyric->setDefaultTextColor(QColor(Qt::white));
+		this->lyric->document()->setDefaultStyleSheet(this->css);
+
+//		QFont font = Global::applicationFont;{
+//			font.setFamily("aquafont");
+//			font.setPixelSize(22);
+//			font.setBold(false);
+//		}
 
 		QFont font = Global::applicationFont;{
-			font.setFamily("aquafont");
-			font.setPixelSize(14);
+			font.setFamily("Dukungan");
+			font.setPixelSize(18);
+			font.setBold(false);
 		}
 
 		this->lyric->setFont(font);
@@ -113,33 +90,13 @@ public:
 
 	void loadLyric(const QString &filename);
 
-	void exec(){
-		RpgObject::exec();
-		if(this->getParentScene() == nullptr){
-			qDebug() << CodePath() << "Parent scene is not set. (Null)";
-			return;
-		}
-		if(this->lyricMap.isEmpty()){
-			qDebug() << CodePath() << "Lyric map is empty, please load one lyric first, cannot execute.";
-			return;
-		}
-		if(this->getProcessing() == true){
-			qDebug() << CodePath() << "RpgLyric is Running, please don't call it repeatly!";
-			return;
-		}
-		if(this->musicObj != nullptr && this->musicObj->getLoop() != 1){
-			qDebug() << CodePath() << "The loop BGM cannot display the lyric...";
-			return;
-		}
-		this->lyric->setPos(this->pos);
-		this->showLyric();
-	}
+	void exec();
 
 	void setTextColor(const QColor &color){ this->lyric->setDefaultTextColor(color); }
 	void setFont(const QFont &font){ this->lyric->setFont(font); }
 	void setPos(const QPoint &pos){ this->pos = pos; }
 
-	void _dumpCurrentLyric(){
+	inline void _dumpCurrentLyric(){
 		qDebug() << CodePath() << "==================== Lyric ====================";
 		for(QMap<int, QString>::ConstIterator i = this->lyricMap.constBegin(); i != this->lyricMap.constEnd(); i++){
 			qDebug() << CodePath() << QString("[%1]%2").arg(i.key()).arg(i.value());
@@ -148,23 +105,9 @@ public:
 	}
 
 protected:
-	void showLyric(){
-		if(this->lyric->isVisible()){
-			qDebug() << CodePath() << "Item was shown, cannot show again.";
-			return;
-		}
-		this->setProcessing(true);
-		this->lyric->setOpacity(1.0f);
-		this->show();
-	}
+	void showLyric();
 
-	void hideLyric(){
-		if(!this->lyric->isVisible()){
-			qDebug() << CodePath() << "Item was not shown, cannot hide.";
-		}
-		this->lyric->setOpacity(0.0f);
-		this->hide();
-	}
+	void hideLyric();
 };
 
 #endif // RPGLYRIC_H

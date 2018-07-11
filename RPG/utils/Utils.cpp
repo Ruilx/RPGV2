@@ -146,7 +146,10 @@ QString Utils::_keyToString(Qt::Key key){
 		case Qt::Key_nobreakspace: return "<nbsp>";
 		case Qt::Key_exclamdown: return "¡";
 		case Qt::Key_cent: return "￠";
-			/***/
+		case Qt::Key_sterling: return "£";
+		case Qt::Key_currency: return "¤";
+		case Qt::Key_yen: return "¥";
+			/*_*/
 		case Qt::Key_Back: return "Back";
 		case Qt::Key_Forward: return "Forward";
 		case Qt::Key_Stop: return "Stop";
