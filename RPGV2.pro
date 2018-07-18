@@ -42,7 +42,8 @@ SOURCES += main.cpp\
     RPG/script/RpgUtilsHelper.cpp \
     RPG/script/RpgVarHelper.cpp \
     RPG/com/RpgLyric.cpp \
-    RPG/script/RpgLyricHelper.cpp
+    RPG/script/RpgLyricHelper.cpp \
+    RPG/core/RpgFileManager.cpp
 
 HEADERS  += Mainw.h \
     RPG/About.h \
@@ -74,7 +75,8 @@ HEADERS  += Mainw.h \
     RPG/script/RpgUtilsHelper.h \
     RPG/script/RpgVarHelper.h \
     RPG/com/RpgLyric.h \
-    RPG/script/RpgLyricHelper.h
+    RPG/script/RpgLyricHelper.h \
+    RPG/core/RpgFileManager.h
 
 INCLUDEPATH += $$PWD
 DEPENDPATH += $$PWD
@@ -254,4 +256,9 @@ DISTFILES += \
     data/images/skin/redAlpha.png \
     data/images/tilesets/016-ForestTown02.png \
     data/images/background/title2.psd \
-    data/images/skin/blueAlpha.psd
+    data/images/skin/blueAlpha.psd \
+    data/lyrics/カンタレラ~grace edition~.lrc.bak \
+    data/lyrics/p1.lrc \
+    data/lyrics/p2.lrc \
+	data/lyrics/Turnin\'.lrc \
+    data/lyrics/カンタレラ~grace edition~.lrc

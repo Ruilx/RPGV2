@@ -39,10 +39,18 @@ private:
 
 	RpgMusic *musicObj = nullptr; // 音乐控件(拿取播放位置用)
 
-	QPoint pos = QPoint(50, ScreenHeight - 65);
+	QPoint pos = QPoint(50, ScreenHeight - 65); // 默认歌词位置
 
+	/**
+	 * @brief lyricAnimationShow
+	 * 显示歌词的歌词过渡动画
+	 */
 	void lyricAnimationShow();
 
+	/**
+	 * @brief lyricAnimationHide
+	 * 隐藏歌词的歌词过渡动画
+	 */
 	void lyricAnimationHide();
 
 public:
@@ -52,50 +60,51 @@ public:
 	 * @param parent
 	 * RPG Lyric控件, 设置父场景之后, 调用显示/退出显示的动画
 	 */
-	explicit RpgLyric(QGraphicsScene *parentScene = nullptr, QObject *parent = nullptr): RpgObject(parentScene, parent, nullptr){
-		this->lyric->setDefaultTextColor(QColor(Qt::white));
-		this->lyric->document()->setDefaultStyleSheet(this->css);
+	explicit RpgLyric(QGraphicsScene *parentScene = nullptr, QObject *parent = nullptr);
 
-//		QFont font = Global::applicationFont;{
-//			font.setFamily("aquafont");
-//			font.setPixelSize(22);
-//			font.setBold(false);
-//		}
-
-		QFont font = Global::applicationFont;{
-			font.setFamily("Dukungan");
-			font.setPixelSize(18);
-			font.setBold(false);
-		}
-
-		this->lyric->setFont(font);
-
-		this->setZValue(LyricZValue);
-		this->lyric->setZValue(0.0f);
-
-		this->lyricShadowEffect->setColor(QColor("#202020"));
-		this->lyricShadowEffect->setBlurRadius(5.0f);
-		this->lyricShadowEffect->setOffset(1.0f, 1.0f);
-		this->lyric->setGraphicsEffect(this->lyricShadowEffect);
-
-		this->lyricOpacityAnimation->setEasingCurve(QEasingCurve::OutCubic);
-		this->lyricOpacityAnimation->setStartValue(0.0f);
-		this->lyricOpacityAnimation->setEndValue(1.0f);
-		this->lyricOpacityAnimation->setDuration(300);
-		this->lyricOpacityAnimation->setLoopCount(1);
-
-	}
-
+	/**
+	 * @brief setRpgMusic
+	 * @param music
+	 * 设置需要反应的Music控件
+	 */
 	void setRpgMusic(RpgMusic *music);
 
+	/**
+	 * @brief loadLyric
+	 * @param filename
+	 * 读取歌词文件
+	 */
 	void loadLyric(const QString &filename);
 
+	/**
+	 * @brief exec
+	 * 开始根据音乐播放时长显示相应歌词
+	 */
 	void exec();
 
+	/**
+	 * @brief setTextColor
+	 * @param color
+	 * 设置默认文字颜色(CSS颜色除外)
+	 */
 	void setTextColor(const QColor &color){ this->lyric->setDefaultTextColor(color); }
+	/**
+	 * @brief setFont
+	 * @param font
+	 * 设置文本
+	 */
 	void setFont(const QFont &font){ this->lyric->setFont(font); }
+	/**
+	 * @brief setPos
+	 * @param pos
+	 * 设置歌词相对于窗口的pos
+	 */
 	void setPos(const QPoint &pos){ this->pos = pos; }
 
+	/**
+	 * @brief _dumpCurrentLyric
+	 * 在debug窗口显示全部歌词
+	 */
 	inline void _dumpCurrentLyric(){
 		qDebug() << CodePath() << "==================== Lyric ====================";
 		for(QMap<int, QString>::ConstIterator i = this->lyricMap.constBegin(); i != this->lyricMap.constEnd(); i++){
@@ -105,8 +114,16 @@ public:
 	}
 
 protected:
+	/**
+	 * @brief showLyric
+	 * 开始执行歌词(由exec调用)
+	 */
 	void showLyric();
 
+	/**
+	 * @brief hideLyric
+	 * 结束, 隐藏lyric控件(由Music的停止调用)
+	 */
 	void hideLyric();
 };
 

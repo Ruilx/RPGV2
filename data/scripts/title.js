@@ -26,6 +26,8 @@ var init = function(){
     RpgMusic.playMusic("Young+Rising+Sons-Turnin’");
     RpgLyric.exec();
 
+
+
 //    for(var i = 0; i < 50; i++){
 //        RpgDialog.addText("<span style='color:black'>=====================================</span>");
 //        RpgDialog.exec();

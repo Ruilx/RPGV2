@@ -37,6 +37,39 @@ void RpgLyric::lyricAnimationHide(){
 	Utils::msleep(150);
 }
 
+RpgLyric::RpgLyric(QGraphicsScene *parentScene, QObject *parent): RpgObject(parentScene, parent, nullptr){
+	this->lyric->setDefaultTextColor(QColor(Qt::white));
+	this->lyric->document()->setDefaultStyleSheet(this->css);
+
+	//		QFont font = Global::applicationFont;{
+	//			font.setFamily("aquafont");
+	//			font.setPixelSize(22);
+	//			font.setBold(false);
+	//		}
+
+	QFont font = Global::applicationFont;{
+		font.setPixelSize(18);
+		font.setBold(false);
+	}
+
+	this->lyric->setFont(font);
+
+	this->setZValue(LyricZValue);
+	this->lyric->setZValue(0.0f);
+
+	this->lyricShadowEffect->setColor(QColor("#202020"));
+	this->lyricShadowEffect->setBlurRadius(5.0f);
+	this->lyricShadowEffect->setOffset(1.0f, 1.0f);
+	this->lyric->setGraphicsEffect(this->lyricShadowEffect);
+
+	this->lyricOpacityAnimation->setEasingCurve(QEasingCurve::OutCubic);
+	this->lyricOpacityAnimation->setStartValue(0.0f);
+	this->lyricOpacityAnimation->setEndValue(1.0f);
+	this->lyricOpacityAnimation->setDuration(300);
+	this->lyricOpacityAnimation->setLoopCount(1);
+
+}
+
 void RpgLyric::setRpgMusic(RpgMusic *music){
 	if(this->musicObj != nullptr){
 		this->musicObj->disconnect();
