@@ -68,11 +68,11 @@ public:
 
 	QUrl getFile(FileType type, const QString &name){
 		if(!this->files.contains(type)){
-			return;
+			return QUrl();
 		}
 		QHash<QString, QUrl> *file = this->files.value(type);
 		if(file == nullptr){
-			return;
+			return QUrl();
 		}
 		return file->value(name);
 	}
