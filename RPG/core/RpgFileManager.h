@@ -5,6 +5,7 @@
 
 class RpgFileManager
 {
+	static RpgFileManager *_instance;
 public:
 	enum FileType{
 		Unknown = 0,
@@ -16,8 +17,15 @@ public:
 		LyricFile,
 		SeFile,
 		ScriptFile,
+		AvatarFile,
 	};
 
+	static RpgFileManager *instance(){
+		if(_instance == nullptr){
+			_instance = new RpgFileManager();
+		}
+		return _instance;
+	}
 private:
 
 	QHash<FileType, (*QHash<QString, QUrl>) > files;
@@ -42,6 +50,7 @@ public:
 		this->files.insert(LyricFile, new QHash<QString, QUrl>());
 		this->files.insert(SeFile, new QHash<QString, QUrl>());
 		this->files.insert(ScriptFile, new QHash<QString, QUrl>());
+		this->files.insert(AvatarFile, new QHash<QString, QUrl>());
 	}
 
 	void addFile(FileType type, const QString &name, const QUrl &url){
@@ -66,7 +75,7 @@ public:
 		file->remove(name);
 	}
 
-	QUrl getFile(FileType type, const QString &name){
+	QUrl getFile(FileType type, const QString &name) const{
 		if(!this->files.contains(type)){
 			return QUrl();
 		}
@@ -75,6 +84,14 @@ public:
 			return QUrl();
 		}
 		return file->value(name);
+	}
+
+	QString getFileString(FileType type, const QString &name){
+		QUrl url = this->getFile(type, name);
+		if(!url.isValid()){
+			return QString();
+		}
+		return url.url(QUrl::PreferLocalFile);
 	}
 };
 

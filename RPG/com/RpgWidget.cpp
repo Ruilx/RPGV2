@@ -132,6 +132,10 @@ bool RpgWidget::biosSet(const QByteArray &initializationConfigureJson){
 					qDebug() << CodePath() << "Map file name or script name is/are empty, the scene:" << key << "invaild.";
 					continue;
 				}else{
+
+					RpgFileManager::instance()->addFile(RpgFileManager::MapFile, key, QUrl(mapName));
+					RpgFileManager::instance()->addFile(RpgFileManager::ScriptFile, key, QUrl(scriptName));
+
 					RpgScene *scene = new RpgScene(this);
 					scene->setScript(scriptName);
 					scene->setMap(mapName);
@@ -154,7 +158,8 @@ bool RpgWidget::biosSet(const QByteArray &initializationConfigureJson){
 					qDebug() << CodePath() << "Music file name is empty";
 					continue;
 				}else{
-					RpgMusic::instance()->addMusic(key, musicFile);
+					RpgFileManager::instance()->addFile(RpgFileManager::MusicFile, key, musicFile);
+					//RpgMusic::instance()->addMusic(key, musicFile);
 				}
 			}
 		}else if(key == "se"){
@@ -172,7 +177,99 @@ bool RpgWidget::biosSet(const QByteArray &initializationConfigureJson){
 					qDebug() << CodePath() << "Sound file name is empty";
 					continue;
 				}else{
-					RpgSound::instance()->addSound(key, soundFile);
+					RpgFileManager::instance()->addFile(RpgFileManager::SeFile, key, soundFile);
+					//RpgSound::instance()->addSound(key, soundFile);
+				}
+			}
+		}else if(key == "image"){
+			// Image init
+			if(!value.isObject()){
+				qDebug() << CodePath() << "Image effect is not an object." << Utils::detectedJsonValue(value) << "found.";
+				continue;
+			}
+			QJsonObject imageObj = value.toObject();
+			QStringList keys = imageObj.keys();
+			for(const QString &key: keys){
+				QJsonValue value = soundObj.value(key);
+				QString imageFile = value.toString();
+				if(imageFile.isEmpty()){
+					qDebug() << CodePath() << "Image file name is empty.";
+					continue;
+				}else{
+					RpgFileManager::instance()->addFile(RpgFileManager::ImageFile, key, imageFile);
+
+				}
+			}
+		}else if(key == "lyric"){
+			// Lyric init
+			if(!value.isObject()){
+				qDebug() << CodePath() << "Lyric is not an object." << Utils::detectedJsonValue(value) << "found.";
+				continue;
+			}
+			QJsonObject lyricObj = value.toObject();
+			QStringList keys = lyricObj.keys();
+			for(const QString &key: keys){
+				QJsonValue value = lyricObj.value(key);
+				QString lyricFile = value.toString();
+				if(lyricFile.isEmpty()){
+					qDebug() << CodePath() << "Lyric file name is empty.";
+					continue;
+				}else{
+					RpgFileManager::instance()->addFile(RpgFileManager::LyricFile, key, lyricFile);
+				}
+			}
+		}else if(key == "font"){
+			// Font init
+			if(!value.isObject()){
+				qDebug() << CodePath() << "Font is not an object." << Utils::detectedJsonValue(value) << "found.";
+				continue;
+			}
+			QJsonObject fontObj = value.toObject();
+			QStringList keys = fontObj.keys();
+			for(const QString &key: keys){
+				QJsonValue value = fontObj.value(key);
+				QString fontFile = value.toString();
+				if(fontFile.isEmpty()){
+					qDebug() << CodePath() << "Font file name is empty.";
+					continue;
+				}else{
+					RpgFileManager::instance()->addFile(RpgFileManager::FontFile, key, fontFile);
+				}
+			}
+		}else if(key == "avatar"){
+			// Avatar init
+			if(!value.isObject()){
+				qDebug() << CodePath() << "Avatar is not an object." << Utils::detectedJsonValue(value) << "found.";
+				continue;
+			}
+			QJsonObject avatarObj = value.toObject();
+			QStringList keys = avatarObj.keys();
+			for(const QString &key: keys){
+				QJsonValue value = avatarObj.value(key);
+				QString avatarFile = value.toString();
+				if(avatarFile.isEmpty()){
+					qDebug() << CodePath() << "Font file name is empty.";
+					continue;
+				}else{
+					RpgFileManager::instance()->addFile(RpgFileManager::AvatarFile, key, avatarFile);
+				}
+			}
+		}else if(key == "file"){
+			// Normal file
+			if(!value.isObject()){
+				qDebug() << CodePath() << "file is not an object." << Utils::detectedJsonValue(value) << "found.";
+				continue;
+			}
+			QJsonObject fileObj = value.toObject();
+			QStringList keys = fileObj.keys();
+			for(const QString &key: keys){
+				QJsonValue value = fileObj.value(key);
+				QString file = value.toString();
+				if(file.isEmpty()){
+					qDebug() << CodePath() << "Font file name is empty.";
+					continue;
+				}else{
+					RpgFileManager::instance()->addFile(RpgFileManager::NormalFile, key, file);
 				}
 			}
 		}else{

@@ -7,6 +7,7 @@
 #include <RPG/Global.h>
 #include <RPG/core/RpgObject.h>
 #include <RPG/utils/Utils.h>
+#include <RPG/core/RpgFileManager.h>
 
 /**
  * @brief The RpgBanner class
@@ -88,11 +89,32 @@ public:
 	void setForegroundPixmap(const QPixmap &pixmap);
 
 	/**
+	 * @brief setForegroundPixmap
+	 * @param name
+	 * 设置前端图片, 使用name在fileManager中找到对应URL然后载入, 如果不是屏幕大小的会放大到屏幕大小, 并且只裁剪中间一段
+	 */
+	void setForegroundPixmap(const QString &name){
+		QString filename = RpgFileManager::instance()->getFileString(RpgFileManager::ImageFile, name);
+		if(!filename.isEmpty()){
+			this->setForegroundPixmap(QPixmap(filename));
+		}
+	}
+
+	/**
 	 * @brief setBackgroundColor
 	 * @param color
 	 * 设置背景颜色, 从黑过渡或者从白过渡(其实可以随意选择颜色)
 	 */
 	void setBackgroundColor(const QColor &color);
+
+	/**
+	 * @brief setBackgroundColor
+	 * @param color
+	 * 设置背景颜色, 从黑过渡或者从白过渡(其实可以随意选择颜色), 接受字符串颜色, #开头的16进制数或者颜色名称"red","blue","green","yellow"等
+	 */
+	void setBackgroundColor(const QString &color){
+		this->setBackgroundColor(QColor(color));
+	}
 	
 	/**
 	 * @brief setBackgroundPixmap
@@ -100,6 +122,18 @@ public:
 	 * 设置背景图片(扩展)
 	 */
 	void setBackgroundPixmap(const QPixmap &pixmap);
+
+	/**
+	 * @brief setBackgroundPixmap
+	 * @param name
+	 * 设置背景图片(扩展), 使用name在fileManager中找到对应URL然后载入
+	 */
+	void setBackgroundPixmap(const QString &name){
+		QString filename = RpgFileManager::instance()->getFileString(RpgFileManager::ImageFile, name);
+		if(!filename.isEmpty()){
+			this->setBackgroundPixmap(QPixmap(filename));
+		}
+	}
 
 	/**
 	 * @brief setBackgroundWithForeground

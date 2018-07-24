@@ -261,4 +261,23 @@ DISTFILES += \
     data/lyrics/p1.lrc \
     data/lyrics/p2.lrc \
 	data/lyrics/Turnin\'.lrc \
-    data/lyrics/カンタレラ~grace edition~.lrc
+    data/lyrics/カンタレラ~grace edition~.lrc \
+    data/music/nero - カンタレラ~grace edition~.mp3 \
+    data/music/OP_月光.mp3 \
+    data/music/title.mp3 \
+    data/music/Young+Rising+Sons-Turnin’.mp3 \
+    data/music/インドア系ならトラックメイカ.mp3 \
+    data/music/雨の日に.mp3 \
+    data/music/月光（オルゴール）.mp3 \
+    data/music/title.ogg \
+    data/music/Young+Rising+Sons-Turnin’.ogg \
+    data/scripts/main.js \
+    data/scripts/title.js \
+    data/scripts/initialize.json \
+    data/images/background/タイトル画面_背景.jpg \
+    data/images/background/lyrictest.png \
+    data/images/background/title.png \
+    data/images/background/title1.png \
+    data/images/background/title2.png \
+    data/images/background/lyrictest.psd \
+    data/images/background/title2.psd

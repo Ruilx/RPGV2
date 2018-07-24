@@ -13,6 +13,7 @@
 #include <RPG/com/RpgMusic.h>
 #include <RPG/core/RpgAutoTileBase.h>
 #include <RPG/com/RpgLyric.h>
+#include <Rpg/core/RpgFileManager.h>
 
 /**
  * @brief The RpgWidget class
