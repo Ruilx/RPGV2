@@ -4,6 +4,7 @@
 #include <QtCore>
 #include <QSoundEffect>
 #include <RPG/Global.h>
+#include <RPG/core/RpgFileManager.h>
 
 /**
  * @brief The RpgSound class
@@ -15,6 +16,9 @@
  * 之后可能已文件名来保存Hash
  *
  * 首先要载入声音(WAV)文件, 并给其取一个名字, 播放的时候只需要提供名字即可
+ *
+ * 2018/07/27 14:48
+ * Add和remove歌曲函数被删除, 因为Sound接下来的文件管理交给RpgFileManager进行管理
  */
 
 class RpgSound : public QObject
@@ -56,19 +60,22 @@ public:
 	 * @brief addSound 增加一个音效
 	 * @param soundName 指定一个音效名
 	 * @param fileName 指定文件名
+	 * 已移交给RpgFileManager进行管理
 	 */
-	void addSound(const QString &soundName, const QString &fileName);
+//	void addSound(const QString &soundName, const QString &fileName);
 
 	/**
 	 * @brief removeSound 删除一个音效
 	 * @param soundName 指定音效名
+	 * 已移交给RpgFileManager进行管理
 	 */
-	void removeSound(const QString &soundName);
+//	void removeSound(const QString &soundName);
 
 	/**
 	 * @brief clearSound 删除音效列表
+	 * 已移交给RpgFileManager进行管理
 	 */
-	void clearSound();
+//	void clearSound();
 signals:
 	void started(const QString &soundName);
 	void stopped(const QString &soundName);

@@ -20,6 +20,8 @@
 #include <RPG/script/RpgSoundHelper.h>
 #include <RPG/script/RpgUtilsHelper.h>
 #include <RPG/script/RpgLyricHelper.h>
+
+#include <RPG/core/RpgFileManager.h>
 /**
  * @brief The RpgScene class
  * RPGScene类是RPG游戏中的场景类, 其本质是一个QGraphicsScene, 在scene上增加需要的内容
@@ -123,8 +125,20 @@ public:
 	bool addRpgItem(RpgItem *item);
 	bool removeRpgItem(RpgItem *item);
 
-	void setScript(const QString &filename){ this->script->setScriptName(filename); }
-	void setMap(const QString &filename){ this->mapFile = filename; }
+	void setScriptFile(const QString &filename){ this->script->setScriptName(filename); }
+	void setScript(const QString &name){
+		this->script->setScriptName(name);
+	}
+
+	void setMapFile(const QString &filename){ this->mapFile = filename; }
+	void setMap(const QString &name){
+		QString filename = RpgFileManager::instance()->getFileString(RpgFileManager::MapFile, name);
+		if(filename.isEmpty()){
+			qDebug() << CodePath() << "Map name:" << name << "not found in the file manager";
+			return;
+		}
+		this->mapFile = filename;
+	}
 
 	QString execScript(){
 		QString res = this->script->exec();

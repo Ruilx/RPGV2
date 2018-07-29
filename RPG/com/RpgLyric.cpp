@@ -104,7 +104,7 @@ void RpgLyric::setRpgMusic(RpgMusic *music){
 	});
 }
 
-void RpgLyric::loadLyric(const QString &filename){
+void RpgLyric::loadLyricFromFile(const QString &filename){
 	if(this->getProcessing()){
 		qDebug() << CodePath() << "Cannot load the lyric while it is running!";
 		return;
@@ -170,6 +170,15 @@ void RpgLyric::loadLyric(const QString &filename){
 	if(f.isOpen()){
 		f.close();
 	}
+}
+
+void RpgLyric::loadLyric(const QString &name){
+	QString filename = RpgFileManager::instance()->getFileString(RpgFileManager::LyricFile, name);
+	if(filename.isEmpty()){
+		qDebug() << CodePath() << "Name:" << name << "no file name being found.";
+		return;
+	}
+	this->loadLyricFromFile(filename);
 }
 
 void RpgLyric::exec(){

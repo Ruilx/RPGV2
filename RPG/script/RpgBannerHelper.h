@@ -50,12 +50,12 @@ public:
 //		this->rpgBanner->setForegroundPixmap(pixmap);
 //	}
 
-	Q_INVOKABLE void setForegroundPixmap(const QString &pixmap){
+	Q_INVOKABLE void setForegroundPixmap(const QString &name){
 		if(this->rpgBanner == nullptr){
 			qDebug() << CodePath() << "RpgBanner nullptr";
 			return;
 		}
-		this->rpgBanner->setForegroundPixmap(QPixmap(pixmap));
+		this->rpgBanner->setForegroundPixmap(name);
 	}
 
 //	Q_INVOKABLE void setBackgroundColor(const QColor &color){

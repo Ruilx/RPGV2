@@ -5,6 +5,7 @@
 #include <QtMultimedia>
 #include <RPG/Global.h>
 #include <RPG/utils/Utils.h>
+#include <RPG/core/RpgFileManager.h>
 
 /**
  * @brief The RpgMusic class
@@ -26,13 +27,17 @@
  * 所以需要安装一个可供DirectShow播放的DirectShow解码器
  * 最后选择了LAV Filters, 下载后使用regsvr32对AX文件进行注册, 然后DirectShow就可以进行解码了
  * (可支持的项目: 320K的MP3, OGG容器, MIDI等)
+ *
+ * 2018/07/27 14:48
+ * Add和remove歌曲函数被删除, 因为Music接下来的文件管理交给RpgFileManager进行管理
  */
 class RpgMusic : public QObject
 {
 	Q_OBJECT
 	static RpgMusic *_instance;
 
-	QHash<QString, QUrl> musicMap;
+	// 使用RpgFileManager管理音乐文件文件名, 取消自管
+//	QHash<QString, QUrl> musicMap;
 	QMediaPlayer *music = new QMediaPlayer(this, QMediaPlayer::StreamPlayback);
 	int volume = 100;
 	QPropertyAnimation *volumeAnimation = new QPropertyAnimation(this->music, "volume", this);
@@ -74,19 +79,22 @@ public:
 	 * @brief addMusic 增加一首歌曲
 	 * @param musicName 指定一个歌曲名
 	 * @param fileName 指定文件名
+	 * 已移交给RpgFileManager进行管理
 	 */
-	void addMusic(const QString &musicName, const QString &fileName);
+//	void addMusic(const QString &musicName, const QString &fileName);
 
 	/**
 	 * @brief removeMusic 删除一首歌曲
 	 * @param musicName 指定歌曲名
+	 * 已移交给RpgFileManager进行管理
 	 */
-	void removeMusic(const QString &musicName);
+//	void removeMusic(const QString &musicName);
 
 	/**
 	 * @brief clearMusic 删除歌单
+	 * 已移交给RpgFileManager进行管理
 	 */
-	void clearMusic();
+//	void clearMusic();
 
 	/**
 	 * @brief isRunning 是否在工作
@@ -98,6 +106,7 @@ public:
 	 * @brief getMusic 获得歌曲名对应的文件
 	 * @param musicName 指定歌曲名
 	 * @return :QString 歌曲地址(QUrl::PreferLocalFile)
+	 * 此函数被改为从RpgFileManager取出这个歌曲的fileName
 	 */
 	QString getMusic(const QString &musicName);
 
@@ -132,8 +141,6 @@ public:
 		this->music->setNotifyInterval(ms);
 	}
 
-
-
 signals:
 	void started();
 	void stopped();
@@ -142,6 +149,7 @@ public slots:
 	/**
 	 * @brief playMusic 运行歌曲
 	 * @param musicName 指定一个歌曲名
+	 * 从RpgFileManager取出文件信息
 	 */
 	void playMusic(const QString &musicName);
 

@@ -58,32 +58,41 @@ RpgMusic::RpgMusic(QObject *parent) : QObject(parent){
 	});
 }
 
-void RpgMusic::addMusic(const QString &musicName, const QString &fileName){
-	if(!QFile::exists(fileName)){
-		qDebug() << CodePath() << "Music file:'" << fileName << "' is not exist.";
-		return;
-	}
-	this->musicMap.insert(musicName, QUrl::fromLocalFile(fileName));
-}
+//void RpgMusic::addMusic(const QString &musicName, const QString &fileName){
+//	if(!QFile::exists(fileName)){
+//		qDebug() << CodePath() << "Music file:'" << fileName << "' is not exist.";
+//		return;
+//	}
+//	this->musicMap.insert(musicName, QUrl::fromLocalFile(fileName));
+//}
 
-void RpgMusic::removeMusic(const QString &musicName){
-	this->musicMap.remove(musicName);
-}
+//void RpgMusic::removeMusic(const QString &musicName){
+//	this->musicMap.remove(musicName);
+//}
 
-void RpgMusic::clearMusic(){
-	this->musicMap.clear();
-}
+//void RpgMusic::clearMusic(){
+//	this->musicMap.clear();
+//}
 
 bool RpgMusic::isRunning() const{
 	return this->music->state() == QMediaPlayer::PlayingState;
 }
 
+//QString RpgMusic::getMusic(const QString &musicName){
+//	if(!this->musicMap.contains(musicName)){
+//		qDebug() << CodePath() << "Music name:'" << musicName << "' is not registered.";
+//		return QString();
+//	}
+//	return this->musicMap.value(musicName).url(QUrl::PreferLocalFile);
+//}
+
 QString RpgMusic::getMusic(const QString &musicName){
-	if(!this->musicMap.contains(musicName)){
-		qDebug() << CodePath() << "Music name:'" << musicName << "' is not registered.";
+	QString filename = RpgFileManager::instance()->getFileString(RpgFileManager::MusicFile, musicName);
+	if(filename.isEmpty()){
+		qDebug() << CodePath() << "Music has no name called:" << musicName;
 		return QString();
 	}
-	return this->musicMap.value(musicName).url(QUrl::PreferLocalFile);
+	return filename;
 }
 
 void RpgMusic::setVolume(int volume){
@@ -92,14 +101,19 @@ void RpgMusic::setVolume(int volume){
 }
 
 void RpgMusic::playMusic(const QString &musicName){
-	if(!this->musicMap.contains(musicName)){
-		qDebug() << CodePath() << "Music name:'" << musicName << "' is not registered.";
+//	if(!this->musicMap.contains(musicName)){
+//		qDebug() << CodePath() << "Music name:'" << musicName << "' is not registered.";
+//		return;
+//	}
+	QUrl filename = RpgFileManager::instance()->getFile(RpgFileManager::MusicFile, musicName);
+	if(filename.isEmpty() || !filename.isValid()){
+		qDebug() << CodePath() << "Music name:'" << musicName << "' is not registered (into RpgFileManager).";
 		return;
 	}
 	if(this->music->state() != QMediaPlayer::PlayingState){
 		this->stopMusic();
 	}
-	this->music->setMedia(QMediaContent(this->musicMap.value(musicName)));
+	this->music->setMedia(QMediaContent(filename));
 	this->music->play();
 	this->volumeTransition(true);
 	this->currentLoop++;

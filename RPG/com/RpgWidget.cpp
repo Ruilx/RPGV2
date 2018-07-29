@@ -137,8 +137,8 @@ bool RpgWidget::biosSet(const QByteArray &initializationConfigureJson){
 					RpgFileManager::instance()->addFile(RpgFileManager::ScriptFile, key, QUrl(scriptName));
 
 					RpgScene *scene = new RpgScene(this);
-					scene->setScript(scriptName);
-					scene->setMap(mapName);
+					scene->setScript(key);
+					scene->setMap(key);
 
 					this->mapList.insert(key, scene);
 				}
@@ -190,7 +190,7 @@ bool RpgWidget::biosSet(const QByteArray &initializationConfigureJson){
 			QJsonObject imageObj = value.toObject();
 			QStringList keys = imageObj.keys();
 			for(const QString &key: keys){
-				QJsonValue value = soundObj.value(key);
+				QJsonValue value = imageObj.value(key);
 				QString imageFile = value.toString();
 				if(imageFile.isEmpty()){
 					qDebug() << CodePath() << "Image file name is empty.";
@@ -386,6 +386,7 @@ void RpgWidget::ready(){
 		this->doReadyToClose();
 		return;
 	}
+
 	RpgScene *initializaScene = this->mapList.value(this->bootScriptSceneName);
 	this->stage->setScene(initializaScene);
 	QString nextScene = initializaScene->execScript();
@@ -399,6 +400,10 @@ void RpgWidget::ready(){
 	while(nextScene != "exit"){
 
 	}
+
+	this->setCanBeClose(true);
+	RpgMusic::instance()->stopMusic();
+	this->doReadyToClose();
 
 
 #ifdef QT_DEBUG

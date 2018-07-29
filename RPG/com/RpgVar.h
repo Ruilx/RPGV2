@@ -19,7 +19,7 @@ public:
 	}
 
 	explicit RpgVar(QObject *parent = 0) : QObject(parent){
-
+		this->var.clear();
 	}
 
 	void setValue(const QString &key, QVariant value){

@@ -66,12 +66,12 @@ public:
 		this->rpgDialog->setFont(font);
 	}
 
-	Q_INVOKABLE void setTextColor(const QColor &color){
+	Q_INVOKABLE void setTextColor(const QString &color){
 		if(this->rpgDialog == nullptr){
 			qDebug() << CodePath() << "RpgDialog is nullptr.";
 			return;
 		}
-		this->rpgDialog->setTextColor(color);
+		this->rpgDialog->setTextColor(QColor(color));
 	}
 
 	Q_INVOKABLE void setDialogWidth(int width){
@@ -91,6 +91,14 @@ public:
 	}
 
 	Q_INVOKABLE void setCharacterPixmap(const QPixmap &character){
+		if(this->rpgDialog == nullptr){
+			qDebug() << CodePath() << "RpgDialog is nullptr.";
+			return;
+		}
+		this->rpgDialog->setCharacterPixmap(character);
+	}
+
+	Q_INVOKABLE void setCharacterPixmap(const QString &character){
 		if(this->rpgDialog == nullptr){
 			qDebug() << CodePath() << "RpgDialog is nullptr.";
 			return;

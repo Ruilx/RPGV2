@@ -3,21 +3,21 @@
 
 RpgSound *RpgSound::_instance = nullptr;
 
-void RpgSound::addSound(const QString &soundName, const QString &fileName){
-	if(!QFile::exists(fileName)){
-		qWarning() << CodePath() << "Sound file:'" << fileName << "' is not exist.";
-	}
-	QUrl source = QUrl::fromLocalFile(fileName);
-	this->soundMap.insert(soundName, source);
-}
+//void RpgSound::addSound(const QString &soundName, const QString &fileName){
+//	if(!QFile::exists(fileName)){
+//		qWarning() << CodePath() << "Sound file:'" << fileName << "' is not exist.";
+//	}
+//	QUrl source = QUrl::fromLocalFile(fileName);
+//	this->soundMap.insert(soundName, source);
+//}
 
-void RpgSound::removeSound(const QString &soundName){
-	this->soundMap.take(soundName);
-}
+//void RpgSound::removeSound(const QString &soundName){
+//	this->soundMap.take(soundName);
+//}
 
-void RpgSound::clearSound(){
-	this->soundMap.clear();
-}
+//void RpgSound::clearSound(){
+//	this->soundMap.clear();
+//}
 
 void RpgSound::play(const QString &soundName, qreal volume, int times){
 //	QSoundEffect *sound = this->soundMap.value(soundName, nullptr);
@@ -38,7 +38,13 @@ void RpgSound::play(const QString &soundName, qreal volume, int times){
 //		emit this->started(soundName);
 //		qDebug() << CodePath() << "Sound effect: '" << sound->source().url(QUrl::PreferLocalFile) << "'";
 //	}
-	QUrl url = this->soundMap.value(soundName, QUrl());
+	//QUrl url = this->soundMap.value(soundName, QUrl());
+	QString filename = RpgFileManager::instance()->getFileString(RpgFileManager::SeFile, soundName);
+	if(filename.isEmpty()){
+		qDebug() << CodePath() << "Sound name:" << soundName << "is not found in file manager.";
+		return;
+	}
+	QUrl url = QUrl::fromLocalFile(filename);
 	if(!url.isValid()){
 		qWarning() << CodePath() << "Sound name is invalid or not exist.";
 		return;
@@ -54,6 +60,8 @@ void RpgSound::play(const QString &soundName, qreal volume, int times){
 //			}
 			if(this->threadPool->activeThreadCount() >= this->threadPool->maxThreadCount()){
 				qWarning() << CodePath() << QString("Threadpool is full. %1/%2").arg(this->threadPool->activeThreadCount()).arg(this->threadPool->maxThreadCount());
+				qDebug() << CodePath() << "Clearing the threadpool...";
+				this->threadPool->clear();
 				return;
 			}
 			QSoundEffect *sound = new QSoundEffect(nullptr);
@@ -94,6 +102,9 @@ void RpgSound::stop(const QString &soundName){
 //			emit this->stopped(soundName);
 //		}
 //	}
+	if(!this->threadPool->waitForDone(500)){
+		this->threadPool->clear();
+	}
 	Q_UNUSED(soundName);
 	qDebug() << CodePath() << "Sound changed cannot be stop manmully.";
 }

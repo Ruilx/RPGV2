@@ -7,6 +7,7 @@
 #include <RPG/Global.h>
 #include <QPropertyAnimation>
 #include <QAnimationGroup>
+#include <RPG/core/RpgFileManager.h>
 
 /**
  * @brief The RpgItem class
@@ -66,12 +67,26 @@ public:
 		QGraphicsPixmapItem::setPixmap(pixmap);
 	}
 
-	void setPixmap(const QString &pixmapFileName){
-		if(pixmapFileName.isEmpty() || !QFile::exists(pixmapFileName)){
-			qDebug() << CodePath() << "Pixmap file name is not valid or empty, cannot load the pixmap.";
+//	void setPixmap(const QString &pixmapFileName){
+//		if(pixmapFileName.isEmpty() || !QFile::exists(pixmapFileName)){
+//			qDebug() << CodePath() << "Pixmap file name is not valid or empty, cannot load the pixmap.";
+//			return;
+//		}
+//		QPixmap p = QPixmap(pixmapFileName);
+//		if(p.isNull()){
+//			qDebug() << CodePath() << "Pixmap file cannot be loaded as pixmap.";
+//			return;
+//		}
+//		QGraphicsPixmapItem::setPixmap(p);
+//	}
+
+	void setPixmap(const QString &name){
+		QString filename = RpgFileManager::instance()->getFileString(RpgFileManager::ImageFile, name);
+		if(filename.isEmpty() || !QFile::exists(filename)){
+			qDebug() << CodePath() << "Pixmap filename is not valid or empty, cannot load the pixmap.";
 			return;
 		}
-		QPixmap p = QPixmap(pixmapFileName);
+		QPixmap p = QPixmap(filename);
 		if(p.isNull()){
 			qDebug() << CodePath() << "Pixmap file cannot be loaded as pixmap.";
 			return;

@@ -195,6 +195,7 @@ void RpgChoice::hideChoice(){
 	if(this->choiceBarAnimation->state() != QAbstractAnimation::Stopped){
 		this->choiceBarAnimation->stop();
 	}
+	this->choiceSymbol->setVisible(false);
 	this->enterOrExitAnimationStart();
 	Utils::msleep(300);
 	this->hide();
@@ -340,6 +341,9 @@ void RpgChoice::enterOrExitAnimationStart(){
 
 void RpgChoice::receiveKey(int key, Qt::KeyboardModifiers mod){
 	if(!this->getProcessing()){
+		return;
+	}
+	if(mod != Qt::NoModifier){
 		return;
 	}
 	if(key == Qt::Key_Return || key == Qt::Key_Space){

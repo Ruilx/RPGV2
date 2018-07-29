@@ -10,6 +10,7 @@
 #include <RPG/core/RpgObject.h>
 #include <RPG/utils/Utils.h>
 #include <RPG/core/RpgDialogBase.h>
+#include <RPG/core/RpgFileManager.h>
 
 /**
  * @brief The RpgDialog class
@@ -200,6 +201,20 @@ public:
 		//}
 
 		//this->messageRect = QRect(messageMarginH, messageMarginV, this->skin.getDialogSize().width() - messageMarginH - messageMarginH, this->skin.getDialogSize().height() - messageMarginV - messageMarginV);
+	}
+
+	/**
+	 * @brief setCharacterPixmap
+	 * @param name
+	 * 设置对话框人物框内容, 在fileManager.AvatarFile中查找人物头像
+	 */
+	void setCharacterPixmap(const QString &name){
+		QString filename = RpgFileManager::instance()->getFileString(RpgFileManager::AvatarFile, name);
+		if(filename.isEmpty()){
+			qDebug() << CodePath() << "Name:" << name << "is invalid.";
+			return;
+		}
+		this->setCharacterPixmap(QPixmap(filename));
 	}
 
 	/**

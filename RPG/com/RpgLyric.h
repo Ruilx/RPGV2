@@ -6,6 +6,7 @@
 #include <RPG/Global.h>
 #include <RPG/com/RpgMusic.h>
 #include <RPG/core/RpgObject.h>
+#include <RPG/core/RpgFileManager.h>
 
 class LyricEffect;
 /**
@@ -74,7 +75,14 @@ public:
 	 * @param filename
 	 * 读取歌词文件
 	 */
-	void loadLyric(const QString &filename);
+	void loadLyricFromFile(const QString &filename);
+
+	/**
+	 * @brief loadLyric
+	 * @param name
+	 * 从RpgFileManager读取歌词文件
+	 */
+	void loadLyric(const QString &name);
 
 	/**
 	 * @brief exec

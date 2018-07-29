@@ -3,6 +3,8 @@
 
 #include <QtCore>
 
+#define toChars(x) #x
+
 class RpgFileManager
 {
 	static RpgFileManager *_instance;
@@ -28,7 +30,9 @@ public:
 	}
 private:
 
-	QHash<FileType, (*QHash<QString, QUrl>) > files;
+	QHash<FileType, QHash<QString, QUrl>* > files;
+
+	QHash<FileType, QString> fileTypeName;
 public:
 	RpgFileManager(){
 		for(QHash<QString, QUrl> *file: this->files){
@@ -51,6 +55,17 @@ public:
 		this->files.insert(SeFile, new QHash<QString, QUrl>());
 		this->files.insert(ScriptFile, new QHash<QString, QUrl>());
 		this->files.insert(AvatarFile, new QHash<QString, QUrl>());
+
+		this->fileTypeName.insert(Unknown, "Unknown");
+		this->fileTypeName.insert(NormalFile, "NormalFile");
+		this->fileTypeName.insert(FontFile, "FontFile");
+		this->fileTypeName.insert(MapFile, "MapFile");
+		this->fileTypeName.insert(ImageFile, "ImageFile");
+		this->fileTypeName.insert(MusicFile, "MusicFile");
+		this->fileTypeName.insert(LyricFile, "LyricFile");
+		this->fileTypeName.insert(SeFile, "SeFile");
+		this->fileTypeName.insert(ScriptFile, "ScriptFile");
+		this->fileTypeName.insert(AvatarFile, "AvatarFile");
 	}
 
 	void addFile(FileType type, const QString &name, const QUrl &url){
@@ -92,6 +107,21 @@ public:
 			return QString();
 		}
 		return url.url(QUrl::PreferLocalFile);
+	}
+
+	void _dumpFiles(){
+		for(QHash<FileType, QHash<QString, QUrl>* >::const_iterator i = this->files.constBegin(); i != this->files.constEnd(); i++){
+			qDebug() << "========================" << this->fileTypeName.value(i.key(), "UNKNOWN") << "========================";
+			QHash<QString, QUrl> *file = i.value();
+			if(file == nullptr){
+				qDebug() << "NULL POINTER OCCURRED!";
+				continue;
+			}
+			for(QHash<QString, QUrl>::const_iterator ii = file->constBegin(); ii != file->constEnd(); ii++){
+				qDebug() << ii.key() << " => " << ii.value();
+			}
+		}
+
 	}
 };
 

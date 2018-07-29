@@ -26,12 +26,12 @@ public:
 		this->rpgChoice->exec();
 	}
 
-	Q_INVOKABLE void waitingForChooseComplete(int second = -1){
+	Q_INVOKABLE int waitingForChooseComplete(int second = -1){
 		if(this->rpgChoice == nullptr){
 			qDebug() << CodePath() << "RpgChoice nullptr.";
-			return;
+			return -1;
 		}
-		this->rpgChoice->waitingForChooseComplete(second);
+		return this->rpgChoice->waitingForChooseComplete(second);
 	}
 
 	Q_INVOKABLE int getChose(){
@@ -74,12 +74,12 @@ public:
 		this->rpgChoice->setFont(font);
 	}
 
-	Q_INVOKABLE void setTextColor(const QColor &color){
+	Q_INVOKABLE void setTextColor(const QString &color){
 		if(this->rpgChoice == nullptr){
 			qDebug() << CodePath() << "RpgChoice nullptr.";
 			return;
 		}
-		this->rpgChoice->setTextColor(color);
+		this->rpgChoice->setTextColor(QColor(color));
 	}
 
 	Q_INVOKABLE void setDialogWidth(int width){

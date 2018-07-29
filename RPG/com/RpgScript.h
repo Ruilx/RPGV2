@@ -7,6 +7,7 @@
 #include <RPG/About.h>
 #include <RPG/Global.h>
 #include <RPG/utils/Utils.h>
+#include <RPG/core/RpgFileManager.h>
 
 /**
  * @brief The RpgScript class
@@ -28,16 +29,29 @@ public:
 		this->modules.clear();
 	}
 
-	void setScriptName(const QString &fileName){
-		if(fileName.isEmpty()){
-			qDebug() << CodePath() << "Script file name is empty.";
+//	void setScriptName(const QString &fileName){
+//		if(fileName.isEmpty()){
+//			qDebug() << CodePath() << "Script file name is empty.";
+//			return;
+//		}
+//		if(!QFile::exists(fileName)){
+//			qDebug() << CodePath() << "Script file not exist.";
+//			return;
+//		}
+//		this->scriptFileName = fileName;
+//	}
+	/**
+	 * @brief setScriptName
+	 * @param name
+	 * 设置可执行的脚本, 名称由RpgFileManager提供
+	 */
+	void setScriptName(const QString &name){
+		QString filename = RpgFileManager::instance()->getFileString(RpgFileManager::ScriptFile, name);
+		if(filename.isEmpty()){
+			qDebug() << CodePath() << "Script name:" << name << "not found in file manager.";
 			return;
 		}
-		if(!QFile::exists(fileName)){
-			qDebug() << CodePath() << "Script file not exist.";
-			return;
-		}
-		this->scriptFileName = fileName;
+		this->scriptFileName = filename;
 	}
 
 	QString exec(){

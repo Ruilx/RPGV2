@@ -18,29 +18,29 @@ public:
 		this->music = rpgMusic;
 	}
 
-	Q_INVOKABLE void addMusic(const QString &musicName, const QString &fileName){
-		if(this->music == nullptr){
-			qDebug() << CodePath() << "RpgMusic is nullptr.";
-			return;
-		}
-		this->music->addMusic(musicName, fileName);
-	}
+//	Q_INVOKABLE void addMusic(const QString &musicName, const QString &fileName){
+//		if(this->music == nullptr){
+//			qDebug() << CodePath() << "RpgMusic is nullptr.";
+//			return;
+//		}
+//		this->music->addMusic(musicName, fileName);
+//	}
 
-	Q_INVOKABLE void removeMusic(const QString &musicName){
-		if(this->music == nullptr){
-			qDebug() << CodePath() << "RpgMusic is nullptr.";
-			return;
-		}
-		this->music->removeMusic(musicName);
-	}
+//	Q_INVOKABLE void removeMusic(const QString &musicName){
+//		if(this->music == nullptr){
+//			qDebug() << CodePath() << "RpgMusic is nullptr.";
+//			return;
+//		}
+//		this->music->removeMusic(musicName);
+//	}
 
-	Q_INVOKABLE void clearMusic(){
-		if(this->music == nullptr){
-			qDebug() << CodePath() << "RpgMusic is nullptr.";
-			return;
-		}
-		this->music->clearMusic();
-	}
+//	Q_INVOKABLE void clearMusic(){
+//		if(this->music == nullptr){
+//			qDebug() << CodePath() << "RpgMusic is nullptr.";
+//			return;
+//		}
+//		this->music->clearMusic();
+//	}
 
 	Q_INVOKABLE bool isRunning(){
 		if(this->music == nullptr){

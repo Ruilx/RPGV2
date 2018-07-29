@@ -5,16 +5,49 @@
             "script": "data/scripts/title.js"
         }
     },
-    "init":"title",
+    "init": "title",
+    "file": {},
+    "font": {
+        "dialogFont": "data/fonts/A-OTF-FolkPro-Medium.otf",
+        "applicationFont": "data/fonts/msyh.ttc",
+        "simplifyChineseCharactersSupport": "data/fonts/msyhl.ttc"
+    },
+    "image": {
+        "test": "data/images/autotiles/test.png",
+        "lyrictest": "data/images/background/title.png",
+        "title": "data/images/background/title.png",
+        "title1": "data/images/background/title1.png",
+        "title2": "data/images/background/title2.png",
+        "kuroiduki": "data/images/background/タイトル画面_背景.jpg",
+        "kuroiduki_item1": "data/images/background/mix/タイトル_キャラ01.png",
+        "kuroiduki_item2": "data/images/background/mix/タイトルロゴ.png",
+        "001": "data/images/drawing/001.png",
+        "01": "data/images/drawing/01.png",
+        "002": "data/images/drawing/002.png",
+        "02": "data/images/drawing/02.png",
+        "03": "data/images/drawing/03.png",
+        "blueSkin": "data/images/skin/blueAlpha.png",
+        "blackSkin": "data/images/skin/blackAlpha.png",
+        "redSkin": "data/images/skin/redAlpha.png",
+        "forestTown": "data/images/tilesets/016-ForestTown02.png"
+    },
     "music": {
-        "title": "data/sounds/月光（オルゴール）.mp3",
-        "op1": "data/sounds/雨の日に.mp3",
-        "lrc": "data/sounds/lrc.mp3",
-        "nero - カンタレラ~grace edition~": "data/sounds/nero - カンタレラ~grace edition~.mp3",
-        "Young+Rising+Sons-Turnin’": "data/sounds/Young+Rising+Sons-Turnin’.mp3"
+        "moonLight": "data/music/月光（オルゴール）.mp3",
+        "raining": "data/music/雨の日に.mp3",
+        "demo": "data/music/インドア系ならトラックメイカ.mp3"
+    },
+    "lyric": {
+        "demo": "data/lyrics/インドア系ならトラックメイカ.lrc"
     },
     "se": {
         "select": "data/se/select.wav",
         "banned": "data/se/banned.wav"
+    },
+    "avatar": {
+        "001": "data/images/drawing/001.png",
+        "01": "data/images/drawing/01.png",
+        "002": "data/images/drawing/002.png",
+        "02": "data/images/drawing/02.png",
+        "03": "data/images/drawing/03.png"
     }
 }
