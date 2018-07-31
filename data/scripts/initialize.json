@@ -34,7 +34,8 @@
     "music": {
         "moonLight": "data/music/月光（オルゴール）.mp3",
         "raining": "data/music/雨の日に.mp3",
-        "demo": "data/music/インドア系ならトラックメイカ.mp3"
+        "demo": "data/music/インドア系ならトラックメイカ.mp3",
+        "op_moonlight": "data/music/OP_月光.mp3"
     },
     "lyric": {
         "demo": "data/lyrics/インドア系ならトラックメイカ.lrc"

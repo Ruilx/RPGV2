@@ -13,17 +13,17 @@ var init = function(){
 //	RpgBanner.waitingForBannerComplete();
 //	RpgUtils.msleep(2000);
 
-    RpgLyric.loadLyric("demo");
+//    RpgLyric.loadLyric("demo");
 
-    RpgMusic.setLoop(1);
-    RpgMusic.playMusic("demo");
+//    RpgMusic.setLoop(1);
+    RpgMusic.playMusic("moonLight");
     RpgMusic.setVolume(50);
-    RpgLyric.exec();
+//    RpgLyric.exec();
 
-    RpgChoice.addChoiceText("第一个选项");
-    RpgChoice.addChoiceText("第二个选项");
-    RpgChoice.addChoiceText("第三个选项");
-    RpgChoice.addChoiceText("第四个选项");
+    RpgChoice.addChoiceText("はじめから");
+    RpgChoice.addChoiceText("つづけから");
+    RpgChoice.addChoiceText("画像<sup>がぞう</sup>閲覧<sup>えいらん</sup>室<sup>しつ</sup>");
+    RpgChoice.addChoiceText("終わる");
     RpgChoice.addChoiceText("第五个选项");
     RpgChoice.addChoiceText("第六个选项");
     RpgChoice.addChoiceText("第七个选项");
