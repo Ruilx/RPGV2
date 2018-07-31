@@ -94,8 +94,9 @@ RpgChoice::RpgChoice(QGraphicsScene *parentScene, QObject *parent): RpgObject(pa
 }
 
 void RpgChoice::exec(){
+	RpgObject::exec();
 	if(this->getParentScene() == nullptr){
-		qDebug() << CodePath() << ": parentScene is not set.(Null)";
+		qDebug() << CodePath() << "RpgChoice::exec(): parentScene is not set.(Null)";
 		return;
 	}
 //	for(QPixmap *p: this->upSymbolPixmap){
@@ -131,6 +132,7 @@ void RpgChoice::exec(){
 		this->messageList.clear();
 		this->messageList = this->messageReadyList;
 	}
+	RpgObject::exec();
 
 	// 设置对话框背景, 支持每次对话框形状不同
 	this->box->setPixmap(this->skin.getDialogImage());

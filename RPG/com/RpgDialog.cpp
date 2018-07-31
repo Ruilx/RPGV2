@@ -71,22 +71,23 @@ RpgDialog::RpgDialog(QGraphicsScene *parentScene, QObject *parent): RpgObject(pa
 }
 
 void RpgDialog::exec(){
+	RpgObject::exec();
 	if(this->getParentScene() == nullptr){
-		qDebug() << "RpgDialog::exec(): parentScene is not set.(Null)";
+		qDebug() << CodePath() << "RpgDialog::exec(): parentScene is not set.(Null)";
 		return;
 	}
 	for(int i = 0; i < 4; i++){
 		if(this->skin.getContinueSymbolImage(i).isNull()){
-			qDebug() << "RpgDialog::exec(): conti2nueSymbolPixmap[4] not set.";
+			qDebug() << CodePath() << "RpgDialog::exec(): conti2nueSymbolPixmap[4] not set.";
 			return;
 		}
 	}
 	if(this->getProcessing() == true){
-		qDebug() << "RpgDialog::exec(): Dialog is still running, please don't call it repeatly!";
+		qDebug() << CodePath() << "RpgDialog::exec(): Dialog is still running, please don't call it repeatly!";
 		return;
 	}
 	if(this->messageReadyList.isEmpty()){
-		qDebug() << "RpgDialog::exec(): messageReadyList is Empty, show what?";
+		qDebug() << CodePath() << "RpgDialog::exec(): messageReadyList is Empty, show what?";
 		return;
 	}else{
 		this->messageList.clear();

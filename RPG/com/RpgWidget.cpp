@@ -351,7 +351,7 @@ RpgWidget::RpgWidget(QWidget *parent): QWidget(parent){
 	//	connect(this, &RpgWidget::dialogModeKeyClick, titleScene->getRpgDialog(), &RpgDialog::receiveKey);
 	//	connect(this, &RpgWidget::dialogModeKeyClick, titleScene->getRpgChoise(), &RpgChoice::receiveKey);
 
-	this->modeStack.push(NormalMode);
+//	this->modeStack.push(NormalMode);
 
 	QTimer::singleShot(2000, this, &RpgWidget::ready);
 
@@ -387,15 +387,31 @@ void RpgWidget::ready(){
 		return;
 	}
 
+
 	RpgScene *initializaScene = this->mapList.value(this->bootScriptSceneName);
 	this->stage->setScene(initializaScene);
-	QString nextScene = initializaScene->execScript();
 
-//	RpgLyric *lyric = new RpgLyric(initializaScene, initializaScene);
-//	RpgLyric *lyric = initializaScene->getRpgLyric();
-//	lyric->loadLyric("data/lyrics/カンタレラ~grace edition~.lrc");
-//	lyric->_dumpCurrentLyric();
-//	lyric->exec();
+
+	RpgTileSetBase RpgTileSetBase("data/images/tilesets/016-ForestTown02.png");
+	for(int i = 0; i < 50; i++){
+		for(int j = 0; j < 50; j++){
+			RpgMapBlock *block = nullptr;
+			if(i < 25 && j < 25){
+				block = new RpgMapBlock(j, i, RpgTileSetBase.getRpgTilePixmap(2, 0), true, initializaScene, nullptr, this);
+			}else if(i >= 25 && j < 25){
+				block = new RpgMapBlock(j, i, RpgTileSetBase.getRpgTilePixmap(3, 0), true, initializaScene, nullptr, this);
+			}else if(i < 25 && j >= 25){
+				block = new RpgMapBlock(j, i, RpgTileSetBase.getRpgTilePixmap(4, 0), true, initializaScene, nullptr, this);
+			}else if(i >= 25 && j >= 25){
+				block = new RpgMapBlock(j, i, RpgTileSetBase.getRpgTilePixmap(1, 0), true, initializaScene, nullptr, this);
+			}
+			block->show();
+		}
+	}
+	initializaScene->setScenePos(15 * MapBlockWidth, 18 * MapBlockHeight);
+
+
+	QString nextScene = initializaScene->execScript();
 
 	while(nextScene != "exit"){
 
