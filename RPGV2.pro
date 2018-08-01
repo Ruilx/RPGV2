@@ -43,7 +43,11 @@ SOURCES += main.cpp\
     RPG/script/RpgVarHelper.cpp \
     RPG/com/RpgLyric.cpp \
     RPG/script/RpgLyricHelper.cpp \
-    RPG/core/RpgFileManager.cpp
+    RPG/core/RpgFileManager.cpp \
+    RPG/exception/RpgException.cpp \
+    RPG/exception/RpgFileNotFoundException.cpp \
+    RPG/exception/RpgFileCannotReadException.cpp \
+    RPG/exception/RpgNullPointerException.cpp
 
 HEADERS  += Mainw.h \
     RPG/About.h \
@@ -76,7 +80,11 @@ HEADERS  += Mainw.h \
     RPG/script/RpgVarHelper.h \
     RPG/com/RpgLyric.h \
     RPG/script/RpgLyricHelper.h \
-    RPG/core/RpgFileManager.h
+    RPG/core/RpgFileManager.h \
+    RPG/exception/RpgException.h \
+    RPG/exception/RpgFileNotFoundException.h \
+    RPG/exception/RpgFileCannotReadException.h \
+    RPG/exception/RpgNullPointerException.h
 
 INCLUDEPATH += $$PWD
 DEPENDPATH += $$PWD
