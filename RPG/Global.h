@@ -56,8 +56,13 @@ public:
 	static QFont applicationFont;
 };
 
+
 #ifdef QT_DEBUG
-#	define CodePath() "[" __FILE__ ":" % QString::number(__LINE__) % "]" % __PRETTY_FUNCTION__ % ": "
+#	if QT_VERSION > 0x050700
+#		define CodePath() "[" __FILE__ ":" % QString::number(__LINE__) % "]" % __PRETTY_FUNCTION__ % ": "
+#	else
+#		define CodePath() "[" __FILE__ ":" + QString::number(__LINE__) + "]" + __PRETTY_FUNCTION__ + ": "
+#	endif
 #else
 #	define CodePath() ""
 #endif
