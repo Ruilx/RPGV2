@@ -392,23 +392,23 @@ void RpgWidget::ready(){
 	this->stage->setScene(initializaScene);
 
 
-	RpgTileSetBase RpgTileSetBase("data/images/tilesets/016-ForestTown02.png");
-	for(int i = 0; i < 50; i++){
-		for(int j = 0; j < 50; j++){
-			RpgMapBlock *block = nullptr;
-			if(i < 25 && j < 25){
-				block = new RpgMapBlock(j, i, RpgTileSetBase.getRpgTilePixmap(2, 0), true, initializaScene, nullptr, this);
-			}else if(i >= 25 && j < 25){
-				block = new RpgMapBlock(j, i, RpgTileSetBase.getRpgTilePixmap(3, 0), true, initializaScene, nullptr, this);
-			}else if(i < 25 && j >= 25){
-				block = new RpgMapBlock(j, i, RpgTileSetBase.getRpgTilePixmap(4, 0), true, initializaScene, nullptr, this);
-			}else if(i >= 25 && j >= 25){
-				block = new RpgMapBlock(j, i, RpgTileSetBase.getRpgTilePixmap(1, 0), true, initializaScene, nullptr, this);
-			}
-			block->show();
-		}
-	}
-	initializaScene->setScenePos(15 * MapBlockWidth, 18 * MapBlockHeight);
+//	RpgTileSetBase RpgTileSetBase("data/images/tilesets/016-ForestTown02.png");
+//	for(int i = 0; i < 50; i++){
+//		for(int j = 0; j < 50; j++){
+//			RpgMapBlock *block = nullptr;
+//			if(i < 25 && j < 25){
+//				block = new RpgMapBlock(j, i, RpgTileSetBase.getRpgTilePixmap(2, 0), true, initializaScene, nullptr, this);
+//			}else if(i >= 25 && j < 25){
+//				block = new RpgMapBlock(j, i, RpgTileSetBase.getRpgTilePixmap(3, 0), true, initializaScene, nullptr, this);
+//			}else if(i < 25 && j >= 25){
+//				block = new RpgMapBlock(j, i, RpgTileSetBase.getRpgTilePixmap(4, 0), true, initializaScene, nullptr, this);
+//			}else if(i >= 25 && j >= 25){
+//				block = new RpgMapBlock(j, i, RpgTileSetBase.getRpgTilePixmap(1, 0), true, initializaScene, nullptr, this);
+//			}
+//			block->show();
+//		}
+//	}
+//	initializaScene->setScenePos(15 * MapBlockWidth, 18 * MapBlockHeight);
 
 
 	QString nextScene = initializaScene->execScript();

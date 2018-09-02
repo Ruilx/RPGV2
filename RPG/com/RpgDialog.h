@@ -204,6 +204,22 @@ public:
 	}
 
 	/**
+	 * @brief setAvatar
+	 * @param avatar
+	 * 同setCharacterPixmap, 改名, 以后版本将会弃用setCharacterPixmap方法
+	 */
+	void setAvatar(const QPixmap &avatar){
+		QPixmap _t;
+		if((double(avatar.height()) > ScreenHeight * 0.8)){
+			_t = avatar.scaledToHeight(int(double(ScreenHeight) * 0.8), Qt::SmoothTransformation);
+			if(_t.width() >= (ScreenWidth >> 1)){
+				_t = _t.scaledToWidth(ScreenWidth >> 1, Qt::SmoothTransformation);
+			}
+		}
+		this->characterBoxPixmap = _t;
+	}
+
+	/**
 	 * @brief setCharacterPixmap
 	 * @param name
 	 * 设置对话框人物框内容, 在fileManager.AvatarFile中查找人物头像
@@ -215,6 +231,19 @@ public:
 			return;
 		}
 		this->setCharacterPixmap(QPixmap(filename));
+	}
+	/**
+	 * @brief setAvatar
+	 * @param name
+	 * 同setCharacterPixmap, 改名, 以后版本将会弃用setCharacterPixmap方法
+	 */
+	void setAvatar(const QString &name){
+		QString filename = RpgFileManager::instance()->getFileString(RpgFileManager::AvatarFile, name);
+		if(filename.isEmpty()){
+			qDebug() << CodePath() << "Name:" << name << "is invalid.";
+			return;
+		}
+		this->setAvatar(QPixmap(filename));
 	}
 
 	/**

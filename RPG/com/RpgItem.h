@@ -24,6 +24,7 @@ public:
 	};
 private:
 //	QGraphicsPixmapItem *item = new QGraphicsPixmapItem(nullptr);
+
 	ItemPosition itemPosition = Pos_Relative;
 	QPointF _pos = QPointF(0, 0);
 

@@ -106,6 +106,14 @@ public:
 		this->rpgDialog->setCharacterPixmap(character);
 	}
 
+	Q_INVOKABLE void setAvatar(const QString &avatar){
+		if(this->rpgDialog == nullptr){
+			qDebug() << CodePath() << "RpgDialog is nullptr.";
+			return;
+		}
+		this->rpgDialog->setAvatar(avatar);
+	}
+
 	Q_INVOKABLE void setCharacterAround(RpgDialog::AvatarAround avatarAround){
 		if(this->rpgDialog == nullptr){
 			qDebug() << CodePath() << "RpgDialog is nullptr.";

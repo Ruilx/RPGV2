@@ -47,7 +47,8 @@ SOURCES += main.cpp\
     RPG/exception/RpgException.cpp \
     RPG/exception/RpgFileNotFoundException.cpp \
     RPG/exception/RpgFileCannotReadException.cpp \
-    RPG/exception/RpgNullPointerException.cpp
+    RPG/exception/RpgNullPointerException.cpp \
+    RPG/script/RpgItemHelper.cpp
 
 HEADERS  += Mainw.h \
     RPG/About.h \
@@ -84,7 +85,8 @@ HEADERS  += Mainw.h \
     RPG/exception/RpgException.h \
     RPG/exception/RpgFileNotFoundException.h \
     RPG/exception/RpgFileCannotReadException.h \
-    RPG/exception/RpgNullPointerException.h
+    RPG/exception/RpgNullPointerException.h \
+    RPG/script/RpgItemHelper.h
 
 INCLUDEPATH += $$PWD
 DEPENDPATH += $$PWD

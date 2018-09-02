@@ -13,27 +13,30 @@ var init = function(){
 //	RpgBanner.waitingForBannerComplete();
 //	RpgUtils.msleep(2000);
 
-//    RpgLyric.loadLyric("demo");
+//    RpgLyric.loadLyric("op_moonlight");
 
 //    RpgMusic.setLoop(1);
-    RpgMusic.playMusic("moonLight");
     RpgMusic.setVolume(50);
+    RpgMusic.playMusic("op_moonlight");
 //    RpgLyric.exec();
+
+//    RpgUtils.msleep(180000);
 
     RpgChoice.addChoiceText("はじめから");
     RpgChoice.addChoiceText("つづけから");
     RpgChoice.addChoiceText("画像<sup>がぞう</sup>閲覧<sup>えいらん</sup>室<sup>しつ</sup>");
     RpgChoice.addChoiceText("終わる");
-    RpgChoice.addChoiceText("第五个选项");
-    RpgChoice.addChoiceText("第六个选项");
-    RpgChoice.addChoiceText("第七个选项");
-    RpgChoice.addChoiceText("第八个选项");
-    RpgChoice.addChoiceText("第九个选项");
-    RpgChoice.setChoiceEnabled(1, false);
+//    RpgChoice.addChoiceText("第五个选项");
+//    RpgChoice.addChoiceText("第六个选项");
+//    RpgChoice.addChoiceText("第七个选项");
+//    RpgChoice.addChoiceText("第八个选项");
+//    RpgChoice.addChoiceText("第九个选项");
+//    RpgChoice.setChoiceEnabled(1, false);
     RpgChoice.exec();
     var c = RpgChoice.waitingForChooseComplete();
 
     RpgDialog.addText("你选择了第" + (c + 1) + "个选项");
+    RpgDialog.
     RpgDialog.exec();
     RpgDialog.waitingForDialogComplete();
 
