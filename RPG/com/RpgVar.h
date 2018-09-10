@@ -4,6 +4,10 @@
 #include <QtCore>
 #include <RPG/Global.h>
 
+/**
+ * @brief The RpgVar class
+ * RPGVar类, 存储游戏中产生的变量, 或者读取某个变量
+ */
 class RpgVar : public QObject
 {
 	Q_OBJECT

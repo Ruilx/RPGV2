@@ -303,55 +303,6 @@ RpgWidget::RpgWidget(QWidget *parent): QWidget(parent){
 	mainLay->addWidget(this->stage);
 	mainLay->setMargin(0);
 
-	//	connect(titleScene->getRpgDialog(), &RpgDialog::enterDialogMode, this, [this](){
-	//		this->modeStack.push(DialogMode);
-	//		this->enterDialogMode();
-	//	});
-
-	//	connect(titleScene->getRpgDialog(), &RpgDialog::quitDialogMode, this, [this](){
-	//		if(this->modeStack.top() == DialogMode){
-	//			this->modeStack.pop();
-	//		}else{
-	//			qDebug() << "RpgWidget::[RpgDialog::quitDialogMode LambdaMoc]: Current Mode Stack top is not dialogMode!";
-	//			return;
-	//		}
-	//		this->quitDialogMode();
-	//	});
-
-	//	connect(titleScene->getRpgChoise(), &RpgChoice::enterDialogMode, this, [this](){
-	//		this->modeStack.push(DialogMode);
-	//		this->enterDialogMode();
-	//	});
-
-	//	connect(titleScene->getRpgChoise(), &RpgChoice::quitDialogMode, this, [this](){
-	//		if(this->modeStack.top() == DialogMode){
-	//			this->modeStack.pop();
-	//		}else{
-	//			qDebug() << "RpgChoice::[RpgDialog::quitDialogMode LambdaMoc]: Current Mode Stack top is not dialogMode!";
-	//			return;
-	//		}
-	//		this->quitDialogMode();
-	//	});
-
-	//	connect(titleScene->getRpgBanner(), &RpgBanner::enterAutoMode, this, [this](){
-	//		this->modeStack.push(AutoMode);
-	//		this->enterAutoMode();
-	//	});
-
-	//	connect(titleScene->getRpgBanner(), &RpgBanner::quitAutoMode, this, [this](){
-	//		if(this->modeStack.top() == AutoMode){
-	//			this->modeStack.pop();
-	//		}else{
-	//			qDebug() << "RpgWidget::[RpgDialog::quitAutoMode LambdaMoc]: Current Mode Stack top is not autoMode!";
-	//			return;
-	//		}
-	//		this->quitAutoMode();
-	//	});
-
-	//	connect(this, &RpgWidget::dialogModeKeyClick, titleScene->getRpgDialog(), &RpgDialog::receiveKey);
-	//	connect(this, &RpgWidget::dialogModeKeyClick, titleScene->getRpgChoise(), &RpgChoice::receiveKey);
-
-//	this->modeStack.push(NormalMode);
 
 	QTimer::singleShot(2000, this, &RpgWidget::ready);
 
@@ -388,158 +339,49 @@ void RpgWidget::ready(){
 	}
 
 
-	RpgScene *initializaScene = this->mapList.value(this->bootScriptSceneName);
-	this->stage->setScene(initializaScene);
+	RpgScene *initializeScene = this->mapList.value(this->bootScriptSceneName);
+	this->stage->setScene(initializeScene);
 
 
-//	RpgTileSetBase RpgTileSetBase("data/images/tilesets/016-ForestTown02.png");
-//	for(int i = 0; i < 50; i++){
-//		for(int j = 0; j < 50; j++){
-//			RpgMapBlock *block = nullptr;
-//			if(i < 25 && j < 25){
-//				block = new RpgMapBlock(j, i, RpgTileSetBase.getRpgTilePixmap(2, 0), true, initializaScene, nullptr, this);
-//			}else if(i >= 25 && j < 25){
-//				block = new RpgMapBlock(j, i, RpgTileSetBase.getRpgTilePixmap(3, 0), true, initializaScene, nullptr, this);
-//			}else if(i < 25 && j >= 25){
-//				block = new RpgMapBlock(j, i, RpgTileSetBase.getRpgTilePixmap(4, 0), true, initializaScene, nullptr, this);
-//			}else if(i >= 25 && j >= 25){
-//				block = new RpgMapBlock(j, i, RpgTileSetBase.getRpgTilePixmap(1, 0), true, initializaScene, nullptr, this);
-//			}
-//			block->show();
-//		}
-//	}
-//	initializaScene->setScenePos(15 * MapBlockWidth, 18 * MapBlockHeight);
-
-
-	QString nextScene = initializaScene->execScript();
-
-	while(nextScene != "exit"){
-
+	RpgTileSetBase RpgTileSetBase("data/images/tilesets/016-ForestTown02.png");
+	for(int i = 0; i < 50; i++){
+		for(int j = 0; j < 50; j++){
+			RpgMapBlock *block = nullptr;
+			if(i < 25 && j < 25){
+				block = new RpgMapBlock(j, i, RpgTileSetBase.getRpgTilePixmap(2, 0), true, initializeScene, nullptr, this);
+			}else if(i >= 25 && j < 25){
+				block = new RpgMapBlock(j, i, RpgTileSetBase.getRpgTilePixmap(3, 0), true, initializeScene, nullptr, this);
+			}else if(i < 25 && j >= 25){
+				block = new RpgMapBlock(j, i, RpgTileSetBase.getRpgTilePixmap(4, 0), true, initializeScene, nullptr, this);
+			}else if(i >= 25 && j >= 25){
+				block = new RpgMapBlock(j, i, RpgTileSetBase.getRpgTilePixmap(1, 0), true, initializeScene, nullptr, this);
+			}
+			block->show();
+		}
 	}
 
-	this->setCanBeClose(true);
-	RpgMusic::instance()->stopMusic();
-	this->doReadyToClose();
+	initializeScene->setScenePos(15 * MapBlockWidth, 18 * MapBlockHeight);
+	int sleep = initializeScene->moveSceneToLocation(5 * MapBlockWidth, 18 * MapBlockHeight);
+	Utils::msleep(sleep);
+	sleep = initializeScene->moveSceneToLocation(5 * MapBlockWidth, 5 * MapBlockHeight);
+	Utils::msleep(sleep);
+	sleep = initializeScene->moveSceneToLocation(15 * MapBlockWidth, 5 * MapBlockHeight);
+	Utils::msleep(sleep);
+	sleep = initializeScene->moveSceneToLocation(15 * MapBlockWidth, 18 * MapBlockHeight);
+	Utils::msleep(sleep);
+	sleep = initializeScene->moveSceneToLocation(0, 0, 500);
+	Utils::msleep(sleep);
+	sleep = initializeScene->moveSceneToLocation(45 * MapBlockWidth, 45 * MapBlockHeight, 1500);
 
 
-#ifdef QT_DEBUG
-	//	int blockCol = titleScene->width() / MapBlockWidth;
-	//	int blockRow = titleScene->height() / MapBlockHeight;
-//	RpgTileSetBase rpgTileSetBase("data/images/tilesets/016-ForestTown02.png");
-//	for(int i = 0; i < blockRow; i++){
-//		for(int j = 0; j < blockCol; j++){
-//			RpgMapBlock *block = new RpgMapBlock(j, i, rpgTileSetBase.getRpgTilePixmap(2, 0) , true, titleScene, nullptr, this);
-//			//qDebug() << QPixmap::fromImage(*rpgTileSetBase->getRpgTile(0, 0));
-//			//block->addPixmap();
-//			block->show();
-//		}
+//	QString nextScene = initializaScene->execScript();
+
+//	while(nextScene != "exit"){
+
 //	}
 
-	//RpgMusic::instance()->addMusic("title", "data/sounds/月光（オルゴール）.mp3");
-//	RpgMusic::instance()->addMusic("title", "H:/kuruiduki_WolfData/BGM/沈降.ogg");
-//	RpgMusic::instance()->addMusic("op1", "data/sounds/雨の日に.mp3");
-
-//	RpgSound::instance()->addSound("select", "data/se/select.wav");
-//	RpgSound::instance()->addSound("banned", "data/se/banned.wav");
-
-//	QPixmap *bg = new QPixmap("data/images/background/title2.png");
-//	titleScene->getRpgBanner()->setForegroundPixmap(*bg);
-//	titleScene->getRpgBanner()->setStartOpacity(0.0f);
-//	titleScene->getRpgBanner()->setEndOpacity(1.0f);
-//	titleScene->getRpgBanner()->setSpeed(RpgBanner::SpeedNormal);
-//	titleScene->getRpgBanner()->exec();
-//	titleScene->getRpgBanner()->waitingForBannerComplete();
-
-//	Utils::msleep(3000);
-
-//	titleScene->getRpgBanner()->setStartOpacity(1.0f);
-//	titleScene->getRpgBanner()->setEndOpacity(0.0f);
-//	titleScene->getRpgBanner()->execExit();
-//	titleScene->getRpgBanner()->waitingForBannerComplete();
-
-//	Utils::msleep(1000);
-
-
-//	RpgMusic::instance()->playMusic("title");
-
-//	QPixmap *title = new QPixmap("data/images/background/タイトル画面_背景.jpg");
-//	QPixmap mix_title = QPixmap("data/images/background/mix/タイトルロゴ.png");
-//	QPixmap mix_character = QPixmap("data/images/background/mix/タイトル_キャラ01.png");
-
-//	RpgItem *item_title = new RpgItem(titleScene->getRpgBanner());
-//	item_title->setPixmap(mix_title);
-//	item_title->setRealPos(titleScene->getRpgBanner()->pos() + QPointF((title->width() - mix_title.width()) / 2, -5));
-//	item_title->setZValue(0.3);
-
-//	RpgItem *item_character = new RpgItem(titleScene->getRpgBanner());
-//	item_character->setPixmap(mix_character);
-//	item_character->setRealPos(titleScene->getRpgBanner()->pos() + QPointF(7, (title->height() - mix_character.height())));
-//	item_character->setZValue(0.2);
-//	QPainter p(title);{
-//		p.setCompositionMode(QPainter::CompositionMode_SourceOver);
-//		p.drawPixmap((7), (title->height() - mix_character.height()), mix_character);
-//		p.drawPixmap((title->width() - mix_title.width()) / 2, -5, mix_title);
-//		p.end();
-//	}
-//	titleScene->addRpgItem(item_title);
-//	titleScene->addRpgItem(item_character);
-
-//	titleScene->getRpgBanner()->setForegroundPixmap(*title);
-//	titleScene->getRpgBanner()->setStartOpacity(0.0f);
-//	titleScene->getRpgBanner()->setEndOpacity(1.0f);
-//	qDebug() << titleScene->getRpgBanner();
-//	qDebug() << titleScene->getRpgBanner()->childItems();
-//	qDebug() << item_title << item_character;
-//	titleScene->getRpgBanner()->exec();
-//	titleScene->getRpgBanner()->waitingForBannerComplete();
-
-//	titleScene->getRpgChoise()->addChoiceText("始める");
-//	titleScene->getRpgChoise()->addChoiceText("続ける");
-//	titleScene->getRpgChoise()->addChoiceText("?????");
-//	titleScene->getRpgChoise()->addChoiceText("終わる");
-//	titleScene->getRpgChoise()->setDialogWidth(250);
-//	titleScene->getRpgChoise()->setChoiceEnabled(1, false);
-//	titleScene->getRpgChoise()->setChoiceEnabled(2, false);
-//	titleScene->getRpgChoise()->exec();
-//	qDebug() << "Selected:" << titleScene->getRpgChoise()->waitingForChooseComplete();
-
-//	if(titleScene->getRpgChoise()->getChose() == 3){
-//		this->setCanBeClose(true);
-//		RpgMusic::instance()->stopMusic();
-//		this->doReadyToClose();
-//	}
-
+//	this->setCanBeClose(true);
 //	RpgMusic::instance()->stopMusic();
+//	this->doReadyToClose();
 
-//	QPixmap *aaa = new QPixmap("data/images/drawing/03.png");
-//	titleScene->getRpgDialog()->setCharacterPixmap(*aaa);
-//	titleScene->getRpgDialog()->addText("**测试一段可显示的文字**<r>测试一段红色的文字</r>**<g>测试一段绿色的文字</g>**<b>测试一段蓝色的文字</b>**<y>测试一段黄色的文字<y>**");
-//	titleScene->getRpgDialog()->exec();
-//	titleScene->getRpgDialog()->waitingForDialogComplete();
-
-//	QEventLoop eventloop(this);
-//	this->connect(titleScene->getRpgDialog(), &RpgDialog::quitDialogMode, &eventloop, &QEventLoop::quit);
-//	eventloop.exec();
-
-	//		titleScene->getRpgDialog()->setCharacterPixmap(QPixmap());
-	//		titleScene->getRpgDialog()->addText("123456");
-	//		titleScene->getRpgDialog()->exec();
-
-//	RpgMusic::instance()->playMusic("op1");
-
-//	RpgAutoTileBase aTileImage("data/images/autotiles/test.png", "test");
-//	//aTileImage._dumpImage(0);
-
-//	titleScene->getRpgDialog()->setDialogWidth(250);
-//	titleScene->getRpgDialog()->addText("Autotile已经导出.");
-//	titleScene->getRpgDialog()->exec();
-//	titleScene->getRpgDialog()->waitingForDialogComplete();
-
-//	if(title){
-//		delete title;
-//	}
-//	if(bg){
-//		delete bg;
-//	}
-#endif
 }

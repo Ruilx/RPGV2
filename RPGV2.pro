@@ -8,6 +8,7 @@ QT       += core gui
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets multimedia qml concurrent
 
+DEFINES *= QT_USE_QSTRINGBUILDER
 TARGET = RPGV2
 TEMPLATE = app
 

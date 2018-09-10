@@ -58,10 +58,10 @@ public:
 
 
 #ifdef QT_DEBUG
-#	if QT_VERSION > 0x060000
-#		define CodePath() "[" __FILE__ ":" % QString::number(__LINE__) % "]" % __PRETTY_FUNCTION__ % ": "
+#	ifdef QT_USE_QSTRINGBUILDER
+#		define CodePath() "[" __FILE__ ":" % QString::number(__LINE__) % "]" % __PRETTY_FUNCTION__ % ":"
 #	else
-#		define CodePath() "[" __FILE__ ":" + QString::number(__LINE__) + "]" + __PRETTY_FUNCTION__ + ": "
+#		define CodePath() "[" __FILE__ ":" + QString::number(__LINE__) + "]" + __PRETTY_FUNCTION__ + ":"
 #	endif
 #else
 #	define CodePath() ""

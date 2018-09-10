@@ -22,6 +22,8 @@
 #include <RPG/script/RpgLyricHelper.h>
 
 #include <RPG/core/RpgFileManager.h>
+
+#include <QPropertyAnimation>
 /**
  * @brief The RpgScene class
  * RPGScene类是RPG游戏中的场景类, 其本质是一个QGraphicsScene, 在scene上增加需要的内容
@@ -49,6 +51,8 @@ class RpgScene : public QGraphicsScene
 	RpgLyricHelper  *lyricHelper  = nullptr;
 
 	QString mapFile;
+
+	QPropertyAnimation *posAnimation = new QPropertyAnimation(this, "sceneRect");
 public:
 	RpgScene(QObject *parent = nullptr) : QGraphicsScene(parent){
 		this->setScenePos(0.0f, 0.0f);
@@ -106,6 +110,9 @@ public:
 		this->connect(this->choice, &RpgChoice::quitDialogMode, [](){
 			RpgState::instance()->popMode();
 		});
+
+		this->posAnimation->setDuration(500);
+		this->posAnimation->setEasingCurve(QEasingCurve::InOutQuad);
 	}
 
 	void setSceneRect(const QRectF &rect){ QGraphicsScene::setSceneRect(rect);}
@@ -116,6 +123,8 @@ public:
 	QRectF getSceneRect() const{ return this->sceneRect(); }
 	QPointF getScenePos() const{ return this->sceneRect().topLeft(); } // 应该写成ViewPos好一点, 但是看上面都写成ScenePos了...闲了改过来
 	QSizeF getSceneSize() const{ return this->sceneRect().size(); }
+	QSizeF getMapSize() const{ return this->itemsBoundingRect().size(); }
+	QSizeF getMapBlockSize() const{ return this->itemsBoundingRect().size() / 32.0f; }
 
 	RpgDialog *getRpgDialog() const{ Q_ASSERT_X(this->dialog, "RpgDialog Nulled", "RpgDialog not found!"); return this->dialog; }
 	RpgBanner *getRpgBanner() const{ Q_ASSERT_X(this->banner, "RpgBanner Nulled", "RpgBanner not found!"); return this->banner; }
@@ -145,6 +154,57 @@ public:
 		qDebug() << CodePath() << res;
 		return res;
 	}
+
+	int moveSceneToLocation(const QPointF &leftTop, int duration = -1){
+		if(this->posAnimation == nullptr){
+			qDebug() << CodePath() << "animation is nullptr.";
+			return 0;
+		}
+		if(this->posAnimation->state() != QPropertyAnimation::Stopped){
+			this->posAnimation->setCurrentTime(this->posAnimation->duration());
+			this->posAnimation->stop();
+		}
+		this->posAnimation->setStartValue(this->getSceneRect());
+		this->posAnimation->setEndValue(QRectF(leftTop, this->getSceneSize()));
+		if(duration == -1){
+			qreal x1 = this->posAnimation->startValue().toRectF().topLeft().x();
+			qreal y1 = this->posAnimation->startValue().toRectF().topLeft().y();
+			qreal x2 = this->posAnimation->endValue().toRectF().topLeft().x();
+			qreal y2 = this->posAnimation->endValue().toRectF().topLeft().y();
+			duration = int(qSqrt(qAbs(x2 - x1) * qAbs(x2 - x1) + qAbs(y2 - y1) * qAbs(y2 - y1))) * 3;
+		}
+		if(duration > 0){
+			this->posAnimation->setDuration(duration);
+			this->posAnimation->start();
+			return duration;
+		}else{
+			this->setSceneRect(this->posAnimation->endValue().toRectF());
+			return 0;
+		}
+	}
+
+	int moveSceneToLocation(qreal x, qreal y, int duration = -1){
+		return this->moveSceneToLocation(QPointF(x, y), duration);
+	}
+
+	int moveSceneToLocation(int x, int y, int duration = -1){
+		return this->moveSceneToLocation(QPointF(qreal(x), qreal(y)), duration);
+	}
+
+	void waitingForMoveSceneComplete(){
+		if(this->posAnimation->state() == QPropertyAnimation::Stopped){
+			qDebug() << CodePath() << "Not running yet, cannot wait.";
+			return;
+		}
+		QEventLoop eventLoop(this);
+		this->connect(this->posAnimation, &QPropertyAnimation::finished, &eventLoop, &QEventLoop::quit);
+		if(this->posAnimation->state() != QPropertyAnimation::Stopped){
+			eventLoop.exec();
+		}
+		return;
+	}
+
+signals:
 };
 
 #endif // RPGSCENE_H
