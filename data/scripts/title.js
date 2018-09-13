@@ -16,32 +16,45 @@ var init = function(){
 //    RpgLyric.loadLyric("op_moonlight");
 
 //    RpgMusic.setLoop(1);
-    RpgMusic.setVolume(50);
-    RpgMusic.playMusic("op_moonlight");
+//    RpgMusic.setVolume(50);
+//    RpgMusic.playMusic("op_moonlight");
 //    RpgLyric.exec();
 
 //    RpgUtils.msleep(180000);
 
-    RpgChoice.addChoiceText("はじめから");
-    RpgChoice.addChoiceText("つづけから");
-    RpgChoice.addChoiceText("画像<sup>がぞう</sup>閲覧<sup>えいらん</sup>室<sup>しつ</sup>");
-    RpgChoice.addChoiceText("終わる");
+//    RpgChoice.addChoiceText("はじめから");
+//    RpgChoice.addChoiceText("つづけから");
+//    RpgChoice.addChoiceText("画像<sup>がぞう</sup>閲覧<sup>えいらん</sup>室<sup>しつ</sup>");
+//    RpgChoice.addChoiceText("終わる");
 //    RpgChoice.addChoiceText("第五个选项");
 //    RpgChoice.addChoiceText("第六个选项");
 //    RpgChoice.addChoiceText("第七个选项");
 //    RpgChoice.addChoiceText("第八个选项");
 //    RpgChoice.addChoiceText("第九个选项");
 //    RpgChoice.setChoiceEnabled(1, false);
-    RpgChoice.exec();
-    var c = RpgChoice.waitingForChooseComplete();
+//    RpgChoice.exec();
+//    var c = RpgChoice.waitingForChooseComplete();
 
-    RpgDialog.addText("你选择了第" + (c + 1) + "个选项");
-    RpgDialog.
-    RpgDialog.exec();
-    RpgDialog.waitingForDialogComplete();
+//    RpgDialog.addText("你选择了第" + (c + 1) + "个选项");
+//    RpgDialog.
+//    RpgDialog.exec();
+//    RpgDialog.waitingForDialogComplete();
 
+    RpgScene.setScenePos(15 *32, 18 * 32);
+    RpgScene.moveSceneToLocation(5 * 32, 18 * 32);
+    RpgScene.waitingForMoveSceneComplete();
+    RpgScene.moveSceneToLocation(5 * 32, 5 * 32);
+    RpgScene.waitingForMoveSceneComplete();
+    RpgScene.moveSceneToLocation(15 * 32, 5 * 32);
+    RpgScene.waitingForMoveSceneComplete();
+    RpgScene.moveSceneToLocation(15 * 32, 18 * 32);
+    RpgScene.waitingForMoveSceneComplete();
+    RpgScene.moveSceneToLocation(0 * 32, 0 * 32);
+    RpgScene.waitingForMoveSceneComplete();
+    RpgScene.moveSceneToLocation(45 * 32, 45 * 32);
+    RpgScene.waitingForMoveSceneComplete();
 
-
+    RpgUtils.msleep(5000);
 
 //    for(var i = 0; i < 50; i++){
 //        RpgDialog.addText("<span style='color:black'>=====================================</span>");

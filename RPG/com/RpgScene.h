@@ -13,17 +13,10 @@
 #include <RPG/com/RpgState.h>
 #include <RPG/com/RpgLyric.h>
 
-#include <RPG/script/RpgBannerHelper.h>
-#include <RPG/script/RpgChoiceHelper.h>
-#include <RPG/script/RpgDialogHelper.h>
-#include <RPG/script/RpgMusicHelper.h>
-#include <RPG/script/RpgSoundHelper.h>
-#include <RPG/script/RpgUtilsHelper.h>
-#include <RPG/script/RpgLyricHelper.h>
-
 #include <RPG/core/RpgFileManager.h>
 
 #include <QPropertyAnimation>
+
 /**
  * @brief The RpgScene class
  * RPGScene类是RPG游戏中的场景类, 其本质是一个QGraphicsScene, 在scene上增加需要的内容
@@ -42,78 +35,20 @@ class RpgScene : public QGraphicsScene
 	RpgLyric  *lyric  = nullptr;
 
 	RpgScript *script = nullptr;
-	RpgBannerHelper *bannerHelper = nullptr;
-	RpgChoiceHelper *choiceHelper = nullptr;
-	RpgDialogHelper *dialogHelper = nullptr;
-	RpgMusicHelper  *musicHelper  = nullptr;
-	RpgSoundHelper  *soundHelper  = nullptr;
-	RpgUtilsHelper  *utilsHelper  = nullptr;
-	RpgLyricHelper  *lyricHelper  = nullptr;
+//	RpgSceneHelper  *sceneHelper  = nullptr;
+//	RpgBannerHelper *bannerHelper = nullptr;
+//	RpgChoiceHelper *choiceHelper = nullptr;
+//	RpgDialogHelper *dialogHelper = nullptr;
+//	RpgMusicHelper  *musicHelper  = nullptr;
+//	RpgSoundHelper  *soundHelper  = nullptr;
+//	RpgUtilsHelper  *utilsHelper  = nullptr;
+//	RpgLyricHelper  *lyricHelper  = nullptr;
 
 	QString mapFile;
 
 	QPropertyAnimation *posAnimation = new QPropertyAnimation(this, "sceneRect");
 public:
-	RpgScene(QObject *parent = nullptr) : QGraphicsScene(parent){
-		this->setScenePos(0.0f, 0.0f);
-
-		this->banner = new RpgBanner(this, this);
-		this->choice = new RpgChoice(this, this);
-		this->dialog = new RpgDialog(this, this);
-		this->lyric  = new RpgLyric(this, this);
-
-		RpgState::instance()->registerRpgObject(this->banner, RpgState::AutoMode);
-		RpgState::instance()->registerRpgObject(this->dialog, RpgState::DialogMode);
-		RpgState::instance()->registerRpgObject(this->choice, RpgState::DialogMode);
-
-		this->script = new RpgScript(this);
-		this->bannerHelper = new RpgBannerHelper(this->banner, this);
-		this->choiceHelper = new RpgChoiceHelper(this->choice, this);
-		this->dialogHelper = new RpgDialogHelper(this->dialog, this);
-		this->musicHelper  = new RpgMusicHelper(RpgMusic::instance(), this);
-		this->soundHelper  = new RpgSoundHelper(RpgSound::instance(), this);
-		this->lyricHelper  = new RpgLyricHelper(this->lyric, this);
-
-		this->utilsHelper  = new RpgUtilsHelper(this);
-
-		this->script->addJsValue("RpgBanner", this->bannerHelper);
-		this->script->addJsValue("RpgChoice", this->choiceHelper);
-		this->script->addJsValue("RpgDialog", this->dialogHelper);
-		this->script->addJsValue("RpgMusic",  this->musicHelper);
-		this->script->addJsValue("RpgSound",  this->soundHelper);
-		this->script->addJsValue("RpgLyric",  this->lyricHelper);
-
-		this->script->addJsValue("RpgUtils", this->utilsHelper);
-
-		this->lyric->setRpgMusic(RpgMusic::instance());
-
-		this->connect(this->banner, &RpgBanner::enterAutoMode, [](){
-			RpgState::instance()->pushMode(RpgState::AutoMode);
-		});
-
-		this->connect(this->banner, &RpgBanner::quitAutoMode, [](){
-			RpgState::instance()->popMode();
-		});
-
-		this->connect(this->dialog, &RpgDialog::enterDialogMode, [](){
-			RpgState::instance()->pushMode(RpgState::DialogMode);
-		});
-
-		this->connect(this->dialog, &RpgDialog::quitDialogMode, [](){
-			RpgState::instance()->popMode();
-		});
-
-		this->connect(this->choice, &RpgChoice::enterDialogMode, [](){
-			RpgState::instance()->pushMode(RpgState::DialogMode);
-		});
-
-		this->connect(this->choice, &RpgChoice::quitDialogMode, [](){
-			RpgState::instance()->popMode();
-		});
-
-		this->posAnimation->setDuration(500);
-		this->posAnimation->setEasingCurve(QEasingCurve::InOutQuad);
-	}
+	RpgScene(QObject *parent = nullptr);
 
 	void setSceneRect(const QRectF &rect){ QGraphicsScene::setSceneRect(rect);}
 	inline void setSceneRect(qreal x, qreal y, qreal w, qreal h) { this->setSceneRect(QRectF(x, y, w, h)); }
@@ -171,7 +106,7 @@ public:
 			qreal y1 = this->posAnimation->startValue().toRectF().topLeft().y();
 			qreal x2 = this->posAnimation->endValue().toRectF().topLeft().x();
 			qreal y2 = this->posAnimation->endValue().toRectF().topLeft().y();
-			duration = int(qSqrt(qAbs(x2 - x1) * qAbs(x2 - x1) + qAbs(y2 - y1) * qAbs(y2 - y1))) * 3;
+			duration = int(qSqrt(qAbs(x2 - x1) * qAbs(x2 - x1) + qAbs(y2 - y1) * qAbs(y2 - y1))) * 2;
 		}
 		if(duration > 0){
 			this->posAnimation->setDuration(duration);

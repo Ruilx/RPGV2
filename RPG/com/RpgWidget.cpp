@@ -360,28 +360,14 @@ void RpgWidget::ready(){
 		}
 	}
 
-	initializeScene->setScenePos(15 * MapBlockWidth, 18 * MapBlockHeight);
-	int sleep = initializeScene->moveSceneToLocation(5 * MapBlockWidth, 18 * MapBlockHeight);
-	Utils::msleep(sleep);
-	sleep = initializeScene->moveSceneToLocation(5 * MapBlockWidth, 5 * MapBlockHeight);
-	Utils::msleep(sleep);
-	sleep = initializeScene->moveSceneToLocation(15 * MapBlockWidth, 5 * MapBlockHeight);
-	Utils::msleep(sleep);
-	sleep = initializeScene->moveSceneToLocation(15 * MapBlockWidth, 18 * MapBlockHeight);
-	Utils::msleep(sleep);
-	sleep = initializeScene->moveSceneToLocation(0, 0, 500);
-	Utils::msleep(sleep);
-	sleep = initializeScene->moveSceneToLocation(45 * MapBlockWidth, 45 * MapBlockHeight, 1500);
+	QString nextScene = initializeScene->execScript();
 
+	while(nextScene != "exit"){
 
-//	QString nextScene = initializaScene->execScript();
+	}
 
-//	while(nextScene != "exit"){
-
-//	}
-
-//	this->setCanBeClose(true);
-//	RpgMusic::instance()->stopMusic();
-//	this->doReadyToClose();
+	this->setCanBeClose(true);
+	RpgMusic::instance()->stopMusic();
+	this->doReadyToClose();
 
 }

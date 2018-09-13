@@ -43,6 +43,22 @@ public:
 		return this->rpgScene->setScenePos(x, y);
 	}
 
+	Q_INVOKABLE int moveSceneToLocation(qreal x, qreal y, int duration = -1){
+		if(this->rpgScene == nullptr){
+			qDebug() << CodePath() << "RpgScene nullptr.";
+			return -1;
+		}
+		return this->rpgScene->moveSceneToLocation(x, y, duration);
+	}
+
+	Q_INVOKABLE void waitingForMoveSceneComplete(){
+		if(this->rpgScene == nullptr){
+			qDebug() << CodePath() << "RpgScene nullptr.";
+			return;
+		}
+		this->rpgScene->waitingForMoveSceneComplete();
+	}
+
 signals:
 
 public slots:
