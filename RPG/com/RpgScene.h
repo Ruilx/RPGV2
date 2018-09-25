@@ -35,14 +35,6 @@ class RpgScene : public QGraphicsScene
 	RpgLyric  *lyric  = nullptr;
 
 	RpgScript *script = nullptr;
-//	RpgSceneHelper  *sceneHelper  = nullptr;
-//	RpgBannerHelper *bannerHelper = nullptr;
-//	RpgChoiceHelper *choiceHelper = nullptr;
-//	RpgDialogHelper *dialogHelper = nullptr;
-//	RpgMusicHelper  *musicHelper  = nullptr;
-//	RpgSoundHelper  *soundHelper  = nullptr;
-//	RpgUtilsHelper  *utilsHelper  = nullptr;
-//	RpgLyricHelper  *lyricHelper  = nullptr;
 
 	QString mapFile;
 

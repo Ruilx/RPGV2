@@ -22,15 +22,6 @@ RpgScene::RpgScene(QObject *parent) : QGraphicsScene(parent){
 	RpgState::instance()->registerRpgObject(this->choice, RpgState::DialogMode);
 
 	this->script = new RpgScript(this);
-//	this->sceneHelper  = new RpgSceneHelper(this, this);
-//	this->bannerHelper = new RpgBannerHelper(this->banner, this);
-//	this->choiceHelper = new RpgChoiceHelper(this->choice, this);
-//	this->dialogHelper = new RpgDialogHelper(this->dialog, this);
-//	this->musicHelper  = new RpgMusicHelper(RpgMusic::instance(), this);
-//	this->soundHelper  = new RpgSoundHelper(RpgSound::instance(), this);
-//	this->lyricHelper  = new RpgLyricHelper(this->lyric, this);
-
-//	this->utilsHelper  = new RpgUtilsHelper(this);
 
 	this->script->addJsValue("RpgScene",  new RpgSceneHelper(this, this));
 	this->script->addJsValue("RpgBanner", new RpgBannerHelper(this->banner, this));
