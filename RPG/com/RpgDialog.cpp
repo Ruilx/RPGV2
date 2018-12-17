@@ -68,6 +68,8 @@ RpgDialog::RpgDialog(QGraphicsScene *parentScene, QObject *parent): RpgObject(pa
 	// 头像位置动画设置
 	characterAnimation->setItem(this->characterBox);
 	characterAnimation->setTimeLine(this->characterTimeLine);
+
+	this->setFlag(QGraphicsItem::ItemIgnoresTransformations);
 }
 
 void RpgDialog::exec(){

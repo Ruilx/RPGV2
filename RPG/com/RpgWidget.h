@@ -74,6 +74,10 @@ class RpgWidget : public QWidget
 	 */
 	void keyReleaseEvent(QKeyEvent *event);
 
+	void mousePressEvent(QMouseEvent *event){
+		qDebug() << "MOUSE PRESS IN VIEW POS:" << event->pos();
+	}
+
 	/**
 	 * @brief canBeExit
 	 * 是否在不经询问的情况下关闭窗口(退出游戏), 设置为true的时候, 关闭窗口不再询问

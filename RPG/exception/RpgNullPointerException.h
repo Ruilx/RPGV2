@@ -7,6 +7,7 @@ class RpgNullPointerException : public RpgException
 {
 public:
 	RpgNullPointerException(const QString &name): RpgException(name){
+		this->setInfo(QObject::tr("Pointer %1 is null.").arg(name));
 	}
 };
 

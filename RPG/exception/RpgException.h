@@ -21,8 +21,8 @@ public:
 		return info;
 	}
 
-	void printInfo() Q_DECL_NOTHROW{
-		qDebug() << CodePath() << "Exception:" << this->info;
+	void printInfo() const Q_DECL_NOTHROW{
+		qCritical() << CodePath() << "Exception:" << this->info;
 	}
 
 	void raise() const Q_DECL_NOTHROW{

@@ -5,7 +5,10 @@
 #include <QGraphicsItem>
 #include <QGraphicsScene>
 #include <QGraphicsObject>
+#include <QPainter>
 #include <RPG/Global.h>
+
+#include <RPG/exception/RpgNullPointerException.h>
 
 /**
  * @brief The RpgObject class
@@ -27,8 +30,9 @@ protected:
 	 * // (或者干脆就是view的大小?)
 	 */
 	QRectF boundingRect() const{
-		return QRectF();
+		//return QRectF();
 		//return QRectF(0, 0, ScreenWidthF, ScreenHeightF);
+		return QRectF(this->parentScene->sceneRect().topLeft(), QSizeF(ScreenWidthF, ScreenHeightF));
 	}
 
 	/**
@@ -54,6 +58,7 @@ public:
 	 */
 	RpgObject(QGraphicsScene *parentScene, QObject *parent, QGraphicsObject *parentItem): QGraphicsObject(parentItem){
 		if(parentScene == nullptr){
+			throw RpgNullPointerException("parentScene");
 			qCritical() << CodePath() << "parentScene is nullptr.";
 			return;
 		}
@@ -107,6 +112,7 @@ public:
 	 */
 	virtual void exec(){
 		if(this->parentScene == nullptr){
+			throw RpgNullPointerException("parentScene");
 			qDebug() << CodePath() << "Parent scene is not set. (Null)";
 			return;
 		}

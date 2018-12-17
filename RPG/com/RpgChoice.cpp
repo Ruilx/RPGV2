@@ -91,6 +91,8 @@ RpgChoice::RpgChoice(QGraphicsScene *parentScene, QObject *parent): RpgObject(pa
 	this->setOpacity(1.0f);
 //	this->boxOpacityEffect->setOpacity(1.0f);
 //	this->box->setGraphicsEffect(this->boxOpacityEffect);
+
+	this->setFlag(QGraphicsItem::ItemIgnoresTransformations);
 }
 
 void RpgChoice::exec(){

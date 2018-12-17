@@ -13,12 +13,12 @@ var init = function(){
 //	RpgBanner.waitingForBannerComplete();
 //	RpgUtils.msleep(2000);
 
-//    RpgLyric.loadLyric("op_moonlight");
+    RpgLyric.loadLyric("demo");
 
-//    RpgMusic.setLoop(1);
-//    RpgMusic.setVolume(50);
-//    RpgMusic.playMusic("op_moonlight");
-//    RpgLyric.exec();
+    RpgMusic.setLoop(1);
+    RpgMusic.setVolume(50);
+    RpgMusic.playMusic("demo");
+    RpgLyric.exec();
 
 //    RpgUtils.msleep(180000);
 
@@ -35,10 +35,9 @@ var init = function(){
 //    RpgChoice.exec();
 //    var c = RpgChoice.waitingForChooseComplete();
 
-//    RpgDialog.addText("你选择了第" + (c + 1) + "个选项");
-//    RpgDialog.
-//    RpgDialog.exec();
-//    RpgDialog.waitingForDialogComplete();
+    RpgDialog.addText("准备好了?");
+    RpgDialog.exec();
+    RpgDialog.waitingForDialogComplete();
 
     RpgScene.setScenePos(15 *32, 18 * 32);
     RpgScene.moveSceneToLocation(5 * 32, 18 * 32);
@@ -49,12 +48,12 @@ var init = function(){
     RpgScene.waitingForMoveSceneComplete();
     RpgScene.moveSceneToLocation(15 * 32, 18 * 32);
     RpgScene.waitingForMoveSceneComplete();
-    RpgScene.moveSceneToLocation(0 * 32, 0 * 32);
+    RpgScene.moveSceneToLocation(-5 * 32, -5 * 32);
     RpgScene.waitingForMoveSceneComplete();
     RpgScene.moveSceneToLocation(45 * 32, 45 * 32);
     RpgScene.waitingForMoveSceneComplete();
 
-    RpgUtils.msleep(5000);
+    RpgUtils.msleep(5000000);
 
 //    for(var i = 0; i < 50; i++){
 //        RpgDialog.addText("<span style='color:black'>=====================================</span>");

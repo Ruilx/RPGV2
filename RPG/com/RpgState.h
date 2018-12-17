@@ -133,9 +133,11 @@ public slots:
 				continue;
 			}
 			if(obj->getParentScene() == scene){
-				// 请在被调用的Object确定当前是否在运行(isRunning=True)并如果没有运行请直接返回
+				// 请在被调用的Object确定当前是否在运行(isRunning=True)并如果没有运行请直接返回 // 不用了, 在这里进行控制
 				// 这里可以依次向每个Object调用其receiveKey函数
-				obj->receiveKey(key, mod);
+				if(obj->getProcessing()){
+					obj->receiveKey(key, mod);
+				}
 			}
 		}
 	}

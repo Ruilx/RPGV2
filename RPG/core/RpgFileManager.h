@@ -2,9 +2,17 @@
 #define RPGFILEMANAGER_H
 
 #include <QtCore>
+#include <RPG/exception/RpgNullPointerException.h>
+#include <RPG/exception/RpgKeyNotFoundException.h>
 
 #define toChars(x) #x
 
+/**
+ * @brief The RpgFileManager class
+ * RPG文件管理类
+ * 单例模式类
+ * 将Json中指定的文件存为指定名称指定类型的记录, 其他类需要打开文件的时候, 使用指定的名称, 类将会返回相应的路径
+ */
 class RpgFileManager
 {
 	static RpgFileManager *_instance;
@@ -70,10 +78,12 @@ public:
 
 	void addFile(FileType type, const QString &name, const QUrl &url){
 		if(!this->files.contains(type)){
+			throw RpgKeyNotFoundException(this->fileTypeName.value(type, "unknown"), "this->fileTypeName");
 			return;
 		}
 		QHash<QString, QUrl> *file = this->files.value(type);
 		if(file == nullptr){
+			throw RpgNullPointerException("file");
 			return;
 		}
 		file->insert(name, url);
@@ -81,10 +91,12 @@ public:
 
 	void removeFile(FileType type, const QString &name){
 		if(!this->files.contains(type)){
+			throw RpgKeyNotFoundException(this->fileTypeName.value(type, "unknown"), "this->fileTypeName");
 			return;
 		}
 		QHash<QString, QUrl> *file = this->files.value(type);
 		if(file == nullptr){
+			throw RpgNullPointerException("file");
 			return;
 		}
 		file->remove(name);
@@ -92,10 +104,12 @@ public:
 
 	QUrl getFile(FileType type, const QString &name) const{
 		if(!this->files.contains(type)){
+			throw RpgKeyNotFoundException(this->fileTypeName.value(type, "unknown"), "this->fileTypeName");
 			return QUrl();
 		}
 		QHash<QString, QUrl> *file = this->files.value(type);
 		if(file == nullptr){
+			throw RpgNullPointerException("file");
 			return QUrl();
 		}
 		return file->value(name);
@@ -104,6 +118,7 @@ public:
 	QString getFileString(FileType type, const QString &name){
 		QUrl url = this->getFile(type, name);
 		if(!url.isValid()){
+			throw RpgKeyNotFoundException(this->fileTypeName.value(type, "unknown"), "this->fileTypeName");
 			return QString();
 		}
 		return url.url(QUrl::PreferLocalFile);

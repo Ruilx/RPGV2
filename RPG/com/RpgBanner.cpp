@@ -9,6 +9,7 @@ RpgBanner::RpgBanner(QGraphicsScene *parentScene, QObject *parent): RpgObject(pa
 	this->setStartOpacity(0.0f);
 	this->setEndOpacity(1.0f);
 	this->connect(this->foregroundAnimation, &QPropertyAnimation::finished, this, &RpgBanner::animationFinished);
+	this->setFlag(QGraphicsItem::ItemIgnoresTransformations);
 }
 
 RpgBanner::RpgBanner(qreal startOpacity, qreal endOpacity, QGraphicsScene *parentScene, QObject *parent) : RpgBanner(parentScene, parent){

@@ -4,6 +4,8 @@
 #include <RPG/Global.h>
 #include <RPG/com/RpgBanner.h>
 
+#include <RPG/exception/RpgNullPointerException.h>
+
 class RpgBannerHelper: public QObject
 {
 	Q_OBJECT
@@ -12,6 +14,7 @@ class RpgBannerHelper: public QObject
 public:
 	RpgBannerHelper(RpgBanner *rpgBanner, QObject *parent = nullptr) : QObject(parent){
 		if(rpgBanner == nullptr){
+			throw RpgNullPointerException("rpgBanner");
 			qDebug() << CodePath() << "RpgBanner nullptr.";
 			return;
 		}
@@ -20,6 +23,7 @@ public:
 
 	Q_INVOKABLE void exec(){
 		if(this->rpgBanner == nullptr){
+			throw RpgNullPointerException("this->rpgBanner");
 			qDebug() << CodePath() << "RpgBanner nullptr";
 			return;
 		}
@@ -28,6 +32,7 @@ public:
 
 	Q_INVOKABLE void execExit(){
 		if(this->rpgBanner == nullptr){
+			throw RpgNullPointerException("this->rpgBanner");
 			qDebug() << CodePath() << "RpgBanner nullptr";
 			return;
 		}
@@ -36,6 +41,7 @@ public:
 
 	Q_INVOKABLE int waitingForBannerComplete(){
 		if(this->rpgBanner == nullptr){
+			throw RpgNullPointerException("this->rpgBanner");
 			qDebug() << CodePath() << "RpgBanner nullptr";
 			return -1;
 		}
@@ -52,6 +58,7 @@ public:
 
 	Q_INVOKABLE void setForegroundPixmap(const QString &name){
 		if(this->rpgBanner == nullptr){
+			throw RpgNullPointerException("this->rpgBanner");
 			qDebug() << CodePath() << "RpgBanner nullptr";
 			return;
 		}
@@ -68,6 +75,7 @@ public:
 
 	Q_INVOKABLE void setBackgroundColor(const QString &color){
 		if(this->rpgBanner == nullptr){
+			throw RpgNullPointerException("this->rpgBanner");
 			qDebug() << CodePath() << "RpgBanner nullptr";
 			return;
 		}
@@ -76,6 +84,7 @@ public:
 
 	Q_INVOKABLE void setBackgroundPixmap(const QPixmap &pixmap){
 		if(this->rpgBanner == nullptr){
+			throw RpgNullPointerException("this->rpgBanner");
 			qDebug() << CodePath() << "RpgBanner nullptr";
 			return;
 		}
@@ -84,6 +93,7 @@ public:
 
 	Q_INVOKABLE void setBackgroundWithForeground(){
 		if(this->rpgBanner == nullptr){
+			throw RpgNullPointerException("this->rpgBanner");
 			qDebug() << CodePath() << "RpgBanner nullptr";
 			return;
 		}
@@ -92,6 +102,7 @@ public:
 
 	Q_INVOKABLE void setSpeed(int ms){
 		if(this->rpgBanner == nullptr){
+			throw RpgNullPointerException("this->rpgBanner");
 			qDebug() << CodePath() << "RpgBanner nullptr";
 			return;
 		}
@@ -100,6 +111,7 @@ public:
 
 	Q_INVOKABLE void setStartOpacity(qreal opacity){
 		if(this->rpgBanner == nullptr){
+			throw RpgNullPointerException("this->rpgBanner");
 			qDebug() << CodePath() << "RpgBanner nullptr";
 			return;
 		}
@@ -108,6 +120,7 @@ public:
 
 	Q_INVOKABLE void setEndOpacity(qreal opacity){
 		if(this->rpgBanner == nullptr){
+			throw RpgNullPointerException("this->rpgBanner");
 			qDebug() << CodePath() << "RpgBanner nullptr";
 			return;
 		}
@@ -116,6 +129,7 @@ public:
 
 	Q_INVOKABLE void setEasingCurveType(QEasingCurve::Type type){
 		if(this->rpgBanner == nullptr){
+			throw RpgNullPointerException("this->rpgBanner");
 			qDebug() << CodePath() << "RpgBanner nullptr";
 			return;
 		}
@@ -124,6 +138,7 @@ public:
 
 	Q_INVOKABLE void setCanBeInterrupt(bool able){
 		if(this->rpgBanner == nullptr){
+			throw RpgNullPointerException("this->rpgBanner");
 			qDebug() << CodePath() << "RpgBanner nullptr";
 			return;
 		}

@@ -68,6 +68,7 @@ RpgLyric::RpgLyric(QGraphicsScene *parentScene, QObject *parent): RpgObject(pare
 	this->lyricOpacityAnimation->setDuration(300);
 	this->lyricOpacityAnimation->setLoopCount(1);
 
+	this->setFlag(QGraphicsItem::ItemIgnoresTransformations);
 }
 
 void RpgLyric::setRpgMusic(RpgMusic *music){

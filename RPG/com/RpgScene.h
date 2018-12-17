@@ -39,11 +39,20 @@ class RpgScene : public QGraphicsScene
 	QString mapFile;
 
 	QPropertyAnimation *posAnimation = new QPropertyAnimation(this, "sceneRect");
+
+	QPointF prevPos = QPointF();
+
+	void mousePressEvent(QGraphicsSceneMouseEvent *event){
+		qDebug() << "MOUSE PRESS IN SCENE POS:" << event->pos();
+	}
+
+	void mouseMoveEvent(QGraphicsSceneMouseEvent *event){
+	}
 public:
 	RpgScene(QObject *parent = nullptr);
 
-	void setSceneRect(const QRectF &rect){ QGraphicsScene::setSceneRect(rect);}
-	inline void setSceneRect(qreal x, qreal y, qreal w, qreal h) { this->setSceneRect(QRectF(x, y, w, h)); }
+//	void setSceneRect(const QRectF &rect){ QGraphicsScene::setSceneRect(rect);}
+//	inline void setSceneRect(qreal x, qreal y, qreal w, qreal h) { this->setSceneRect(QRectF(x, y, w, h)); }
 	inline void setScenePos(const QPointF &point){ this->setSceneRect(point.x(), point.y(), ScreenWidthF, ScreenHeightF); }
 	inline void setScenePos(qreal left, qreal top){ this->setScenePos(QPointF(left, top)); }
 

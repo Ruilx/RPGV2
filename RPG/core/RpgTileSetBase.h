@@ -5,6 +5,9 @@
 #include <QImage>
 #include <QPixmap>
 #include <RPG/Global.h>
+
+#include <RPG/exception/RpgNullPointerException.h>
+#include <RPG/exception/RpgKeyNotFoundException.h>
 /**
  * @brief The RpgTileSetBase class
  * 这个类进行物品/地板/墙面的固定图片读取类
@@ -57,20 +60,45 @@ public:
 		return RpgTileSetBase::getRpgTile(QPoint(x, y));
 	}
 
-	QImage *getRpgTile(QPoint loc) const {
-		return this->imageList.value((quint64)(loc.x()) << 32 | (quint64)(loc.y()), new QImage());
+	QImage *getRpgTile(const QPoint &loc) const {
+		quint64 index = this->loc2Index(loc);
+		if(!this->imageList.contains(index)){
+			throw RpgKeyNotFoundException(QString::number(index), "imageList");
+			return nullptr;
+		}
+		QImage *image = this->imageList.value(index, new QImage());
+		if(image == nullptr){
+			throw RpgNullPointerException(QObject::tr("this->imageList.value(%1)").arg(index));
+			return nullptr;
+		}
+		return image;
 	}
 
 	QPixmap getRpgTilePixmap(int x, int y) const {
-		return QPixmap::fromImage(*getRpgTile(x, y));
+		QImage *image = getRpgTile(x, y);
+		if(image == nullptr){
+			throw RpgNullPointerException(QObject::tr("image"));
+			return QPixmap();
+		}
+		return QPixmap::fromImage(*image);
 	}
 
 	QPixmap getRpgTilePixmap(QPoint loc) const {
-		return QPixmap::fromImage(*getRpgTile(loc));
+		QImage *image = getRpgTile(loc);
+		if(image == nullptr){
+			throw RpgNullPointerException(QObject::tr("image"));
+			return QPixmap();
+		}
+		return QPixmap::fromImage(*image);
 	}
 
 	int getRows(){ return this->rows; }
 	int getCols(){ return this->cols; }
+
+protected:
+	quint64 loc2Index(const QPoint &loc) const{
+		return (quint64)(loc.x()) << 32 | (quint64)(loc.y());
+	}
 };
 
 #endif // RPGTILESETBASE_H

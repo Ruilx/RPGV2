@@ -4,6 +4,8 @@
 #include <RPG/Global.h>
 #include <RPG/com/RpgChoice.h>
 
+#include <RPG/exception/RpgNullPointerException.h>
+
 class RpgChoiceHelper: public QObject
 {
 	Q_OBJECT
@@ -12,6 +14,7 @@ class RpgChoiceHelper: public QObject
 public:
 	RpgChoiceHelper(RpgChoice *rpgChoice, QObject *parent = nullptr): QObject(parent){
 		if(rpgChoice == nullptr){
+			throw RpgNullPointerException("rpgChoice");
 			qDebug() << CodePath() << "RpgChoice nullptr.";
 			return;
 		}
@@ -20,6 +23,7 @@ public:
 
 	Q_INVOKABLE void exec(){
 		if(this->rpgChoice == nullptr){
+			throw RpgNullPointerException("this->rpgChoice");
 			qDebug() << CodePath() << "RpgChoice nullptr.";
 			return;
 		}
@@ -28,6 +32,7 @@ public:
 
 	Q_INVOKABLE int waitingForChooseComplete(int second = -1){
 		if(this->rpgChoice == nullptr){
+			throw RpgNullPointerException("this->rpgChoice");
 			qDebug() << CodePath() << "RpgChoice nullptr.";
 			return -1;
 		}
@@ -36,6 +41,7 @@ public:
 
 	Q_INVOKABLE int getChose(){
 		if(this->rpgChoice == nullptr){
+			throw RpgNullPointerException("this->rpgChoice");
 			qDebug() << CodePath() << "RpgChoice nullptr.";
 			return -1;
 		}
@@ -44,6 +50,7 @@ public:
 
 	Q_INVOKABLE void addChoiceText(const QString &text){
 		if(this->rpgChoice == nullptr){
+			throw RpgNullPointerException("this->rpgChoice");
 			qDebug() << CodePath() << "RpgChoice nullptr.";
 			return;
 		}
@@ -52,6 +59,7 @@ public:
 
 	Q_INVOKABLE void setChoiceEnabled(int choiceIndex, bool enabled){
 		if(this->rpgChoice == nullptr){
+			throw RpgNullPointerException("this->rpgChoice");
 			qDebug() << CodePath() << "RpgChoice nullptr.";
 			return;
 		}
@@ -60,6 +68,7 @@ public:
 
 	Q_INVOKABLE void setSlowprint(int speed){
 		if(this->rpgChoice == nullptr){
+			throw RpgNullPointerException("this->rpgChoice");
 			qDebug() << CodePath() << "RpgChoice nullptr.";
 			return;
 		}
@@ -68,6 +77,7 @@ public:
 
 	Q_INVOKABLE void setFont(const QFont &font){
 		if(this->rpgChoice == nullptr){
+			throw RpgNullPointerException("this->rpgChoice");
 			qDebug() << CodePath() << "RpgChoice nullptr.";
 			return;
 		}
@@ -76,6 +86,7 @@ public:
 
 	Q_INVOKABLE void setTextColor(const QString &color){
 		if(this->rpgChoice == nullptr){
+			throw RpgNullPointerException("this->rpgChoice");
 			qDebug() << CodePath() << "RpgChoice nullptr.";
 			return;
 		}
@@ -84,6 +95,7 @@ public:
 
 	Q_INVOKABLE void setDialogWidth(int width){
 		if(this->rpgChoice == nullptr){
+			throw RpgNullPointerException("this->rpgChoice");
 			qDebug() << CodePath() << "RpgChoice nullptr.";
 			return;
 		}
@@ -92,6 +104,7 @@ public:
 
 	Q_INVOKABLE void clearChoiceText(){
 		if(this->rpgChoice == nullptr){
+			throw RpgNullPointerException("this->rpgChoice");
 			qDebug() << CodePath() << "RpgChoice nullptr.";
 			return;
 		}
